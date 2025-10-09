@@ -9,8 +9,6 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private GameObject player;
     private PlayerController playerController;
 
-    public float mouseSpeed { get; private set; }
-
     void Awake()
     {
         if (Instance == null)
