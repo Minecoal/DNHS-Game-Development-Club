@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -12,32 +13,18 @@ public class PlayerController : MonoBehaviour
     private Animator anim;
     private Vector2 moveInput;
 
-    
-    
-
-    public static PlayerController Instance { get; private set; }
-
     private void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-        }
-        else
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-    }
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
     {
         rb = GetComponent<Rigidbody2D>();
 
+        TextDisplayer playerStateDisplayer = new TextDisplayer(() => currentState.ToString(), new Vector2(-4.7f, 3.3f), 0.1f);
     }
 
-    // Update is called once per frame
+    void Start()
+    {
+
+    }
+
     void Update()
     {
         moveInput.x = Input.GetAxisRaw("Horizontal");
@@ -96,22 +83,19 @@ public class PlayerController : MonoBehaviour
 
 
     //enter/exit state logic
-    void EnterIdle() 
-    {
-        Debug.Log("enter idle state");
-    }
+    void EnterIdle() { }
     void ExitIdle() { }
 
-    void EnterMoving() 
-    {
-        Debug.Log("enter moving state");
-    }
+    void EnterMoving() { }
     void ExitMoving() { }
 
 
     private void Run()
     {
         Vector2 targetSpeed = new Vector2(moveInput.x * moveSpeed, moveInput.y * moveSpeed);
+
+        Debug.DrawLine((Vector2)transform.position, (Vector2)transform.position + targetSpeed, Color.green);
+        Debug.DrawLine((Vector2)transform.position, (Vector2)transform.position + rb.linearVelocity, Color.yellow);
 
         //calculate accel/deccel
         Vector2 accelRate = new Vector2();
