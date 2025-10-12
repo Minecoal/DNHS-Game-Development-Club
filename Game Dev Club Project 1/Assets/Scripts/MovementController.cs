@@ -1,7 +1,6 @@
+using System;
 using UnityEngine;
-using UnityEngine.UI;
-
-public class PlayerController : MonoBehaviour
+public class MovementController : MonoBehaviour
 {
 
     public PlayerState currentState = PlayerState.Idle;
@@ -30,12 +29,16 @@ public class PlayerController : MonoBehaviour
         moveInput.x = Input.GetAxisRaw("Horizontal");
         moveInput.y = Input.GetAxisRaw("Vertical");
         moveInput.Normalize();
-
+        
 
         if (moveInput.sqrMagnitude > 0.01f && (currentState == PlayerState.Moving || currentState == PlayerState.Idle))
             ChangeState(PlayerState.Moving);
         else
             ChangeState(PlayerState.Idle);
+
+        if (Input.GetMouseButtonDown(0))
+            ChangeState(PlayerState.BasicAttack);
+            
     }
 
     private void FixedUpdate()
@@ -65,6 +68,10 @@ public class PlayerController : MonoBehaviour
             case PlayerState.Moving:
                 ExitMoving();
                 break;
+            case PlayerState.BasicAttack:
+                ExitBaasicAttack();
+                break;
+
         }
 
         currentState = newState;
@@ -78,6 +85,9 @@ public class PlayerController : MonoBehaviour
             case PlayerState.Moving:
                 EnterMoving();
                 break;
+            case PlayerState.BasicAttack:
+                EnterBasicAttack();
+                break;
         }
     }
 
@@ -88,6 +98,9 @@ public class PlayerController : MonoBehaviour
 
     void EnterMoving() { }
     void ExitMoving() { }
+
+    void EnterBasicAttack() { }
+    void ExitBaasicAttack() { }
 
 
     private void Run()
@@ -128,10 +141,18 @@ public class PlayerController : MonoBehaviour
         rb.AddForce(movement.x * Vector2.right, ForceMode2D.Force);
         rb.AddForce(movement.y * Vector2.up, ForceMode2D.Force);
     }
+
+    public Vector2 GetInputVector()
+    {
+        return moveInput;
+    }
 }
 
 public enum PlayerState
 {
     Idle,
-    Moving
+    Moving,
+    BasicAttack,
+    HeavyAttack,
+    Dash
 }

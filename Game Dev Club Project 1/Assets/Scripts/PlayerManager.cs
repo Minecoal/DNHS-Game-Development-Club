@@ -7,7 +7,10 @@ public class PlayerManager : MonoBehaviour
 
     [SerializeField] private GameObject weapon;
     [SerializeField] private GameObject player;
-    private PlayerController playerController;
+    private MovementController movementController;
+    private AttackController attackController;
+
+    public Vector2 moveInput { get; private set; }
 
     void Awake()
     {
@@ -25,12 +28,13 @@ public class PlayerManager : MonoBehaviour
 
     void Start()
     {
-        playerController = player.GetComponent<PlayerController>();
+        movementController = player.GetComponent<MovementController>();
+        attackController = player.GetComponent<AttackController>();
     }
 
     void Update()
     {
-
+        moveInput = movementController.GetInputVector();
     }
 
     public void DamagePlayer()
