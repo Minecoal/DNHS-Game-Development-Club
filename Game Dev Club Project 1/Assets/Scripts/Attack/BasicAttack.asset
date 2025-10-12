@@ -9,14 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2874cb1d574924476a7a41eede0bca50, type: 3}
+  m_Script: {fileID: 11500000, guid: 5c0077e1e15674d8b99579559008c418, type: 3}
   m_Name: BasicAttack
   m_EditorClassIdentifier: Assembly-CSharp::AttackData
-  attackName: 
+  attackName: BasicAttack
   damage: 3
-  cooldown: 0.5
+  cooldown: 1
   range: 1.2
-  hitboxPrefab: {fileID: 2371177038859475188, guid: c54f217270a31463daccf9bcafe11236, type: 3}
+  hitboxPrefab: {fileID: 2371177038859475188, guid: ffa59272091d946a0ab509becab5dc3d, type: 3}
   hitboxDuration: 1
   useAnimationEvent: 0
   animatorTrigger: 

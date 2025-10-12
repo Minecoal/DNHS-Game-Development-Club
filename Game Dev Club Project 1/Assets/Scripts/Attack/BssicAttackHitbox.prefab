@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6674818760610752456}
   - component: {fileID: 3332273716567289793}
-  - component: {fileID: 1436538460231403212}
+  - component: {fileID: 5343163363168774661}
   m_Layer: 0
   m_Name: BssicAttackHitbox
   m_TagString: Untagged
@@ -79,7 +79,7 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &1436538460231403212
+--- !u!114 &5343163363168774661
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -88,7 +88,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 2371177038859475188}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 79883a96d2dc04fd095205cec8269643, type: 3}
+  m_Script: {fileID: 11500000, guid: 8c71c37330520464f9c63f6d6a23efaf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Hitbox
-  lifetime: 0.2
