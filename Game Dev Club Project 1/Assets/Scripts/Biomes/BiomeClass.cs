@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 [System.Serializable]
 public class BiomeClass
@@ -8,6 +9,9 @@ public class BiomeClass
 
     public Color biomeCol;
 
-    public Sprite tileSprite;
+    public Tile tileSprite;
+
+    public int minNumOfTiles;
+    public int numTiles;
 
 }

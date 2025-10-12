@@ -1,22 +1,24 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class WorldGen : MonoBehaviour
 {
 
-    public float seed;
+    [SerializeField] private float seed;
 
-    public BiomeClass[] biomes;
+    [SerializeField] private BiomeClass[] biomes;
 
     [Header("Biomes")]
-    public float biomeFrequency;
-    public Gradient biomeGradient;
+    [SerializeField] private float biomeFrequency;
+    [SerializeField] private Gradient biomeGradient;
 
     public int size;
 
 
-    public Texture2D biomeMap;
+    [SerializeField] private Texture2D biomeMap;
     private BiomeClass curBiome;
+    [SerializeField] private Tilemap tilemap;
 
     public List<TileClass> tiles = new List<TileClass>();
 
@@ -24,6 +26,18 @@ public class WorldGen : MonoBehaviour
     {
         
         DrawTextures();
+        ApplyToTilemap();
+    }
+
+    
+    
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            DrawTextures();
+            ApplyToTilemap();
+        }
     }
 
     public void DrawTextures()
@@ -45,12 +59,73 @@ public class WorldGen : MonoBehaviour
         biomeMap.Apply();
     }
 
-    private void Update()
+    void ApplyToTilemap()
     {
-        if (Input.GetKeyDown(KeyCode.E))
+        tilemap.ClearAllTiles();
+        foreach (BiomeClass biome in biomes)
         {
-            DrawTextures();
+            biome.numTiles = 0;
+        }
+
+        for (int x = 0; x < biomeMap.width; x++)
+        {
+            for (int y = 0; y < biomeMap.height; y++)
+            {
+                Color pixelColor = biomeMap.GetPixel(x, y);
+
+                BiomeClass matchedBiome = GetClosestBiome(pixelColor);
+
+                if (matchedBiome != null && matchedBiome.tileSprite != null)
+                {
+                    matchedBiome.numTiles++;
+                    tilemap.SetTile(new Vector3Int(x, y, 0), matchedBiome.tileSprite);
+                }
+            }
+        }
+
+        if (EnoughTiles())
+        {
+            Debug.Log("world gen successful");
+        }
+        else
+        {
+            Debug.Log("redo world gen");
+            
         }
     }
 
+
+    BiomeClass GetClosestBiome(Color col)
+    {
+        BiomeClass closest = null;
+        float minDist = Mathf.Infinity;
+
+        foreach (BiomeClass biome in biomes)
+        {
+            float dist = Vector3.Distance(
+                new Vector3(col.r, col.g, col.b),
+                new Vector3(biome.biomeCol.r, biome.biomeCol.g, biome.biomeCol.b)
+            );
+
+            if (dist < minDist)
+            {
+                minDist = dist;
+                closest = biome;
+            }
+        }
+
+        return closest;
+    }
+
+    private bool EnoughTiles()
+    {
+        foreach (BiomeClass biome in biomes)
+        {
+            if (biome.numTiles < biome.minNumOfTiles)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 }
