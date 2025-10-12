@@ -11,12 +11,12 @@ public class MovementController : MonoBehaviour
     private Rigidbody2D rb;
     private Animator anim;
     private Vector2 moveInput;
-
+    private TextDisplayer playerStateDisplayer;
+    
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-
-        TextDisplayer playerStateDisplayer = new TextDisplayer(() => currentState.ToString(), new Vector2(-4.7f, 3.3f), 0.1f);
+        playerStateDisplayer = new TextDisplayer(() => currentState.ToString(), new Vector2(-4.7f, 3.3f), 0.1f);
     }
 
     void Start()

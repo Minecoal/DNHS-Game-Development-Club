@@ -7,6 +7,7 @@ public class TestScript : MonoBehaviour
     void Awake()
     {
         grid = new Grid<Tile>(5, 5, 1f, (Grid<Tile> g, int x, int y) => new Tile(g, x, y), Vector3.zero);
+        grid.CreateDebugText();
     }
 
     void Start()
@@ -14,7 +15,6 @@ public class TestScript : MonoBehaviour
 
     }
 
-    // Update is called once per frame
     void Update()
     {
 

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1329374124362783259}
   - component: {fileID: 6984458220344529426}
-  - component: {fileID: 6718463457054423839}
+  - component: {fileID: 3821928912088949688}
   m_Layer: 0
   m_Name: HeaveAttackHitbox
   m_TagString: Untagged
@@ -79,7 +79,7 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 2, y: 2}
   m_EdgeRadius: 0
---- !u!114 &6718463457054423839
+--- !u!114 &3821928912088949688
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -88,7 +88,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 7943019339696071975}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 79883a96d2dc04fd095205cec8269643, type: 3}
+  m_Script: {fileID: 11500000, guid: 8c71c37330520464f9c63f6d6a23efaf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Hitbox
-  lifetime: 0.4

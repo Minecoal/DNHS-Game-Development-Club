@@ -45,31 +45,6 @@ public class Grid<T>
             }
         }
 
-        if (showDebug)
-        {
-            debugTextArray = new TextMeshPro[this.gridx, this.gridy];
-            debugTextParent = new GameObject("Debug Text Parent").transform;
-            if (globalDebugTextParent == null)
-            {
-                globalDebugTextParent = new GameObject("Global Debug Text Parent").transform;
-            }
-            debugTextParent.SetParent(globalDebugTextParent);
-
-            Vector3 cellOffset = new Vector3(0.5f * cellSize, 0.5f * cellSize);
-            for (int i = 0; i < gridArray.GetLength(0); i++)
-            {
-                for (int j = 0; j < gridArray.GetLength(1); j++)
-                {
-                    TextDisplayer debugText = new TextDisplayer(gridArray[i, j]?.ToString(), GetGlobalPosition(i, j) + cellOffset, 0.1f);
-                    debugText.textObject.transform.SetParent(debugTextParent);
-                    Debug.DrawLine(GetGlobalPosition(i, j), GetGlobalPosition(i + 1, j), Color.white, 100f);
-                    Debug.DrawLine(GetGlobalPosition(i, j), GetGlobalPosition(i, j + 1), Color.white, 100f);
-                }
-            }
-            Debug.DrawLine(GetGlobalPosition(0, gridy), GetGlobalPosition(gridx, gridy), Color.white, 100f);
-            Debug.DrawLine(GetGlobalPosition(gridx, 0), GetGlobalPosition(gridx, gridy), Color.white, 100f);
-        }
-
         OnGridValueChanged += UpdateGrid;
     }
 
@@ -113,6 +88,34 @@ public class Grid<T>
     {
         GetGridPosition(globalPosition, out int x, out int y);
         SetGridObject(x, y, value);
+    }
+
+    // Call this from a MonoBehaviour on the main thread (Awake/Start) to create debug visuals.
+    public void CreateDebugText()
+    {
+        if (!showDebug) return;
+
+        debugTextArray = new TextMeshPro[this.gridx, this.gridy];
+        debugTextParent = new GameObject("Debug Text Parent").transform;
+        if (globalDebugTextParent == null)
+        {
+            globalDebugTextParent = new GameObject("Global Debug Text Parent").transform;
+        }
+        debugTextParent.SetParent(globalDebugTextParent);
+
+        Vector3 cellOffset = new Vector3(0.5f * cellSize, 0.5f * cellSize);
+        for (int i = 0; i < gridArray.GetLength(0); i++)
+        {
+            for (int j = 0; j < gridArray.GetLength(1); j++)
+            {
+                TextDisplayer debugText = new TextDisplayer(gridArray[i, j]?.ToString(), GetGlobalPosition(i, j) + cellOffset, 0.1f);
+                debugText.textObject.transform.SetParent(debugTextParent);
+                Debug.DrawLine(GetGlobalPosition(i, j), GetGlobalPosition(i + 1, j), Color.white, 100f);
+                Debug.DrawLine(GetGlobalPosition(i, j), GetGlobalPosition(i, j + 1), Color.white, 100f);
+            }
+        }
+        Debug.DrawLine(GetGlobalPosition(0, gridy), GetGlobalPosition(gridx, gridy), Color.white, 100f);
+        Debug.DrawLine(GetGlobalPosition(gridx, 0), GetGlobalPosition(gridx, gridy), Color.white, 100f);
     }
 
     public T GetGridObject(int x, int y)
