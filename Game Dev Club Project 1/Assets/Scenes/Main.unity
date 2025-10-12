@@ -119,6 +119,102 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &1190747281
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1190747283}
+  - component: {fileID: 1190747282}
+  m_Layer: 0
+  m_Name: WorldGen
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1190747282
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1190747281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9860239b959280458f0f49e725ea446, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WorldGen
+  seed: 1
+  biomes:
+  - biomeName: green
+    biome: 0
+    biomeCol: {r: 0, g: 1, b: 0, a: 0}
+    tileSprite: {fileID: 0}
+  - biomeName: blue
+    biome: 1
+    biomeCol: {r: 0, g: 0, b: 1, a: 0}
+    tileSprite: {fileID: 0}
+  - biomeName: yellow
+    biome: 3
+    biomeCol: {r: 1, g: 1, b: 0, a: 0}
+    tileSprite: {fileID: 0}
+  - biomeName: red
+    biome: 2
+    biomeCol: {r: 1, g: 0, b: 0, a: 0}
+    tileSprite: {fileID: 0}
+  biomeFrequency: 0.22
+  biomeGradient:
+    serializedVersion: 2
+    key0: {r: 0, g: 1, b: 0, a: 1}
+    key1: {r: 1, g: 1, b: 0, a: 1}
+    key2: {r: 1, g: 0, b: 0, a: 0}
+    key3: {r: 0, g: 0, b: 1, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 19002
+    ctime1: 30916
+    ctime2: 48626
+    ctime3: 65535
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 1
+    m_ColorSpace: -1
+    m_NumColorKeys: 4
+    m_NumAlphaKeys: 2
+  size: 100
+  biomeMap: {fileID: 0}
+  tiles: []
+--- !u!4 &1190747283
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1190747281}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1586318526
 GameObject:
   m_ObjectHideFlags: 0
@@ -171,8 +267,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   currentState: 0
   moveSpeed: 10
-  accelAmount: 3
-  decelAmount: 3
+  accelAmount: 6
+  decelAmount: 7
 --- !u!61 &1586318529
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -554,3 +650,4 @@ SceneRoots:
   - {fileID: 2101502138}
   - {fileID: 1931086415}
   - {fileID: 1586318532}
+  - {fileID: 1190747283}
