@@ -11,14 +11,16 @@ public class MovementController : MonoBehaviour
     private Rigidbody2D rb;
     private Animator anim;
     private Vector2 moveInput;
-    private TextDisplayer playerStateDisplayer;
-    
+    private TextDisplay playerStateDisplayer;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        playerStateDisplayer = new TextDisplayer(() => currentState.ToString(), new Vector2(-4.7f, 3.3f), 0.1f);
+        playerStateDisplayer = TextDisplayManager.New(new Vector2(-4.7f, 3.3f), 0.1f)
+            .WithTrackedProvider(() => currentState.ToString())
+            .WithDraggable()
+            .Build();
     }
-
     void Start()
     {
 
@@ -29,21 +31,16 @@ public class MovementController : MonoBehaviour
         moveInput.x = Input.GetAxisRaw("Horizontal");
         moveInput.y = Input.GetAxisRaw("Vertical");
         moveInput.Normalize();
-        
 
         if (moveInput.sqrMagnitude > 0.01f && (currentState == PlayerState.Moving || currentState == PlayerState.Idle))
             ChangeState(PlayerState.Moving);
         else
             ChangeState(PlayerState.Idle);
-
-        if (Input.GetMouseButtonDown(0))
-            ChangeState(PlayerState.BasicAttack);
             
     }
 
     private void FixedUpdate()
     {
-        
         if(currentState == PlayerState.Moving)
         {
             Run();
@@ -52,6 +49,7 @@ public class MovementController : MonoBehaviour
         {
             Decelerate();
         }
+        Rotate();
     }
 
     private void ChangeState(PlayerState newState)
@@ -140,6 +138,15 @@ public class MovementController : MonoBehaviour
 
         rb.AddForce(movement.x * Vector2.right, ForceMode2D.Force);
         rb.AddForce(movement.y * Vector2.up, ForceMode2D.Force);
+    }
+
+    private void Rotate(){
+        Vector2 velocity = rb.linearVelocity;
+        if (velocity.sqrMagnitude > 0.01f)
+        {
+            float angle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0f, 0f, angle);
+        }
     }
 
     public Vector2 GetInputVector()

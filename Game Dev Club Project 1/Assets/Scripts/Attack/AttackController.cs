@@ -5,6 +5,7 @@ public class AttackController : MonoBehaviour
     public AttackData[] attackDatas; // assign in inspector
     private IAttack[] actions;
     public Animator animator;
+    [SerializeField] private Transform attackAnchor;
 
     private int bufferedInput = -1; // the index of the buffered input
     private float bufferTime = 0.2f;
@@ -30,7 +31,7 @@ public class AttackController : MonoBehaviour
     void Update()
     {
         // example input handling
-        if (Input.GetKeyDown(attackButton))
+        if (Input.GetKey(attackButton))
         {
             TryStartAttack(0);
         }
@@ -41,8 +42,10 @@ public class AttackController : MonoBehaviour
             if (actions[bufferedInput].IsAvailable())
             {
                 StartAttack(bufferedInput);
-                bufferedInput = -1;
             }
+        } else
+        {
+            bufferedInput = -1;
         }
     }
 
@@ -65,21 +68,21 @@ public class AttackController : MonoBehaviour
         AttackData data = attackDatas[index];
 
         if (animator != null && !string.IsNullOrEmpty(data.animatorTrigger)){ }
-            // set animator trigger
+        // set animator trigger
 
-            // if using animation events to time the hit, don't execute here, otherwise call Execute immediately
+        // if using animation events to time the hit, don't execute here, otherwise call Execute immediately
         if (!data.useAnimationEvent)
         {
-            actions[index].ExecuteAttack(transform, PlayerManager.Instance.moveInput);
-            Debug.Log("Attack Executed");
-        } else {
-            Debug.Log(data.useAnimationEvent);
+            // spawn hit/effects at attackAnchor, but pass the player transform as the logical originator
+            Transform spawnParent = attackAnchor != null ? attackAnchor : transform;
+            actions[index].ExecuteAttack(spawnParent, transform, PlayerManager.Instance.moveInput);
         }
     }
 
     // called from animation event
     public void OnAnimationAttack(int attackIndex)
     {
-        actions[attackIndex].ExecuteAttack(transform, PlayerManager.Instance.moveInput);
+        Transform spawnParent = attackAnchor != null ? attackAnchor : transform;
+        actions[attackIndex].ExecuteAttack(spawnParent, transform, PlayerManager.Instance.moveInput);
     }
 }

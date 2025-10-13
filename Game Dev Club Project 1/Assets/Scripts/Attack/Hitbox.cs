@@ -34,7 +34,26 @@ public class Hitbox : MonoBehaviour
             HitNormal = (transform.position - hitPoint3).normalized
         };
 
-        target.ApplyDamage(in info);
+        DamageResult damageResult = target.ApplyDamage(in info);
+        CreateDamageReading(damageResult, info);
         alreadyHit.Add(collision.gameObject);
+    }
+
+    private void CreateDamageReading(DamageResult result, DamageInfo info)
+    {
+        if (result == DamageResult.Damaged)
+        {
+            TextDisplayManager.New(info.HitPoint, 0.1f)
+            .WithAutoDestroy(2f)
+            .WithInitialText(info.Amount.ToString())
+            .Build();
+        } else
+        {
+            TextDisplayManager.New(info.HitPoint, 0.1f)
+            .WithAutoDestroy(2f)
+            .WithInitialText(result.ToString())
+            .Build();
+        }
+        
     }
 }
