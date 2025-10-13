@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AttackData
   attackName: HeavyAttack
   damage: 10
-  cooldown: 2
+  cooldown: 1
   range: 2.4
   hitboxPrefab: {fileID: 7943019339696071975, guid: d71f351b891db4b028e04beaebba752e, type: 3}
-  hitboxDuration: 2
+  hitboxDuration: 0.3
   useAnimationEvent: 0
   animatorTrigger: 
   isProjectile: 0

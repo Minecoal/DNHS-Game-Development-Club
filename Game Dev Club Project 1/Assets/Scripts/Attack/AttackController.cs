@@ -31,7 +31,7 @@ public class AttackController : MonoBehaviour
     void Update()
     {
         // example input handling
-        if (Input.GetKey(attackButton))
+        if (Input.GetKeyDown(attackButton))
         {
             TryStartAttack(0);
         }
