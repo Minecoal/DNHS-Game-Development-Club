@@ -16,6 +16,7 @@ public class MovementController : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        anim = GetComponentInChildren<Animator>();
         playerStateDisplayer = TextDisplayManager.New(new Vector2(-4.7f, 3.3f), 0.1f)
             .WithTrackedProvider(() => currentState.ToString())
             .WithDraggable()
@@ -49,7 +50,6 @@ public class MovementController : MonoBehaviour
         {
             Decelerate();
         }
-        Rotate();
     }
 
     private void ChangeState(PlayerState newState)
@@ -91,10 +91,10 @@ public class MovementController : MonoBehaviour
 
 
     //enter/exit state logic
-    void EnterIdle() { }
+    void EnterIdle() { anim.SetTrigger("EnterIdle"); }
     void ExitIdle() { }
 
-    void EnterMoving() { }
+    void EnterMoving() { anim.SetTrigger("EnterWalk"); }
     void ExitMoving() { }
 
     void EnterBasicAttack() { }
@@ -138,15 +138,6 @@ public class MovementController : MonoBehaviour
 
         rb.AddForce(movement.x * Vector2.right, ForceMode2D.Force);
         rb.AddForce(movement.y * Vector2.up, ForceMode2D.Force);
-    }
-
-    private void Rotate(){
-        Vector2 velocity = rb.linearVelocity;
-        if (velocity.sqrMagnitude > 0.01f)
-        {
-            float angle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg;
-            transform.rotation = Quaternion.Euler(0f, 0f, angle);
-        }
     }
 
     public Vector2 GetInputVector()
