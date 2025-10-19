@@ -12,7 +12,7 @@ public class Grid<T>
 
     private Vector3 origin;
     private T[,] gridArray;
-    private TextMeshPro[,] debugTextArray;
+    private TextDisplay[,] debugTextArray;
     private Transform debugTextParent;
     private static Transform globalDebugTextParent;
 
@@ -51,7 +51,11 @@ public class Grid<T>
 
     public void UpdateGrid(object sender, OnGridValueChangedEventArgs e)
     {
-        debugTextArray[e.x, e.y].text = gridArray[e.x, e.y]?.ToString();
+        var td = debugTextArray[e.x, e.y];
+        if (td != null)
+        {
+            td.UpdateText(gridArray[e.x, e.y]?.ToString());
+        }
     }
 
     private Vector3 GetGlobalPosition(int x, int y)
@@ -95,7 +99,7 @@ public class Grid<T>
     {
         if (!showDebug) return;
 
-        debugTextArray = new TextMeshPro[this.gridx, this.gridy];
+    debugTextArray = new TextDisplay[this.gridx, this.gridy];
         debugTextParent = new GameObject("Debug Text Parent").transform;
         if (globalDebugTextParent == null)
         {
@@ -108,8 +112,11 @@ public class Grid<T>
         {
             for (int j = 0; j < gridArray.GetLength(1); j++)
             {
-                TextDisplayer debugText = new TextDisplayer(gridArray[i, j]?.ToString(), GetGlobalPosition(i, j) + cellOffset, 0.1f);
-                debugText.textObject.transform.SetParent(debugTextParent);
+                // Create via manager builder - use initial text if available
+                // var builder = TextDisplayManager.New(GetGlobalPosition(i, j) + cellOffset, 0.1f);
+                // if (gridArray[i, j] != null) builder.WithInitialText(gridArray[i, j]?.ToString());
+                // TextDisplay debugText = builder.Build();
+                // debugTextArray[i, j] = debugText;
                 Debug.DrawLine(GetGlobalPosition(i, j), GetGlobalPosition(i + 1, j), Color.white, 100f);
                 Debug.DrawLine(GetGlobalPosition(i, j), GetGlobalPosition(i, j + 1), Color.white, 100f);
             }

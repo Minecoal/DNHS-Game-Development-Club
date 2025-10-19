@@ -7,6 +7,13 @@ public enum DamageResult
     Immune
 }
 
+public enum HealResult
+{
+    Healed,
+    Canceled,
+    Invalid
+}
+
 public struct DamageInfo
 {
     public float Amount;
@@ -23,8 +30,16 @@ public struct DamageInfo
     }
 }
 
+public struct HealInfo
+{
+    public float Amount;
+    public GameObject Source;
+}
+
 
 public interface IDamagable
 {
     DamageResult ApplyDamage(in DamageInfo info); //read only
+    HealResult ApplyHeal(in HealInfo info);
+    bool IsDead();
 }

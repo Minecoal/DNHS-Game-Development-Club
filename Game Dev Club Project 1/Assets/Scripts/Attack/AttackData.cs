@@ -15,9 +15,4 @@ public class AttackData : ScriptableObject
     public GameObject projectilePrefab;
     public float projectileSpeed;
     // more fields: knockback, hitstun, comboNext, etc.
-
-    void OnValidate()
-    {
-        //forces serialization to refresh
-    }
 }
