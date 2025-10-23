@@ -7,6 +7,8 @@ public class Hitbox : MonoBehaviour
     private float damage;
     private GameObject self;
     private HashSet<GameObject> alreadyHit = new HashSet<GameObject>(); //HastSet for O(1) complexity
+    // event raised when the hitbox successfully damages a target
+    public event System.Action<DamageResult, DamageInfo> OnHit;
 
     public void ConfigureAndDestroy(float damage, GameObject self, float lifetime = 0.2f)
     {
@@ -37,6 +39,8 @@ public class Hitbox : MonoBehaviour
         DamageResult damageResult = target.ApplyDamage(in info);
         CreateDamageReading(damageResult, info);
         alreadyHit.Add(collision.gameObject);
+        // notify listeners
+        OnHit?.Invoke(damageResult, info);
     }
 
     private void CreateDamageReading(DamageResult result, DamageInfo info)

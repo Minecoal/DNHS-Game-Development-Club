@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -7,9 +8,14 @@ public class PlayerManager : MonoBehaviour
 
     [SerializeField] private GameObject weapon;
     [SerializeField] private GameObject player;
-    private MovementController movementController;
-    private AttackController attackController;
-
+    private MovementLogic movementLogic;
+    private AttackLogic attackLogic;
+    private PlayerInputHandler inputHandler;
+    
+    public MovementLogic MovementLogic => movementLogic;
+    public AttackLogic AttackLogic => attackLogic;
+    public PlayerInputHandler InputHandler => InputHandler;
+    public Animator Animator { get; private set; }
     public Vector2 moveInput { get; private set; }
 
     void Awake()
@@ -23,22 +29,17 @@ public class PlayerManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
+        movementLogic = player.GetComponent<MovementLogic>();
+        attackLogic = player.GetComponent<AttackLogic>();
     }
 
     void Start()
     {
-        movementController = player.GetComponent<MovementController>();
-        attackController = player.GetComponent<AttackController>();
+
     }
 
     void Update()
     {
-        moveInput = movementController.GetInputVector();
-    }
-
-    public void DamagePlayer()
-    {
-
+        moveInput = inputHandler.MoveInput;
     }
 }
