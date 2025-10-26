@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class Hitbox : MonoBehaviour
@@ -7,8 +8,9 @@ public class Hitbox : MonoBehaviour
     private float damage;
     private GameObject self;
     private HashSet<GameObject> alreadyHit = new HashSet<GameObject>(); //HastSet for O(1) complexity
-    // event raised when the hitbox successfully damages a target
-    public event System.Action<DamageResult, DamageInfo> OnHit;
+
+    public event Action<DamageResult, DamageInfo> OnHit; // hit target
+    public event Action OnReady; // finish attacking
 
     public void ConfigureAndDestroy(float damage, GameObject self, float lifetime = 0.2f)
     {
@@ -59,5 +61,10 @@ public class Hitbox : MonoBehaviour
             .Build();
         }
         
+    }
+
+    private void OnDestroy()
+    {
+        OnReady?.Invoke();
     }
 }

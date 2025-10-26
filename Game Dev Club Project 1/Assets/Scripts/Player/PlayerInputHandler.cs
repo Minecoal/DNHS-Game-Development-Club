@@ -1,26 +1,28 @@
+using System;
 using UnityEngine;
-
-public enum PlayerActionType { None, Move, Attack, Dash }
 
 public class PlayerInputHandler : MonoBehaviour
 {
-    public PlayerActionType QueuedAction { get; private set; }
     public Vector2 MoveInput { get; private set; }
+
+    [SerializeField] private KeyCode attackButton = KeyCode.Z;
+    [SerializeField] private KeyCode dashButton = KeyCode.X;
+
+    public Action AttackPressed;
+    public Action OnDash;
 
     void Update()
     {
         MoveInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
         MoveInput.Normalize();
 
-        if (Input.GetKeyDown(KeyCode.Z))
-            QueueAction(PlayerActionType.Attack);
-        else if (Input.GetKeyDown(KeyCode.X))
-            QueueAction(PlayerActionType.Dash);
-        else if (MoveInput.sqrMagnitude > 0.01f)
-            QueueAction(PlayerActionType.Move);
-        else
-            QueueAction(PlayerActionType.None);
+        if (Input.GetKeyDown(attackButton))
+        {
+            AttackPressed?.Invoke();
+        }
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            OnDash?.Invoke();
+        }
     }
-
-    void QueueAction(PlayerActionType action) => QueuedAction = action;
 }

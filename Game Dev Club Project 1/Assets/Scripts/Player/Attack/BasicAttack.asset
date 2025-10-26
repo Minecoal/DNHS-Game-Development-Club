@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AttackData
   attackName: BasicAttack
   damage: 3
-  cooldown: 0.4
+  cooldown: 0.2
   range: 1.2
+  attackStateTime: 0.1
   hitboxPrefab: {fileID: 2371177038859475188, guid: ffa59272091d946a0ab509becab5dc3d, type: 3}
   hitboxDuration: 0.2
   useAnimationEvent: 0

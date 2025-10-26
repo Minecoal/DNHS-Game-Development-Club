@@ -3,38 +3,47 @@ using UnityEngine;
 public class PlayerStateManager : MonoBehaviour
 {
     IPlayerState currentState;
-    // pre-create state instances to avoid allocations on state switches
+    // pre create state instances to avoid constant allocations on state switches
     public PlayerIdleState IdleState { get; private set; }
     public PlayerMovingState MovingState { get; private set; }
     public PlayerAttackState AttackState { get; private set; }
-    
-    public MovementLogic Movement { get; private set; }
-    public AttackLogic Attack { get; private set; }
-    public Animator Anim { get; private set; }
+
+    public Transform Player { get; private set; }
+    public PlayerData Data { get; private set; }
     public PlayerInputHandler Input { get; private set; }
+    public Rigidbody2D Rb { get; private set; }
+    public Animator Animator { get; private set; }
+
+    [SerializeField] private AttackData[] AttackDataList;
+    [SerializeField] private Transform AttackAnchor;
+
+    void Awake()
+    {
+        PlayerManager.Instance.RegisterPlayer(gameObject);
+    }
 
     void Start()
     {
-        Movement = PlayerManager.Instance.MovementLogic;
-        Attack = PlayerManager.Instance.AttackLogic;
-        Anim = PlayerManager.Instance.Animator;
-        Input = PlayerManager.Instance.InputHandler;
-        if (Attack != null)
-        {
-            Attack.OnAttackHit += HandleAttackHit;
-        }
+        Player = PlayerManager.Instance.Transform;
+        Data = PlayerManager.Instance.Data;
+        Input = PlayerManager.Instance.Input;
+        Rb = PlayerManager.Instance.Rb;
+        Animator = PlayerManager.Instance.Animator;
+
         // create and cache state instances
         IdleState = new PlayerIdleState();
         MovingState = new PlayerMovingState();
-        AttackState = new PlayerAttackState();
+        AttackState = new PlayerAttackState(AttackDataList, AttackAnchor);
 
+        // default
         currentState = IdleState;
         currentState.Enter(this);
-    }
 
-    private void HandleAttackHit(int attackIndex, DamageResult result, DamageInfo info)
-    {
-        Debug.Log($"Attack {attackIndex} hit: {result} amount={info.Amount}");
+        TextDisplayManager.New(new Vector2(-4.7f, 3.3f), 0.1f)
+            .WithTrackedProvider(() => currentState.ToString())
+            .WithDraggable()
+            .WithInitialText("Waiting for Input")
+            .Build();
     }
 
     void Update()

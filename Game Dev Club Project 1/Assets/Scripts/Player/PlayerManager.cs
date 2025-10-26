@@ -1,24 +1,20 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager Instance;
-    private PlayerManager() { }
 
-    [SerializeField] private GameObject weapon;
-    [SerializeField] private GameObject player;
-    private MovementLogic movementLogic;
-    private AttackLogic attackLogic;
-    private PlayerInputHandler inputHandler;
-    
-    public MovementLogic MovementLogic => movementLogic;
-    public AttackLogic AttackLogic => attackLogic;
-    public PlayerInputHandler InputHandler => InputHandler;
+    [SerializeField] private PlayerData data;
+    public PlayerData Data => data;
+
+    public GameObject Player { get; private set; }
+    public Transform Transform { get; private set; }
+    public Rigidbody2D Rb { get; private set; }
+    public PlayerInputHandler Input { get; private set; }
     public Animator Animator { get; private set; }
-    public Vector2 moveInput { get; private set; }
+    public Vector2 MoveInput { get; private set; }
 
-    void Awake()
+    private void Awake()
     {
         if (Instance == null)
         {
@@ -28,18 +24,20 @@ public class PlayerManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+            return;
         }
-        movementLogic = player.GetComponent<MovementLogic>();
-        attackLogic = player.GetComponent<AttackLogic>();
     }
 
-    void Start()
+    private void Update()
     {
-
+        MoveInput = Input.MoveInput;
     }
 
-    void Update()
-    {
-        moveInput = inputHandler.MoveInput;
+    public void RegisterPlayer(GameObject player){
+        Player = player;
+        Transform = Player.transform;
+        Rb = Player.GetComponent<Rigidbody2D>();
+        Input = Player.GetComponent<PlayerInputHandler>();
+        Animator = Player.GetComponentInChildren<Animator>();
     }
 }
