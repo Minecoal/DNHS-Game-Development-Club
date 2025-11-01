@@ -57,7 +57,6 @@ public class TextDisplayManager : MonoBehaviour
         {
             var updater = textObject.AddComponent<TextDisplayUpdater>();
             updater.Init(td, trackedProvider);
-            updater.SetDraggable(draggable);
             updater.SetOnClick(onClick);
         }
 
@@ -95,10 +94,12 @@ public class TextDisplayManager : MonoBehaviour
         var tm = textObject.AddComponent<TextMeshProUGUI>();
         tm.alignment = TextAlignmentOptions.Center;
         tm.fontSize = Mathf.Max(1f, size * 50f);
+        tm.raycastTarget = true;
         if (!string.IsNullOrEmpty(initialText)) tm.text = initialText;
 
         TextDisplay td = new TextDisplay(textObject, tm, trackedProvider);
 
+        draggable = false; // not draggable, may implement in the future
         if (trackedProvider != null || draggable || onClick != null)
         {
             var updater = textObject.AddComponent<TextDisplayUIUpdater>();
@@ -150,7 +151,7 @@ public class TextDisplayManager : MonoBehaviour
         public Builder WithTrackedProvider(Func<string> provider) { trackedProvider = provider; return this; }
         public Builder WithParent(Transform p) { parent = p; return this; }
         public Builder WithOnClick(Action a) { onClick = a; return this; }
-        public Builder WithDraggable(bool d = true) { draggable = d; return this; }
+        public Builder WithDraggable(bool d = true) { draggable = d; return this; } // Only for UI TextDisplay
         public Builder WithAutoDestroy(float s) { autoDestroySeconds = s; return this; }
 
         public TextDisplay Build()

@@ -144,13 +144,13 @@ public class PlayerAttackState : IPlayerState
 
     private void HandleAttackHit(int attackIndex, DamageResult result, DamageInfo info)
     {
-        Debug.Log("Attack Landed");
+        // Debug.Log("Attack Landed");
         OnAttackHit?.Invoke(attackIndex, result, info);
     }
 
     private void HandleAttackReady(int attackIndex)
     {
-        Debug.Log("Attack Ready");
+        // Debug.Log("Attack Ready");
         OnAttackReady?.Invoke(attackIndex);
         isAttacking = false;
     }
