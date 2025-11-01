@@ -36,8 +36,9 @@ public class PlayerManager : MonoBehaviour
         Input = Player.GetComponent<PlayerInputHandler>();
         Animator = Player.GetComponentInChildren<Animator>();
     }
-    
-    public void RegisterCamera(CameraController camera){
+
+    public void RegisterCamera(CameraController camera)
+    {
         Camera = camera;
         Camera.RegisterPlayer(Transform);
     }

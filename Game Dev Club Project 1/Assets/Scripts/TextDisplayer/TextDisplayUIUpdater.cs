@@ -1,20 +1,17 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System;
-using TMPro;
 
 // Handles UI click/drag events for TextMeshProUGUI objects.
 public class TextDisplayUIUpdater : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     private TextDisplay displayer;
-    private Func<string> provider;
     private bool draggable = false;
     private Action onClick;
 
     public void Init(TextDisplay d, Func<string> trackedProvider)
     {
         displayer = d;
-        provider = trackedProvider;
     }
 
     public void SetDraggable(bool value)

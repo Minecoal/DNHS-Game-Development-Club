@@ -47,6 +47,7 @@ public class Health : MonoBehaviour, IDamagable
         TextDisplay healthDisplay = TextDisplayManager.New3D(Vector3.zero, 0.1f)
             .WithTrackedProvider(() => currentHealth.ToString())
             .WithParent(transform)
+            .WithDraggable()
             .Build();
     }
 
