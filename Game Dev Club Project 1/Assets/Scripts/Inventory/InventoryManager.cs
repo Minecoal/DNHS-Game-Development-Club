@@ -302,12 +302,14 @@ public class InventoryManager : MonoBehaviour
         return null;
     }
 
+    //run this to apply effects
     private void GetEquipmentEffects()
     {
         foreach (var action in equipEffects)
         {
             if (action != null)
                 action(PlayerManager.Instance);
+            //
         }
     }
 
