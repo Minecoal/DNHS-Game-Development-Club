@@ -6,6 +6,7 @@ using TMPro;
 public class TextDisplayManager : MonoBehaviour
 {
     public static TextDisplayManager Instance;
+    [SerializeField] private Canvas canvas;
 
     void Awake()
     {
@@ -27,7 +28,7 @@ public class TextDisplayManager : MonoBehaviour
     {
         if (container == null)
         {
-            container = new GameObject("Text Container");
+            container = new GameObject("3D Text Container");
             DontDestroyOnLoad(container);
         }
         return container;
@@ -73,7 +74,7 @@ public class TextDisplayManager : MonoBehaviour
     public TextDisplay CreateUI(Vector2 anchoredPosition, float size, string initialText = null, Func<string> trackedProvider = null, Canvas parentCanvas = null, Action onClick = null, bool draggable = false, float autoDestroySeconds = 0f)
     {
         // find or create canvas
-        Canvas canvas = parentCanvas ?? GameObject.FindFirstObjectByType<Canvas>();
+        Canvas canvas = this.canvas;
         if (canvas == null)
         {
             GameObject canvasGO = new GameObject("TextDisplay Canvas");

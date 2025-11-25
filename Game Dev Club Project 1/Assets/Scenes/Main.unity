@@ -14062,6 +14062,38 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &592008590
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 592008591}
+  m_Layer: 0
+  m_Name: System
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &592008591
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 592008590}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.34387, y: 0, z: -2.1459}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 975381164}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &608018552
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14834,12 +14866,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 975381161}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.34387, y: 0, z: 2.1459}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 592008591}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!224 &1071296583 stripped
 RectTransform:
@@ -15421,6 +15453,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dad43368bfa4d49209513c15f87c003d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TextDisplayManager
+  canvas: {fileID: 2056817987}
 --- !u!224 &1648100457 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8788688767840062729, guid: f1760dc30a8fb034f98394407781d99a, type: 3}
@@ -16396,6 +16429,8 @@ MonoBehaviour:
   slots:
   - {fileID: 0}
   - {fileID: 0}
+  inventoryUIRoot: {fileID: 1279713607}
+  toggleKey: 101
 --- !u!1 &2145246753
 GameObject:
   m_ObjectHideFlags: 0
@@ -16582,5 +16617,5 @@ SceneRoots:
   - {fileID: 523167322}
   - {fileID: 1150024919}
   - {fileID: 2056817988}
-  - {fileID: 975381164}
   - {fileID: 1279713611}
+  - {fileID: 592008591}

@@ -19,6 +19,11 @@ public class InventoryManager : MonoBehaviour
     private ItemSlot originalSlot;
     bool isMovingItem;
 
+    [SerializeField] private GameObject inventoryUIRoot; //Canvas
+    [SerializeField] private KeyCode toggleKey = KeyCode.E;
+    private bool previousCursorState;
+    private bool isInventoryOpen = false;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -63,6 +68,11 @@ public class InventoryManager : MonoBehaviour
             }
             else
                 BeginItemMove();
+        }
+
+        if (Input.GetKeyDown(toggleKey))
+        {
+            ToggleInventory();
         }
     }
 
@@ -214,5 +224,33 @@ public class InventoryManager : MonoBehaviour
         }
 
         return null;
+    }
+
+    public void ToggleInventory()
+    {
+        if (isInventoryOpen)
+        {
+            CloseInventory();
+        } else {
+            OpenInventory();
+        }
+    }
+
+    public void CloseInventory()
+    {
+        isInventoryOpen = false;
+        inventoryUIRoot?.SetActive(false);
+        Cursor.visible = previousCursorState; 
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+    
+    public void OpenInventory()
+    {
+        isInventoryOpen = true;
+        inventoryUIRoot?.SetActive(true);
+        previousCursorState = Cursor.visible;
+        Cursor.visible = true; 
+        Cursor.lockState = CursorLockMode.None;
+        RefreshUI();
     }
 }
