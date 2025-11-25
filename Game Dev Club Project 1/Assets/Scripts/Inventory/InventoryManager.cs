@@ -160,11 +160,13 @@ public class InventoryManager : MonoBehaviour
 
     private bool EndItemMove()
     {
+        ItemSlot oldSlotBeforeMove = originalSlot;
         originalSlot = GetClosestSlot();
 
         if (originalSlot == null)
         {
-            AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
+            oldSlotBeforeMove.AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
+
             movingSlot.Clear();
         }
         else
