@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,18 +8,22 @@ public class InventoryManager : MonoBehaviour
     [SerializeField] private GameObject itemCursor;
 
     [SerializeField] private GameObject slotHolder;
+    [SerializeField] private GameObject equipmentSlotHolder;
     [SerializeField] private ItemClass itemToAdd;
     [SerializeField] private ItemClass itemToRemove;
 
     [SerializeField] private ItemSlot[] startingItems;
 
     public ItemSlot[] items;
+    public ItemSlot[] equipment;
+    public Action<PlayerManager>[] equipEffects;
     public GameObject[] slots;
+    public GameObject[] equipmentSlots;
 
     private ItemSlot movingSlot;
     private ItemSlot tempSlot;
     private ItemSlot originalSlot;
-    bool isMovingItem;
+    private bool isMovingItem;
 
     [SerializeField] private GameObject inventoryUIRoot; //Canvas
     [SerializeField] private KeyCode toggleKey = KeyCode.E;
@@ -30,6 +36,19 @@ public class InventoryManager : MonoBehaviour
     {
         slots = new GameObject[slotHolder.transform.childCount];
         items = new ItemSlot[slots.Length];
+        equipmentSlots = new GameObject[equipmentSlotHolder.transform.childCount];
+        equipment = new ItemSlot[equipmentSlots.Length];
+        equipEffects = new Action<PlayerManager>[equipmentSlots.Length];
+
+        for (int i = 0; i < items.Length; i++)
+        {
+            items[i] = new ItemSlot();
+        }
+
+        for (int i = 0; i < equipment.Length; i++)
+        {
+            equipment[i] = new ItemSlot();
+        }
 
         for (int i = 0; i < items.Length; i++)
         {
@@ -44,6 +63,11 @@ public class InventoryManager : MonoBehaviour
         for (int i = 0; i < slotHolder.transform.childCount; i++)
         {
             slots[i] = slotHolder.transform.GetChild(i).gameObject;
+        }
+
+        for (int i = 0; i < equipmentSlotHolder.transform.childCount; i++)
+        {
+            equipmentSlots[i] = equipmentSlotHolder.transform.GetChild(i).gameObject;
         }
 
         //AddItem(itemToAdd, 1);
@@ -68,6 +92,11 @@ public class InventoryManager : MonoBehaviour
             }
             else
                 BeginItemMove();
+        }
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            GetEquipmentEffects();
         }
 
         if (Input.GetKeyDown(toggleKey))
@@ -142,6 +171,26 @@ public class InventoryManager : MonoBehaviour
                 slots[i].transform.GetChild(1).GetComponent<TMPro.TextMeshProUGUI>().text = "";
             }
         }
+
+        for (int i = 0; i < equipmentSlots.Length; i++)
+        {
+            try
+            {
+                equipmentSlots[i].transform.GetChild(0).GetComponent<Image>().enabled = true;
+                equipmentSlots[i].transform.GetChild(0).GetComponent<Image>().sprite = equipment[i].GetItem().itemIcon;
+                equipmentSlots[i].transform.GetChild(1).GetComponent<TMPro.TextMeshProUGUI>().text = "";
+
+                equipEffects[i] = equipment[i].GetItem().GetEquipment().OnEquip;
+            }
+            catch
+            {
+                equipmentSlots[i].transform.GetChild(0).GetComponent<Image>().sprite = null;
+                equipmentSlots[i].transform.GetChild(0).GetComponent<Image>().enabled = false;
+                equipmentSlots[i].transform.GetChild(1).GetComponent<TMPro.TextMeshProUGUI>().text = "";
+
+                equipEffects[i] = null;
+            }
+        }
     }
 
     public ItemSlot Contains(ItemClass item)
@@ -157,7 +206,7 @@ public class InventoryManager : MonoBehaviour
 
     private bool BeginItemMove()
     {
-        originalSlot = GetClosestSlot();
+        originalSlot = GetClosestEquipmentSlot();
         if (originalSlot == null || originalSlot.GetItem() == null)
             return false;
 
@@ -171,11 +220,17 @@ public class InventoryManager : MonoBehaviour
     private bool EndItemMove()
     {
         ItemSlot oldSlotBeforeMove = originalSlot;
-        originalSlot = GetClosestSlot();
+        if (movingSlot.GetItem().GetEquipment() != null)
+            originalSlot = GetClosestEquipmentSlot();
+        else
+            originalSlot = GetClosestSlot();
 
         if (originalSlot == null)
         {
-            oldSlotBeforeMove.AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
+            if(oldSlotBeforeMove.GetItem() != null)
+                AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
+            else
+                oldSlotBeforeMove.AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
 
             movingSlot.Clear();
         }
@@ -226,12 +281,44 @@ public class InventoryManager : MonoBehaviour
         return null;
     }
 
+    private ItemSlot GetClosestEquipmentSlot()
+    {
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if (Vector2.Distance(slots[i].transform.position, Input.mousePosition) <= 35) // half of slot size + half of padding size
+            {
+                return items[i];
+            }
+        }
+
+        for (int i = 0; i < equipmentSlots.Length; i++)
+        {
+            if (Vector2.Distance(equipmentSlots[i].transform.position, Input.mousePosition) <= 35) // half of slot size + half of padding size
+            {
+                return equipment[i];
+            }
+        }
+
+        return null;
+    }
+
+    private void GetEquipmentEffects()
+    {
+        foreach (var action in equipEffects)
+        {
+            if (action != null)
+                action(PlayerManager.Instance);
+        }
+    }
+
     public void ToggleInventory()
     {
         if (isInventoryOpen)
         {
             CloseInventory();
-        } else {
+        }
+        else
+        {
             OpenInventory();
         }
     }
@@ -240,16 +327,16 @@ public class InventoryManager : MonoBehaviour
     {
         isInventoryOpen = false;
         inventoryUIRoot?.SetActive(false);
-        Cursor.visible = previousCursorState; 
+        Cursor.visible = previousCursorState;
         Cursor.lockState = CursorLockMode.Locked;
     }
-    
+
     public void OpenInventory()
     {
         isInventoryOpen = true;
         inventoryUIRoot?.SetActive(true);
         previousCursorState = Cursor.visible;
-        Cursor.visible = true; 
+        Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
         RefreshUI();
     }
