@@ -25,7 +25,7 @@ public class PlayerStateMachine : MonoBehaviour
     void Start()
     {
         Player = PlayerManager.Instance.Transform;
-        Data = PlayerManager.Instance.Data;
+        Data = PlayerManager.Instance.RunTimeData;
         Input = PlayerManager.Instance.Input;
         Rb = PlayerManager.Instance.Rb;
         Animator = PlayerManager.Instance.Animator;
