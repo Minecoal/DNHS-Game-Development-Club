@@ -1,191 +1,182 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
-public class Pathfinding : MonoBehaviour
+// Compute a simple distance-weighted influence vector based on targetsData (attractive)
+// and obstaclesData (repulsive). Returns a non-normalized vector that represents
+// the combined local deviation to apply on top of the NavMesh direction.
+public class Pathfinding : MonoBehaviour, IPathfinder
 {
-    [Header("Ray Settings")]
-    [SerializeField] private int rayCount = 12;
-
     [Header("Target Settings")]
-    [SerializeField] private string targetTag = "Enemy Target";
-    [SerializeField] private string repelTag = "Enemy Repel";
-    [SerializeField] private float movementWeight = 1f;
-    [SerializeField] private float targetDistanceWeight = 1f;
-    [SerializeField] private float repelWeight = 1f;
+    // Per-target weights are stored on TargetData; global fallbacks removed to avoid confusion.
 
-    private Vector3[] rayDirections;
-    private float[] rayLengths;
-    private Vector3 bestDirection;
-    private float bestRayLength = 0f;
+    [Header("NavMesh + Local Influence")]
+    [Tooltip("Weight of the NavMesh global direction when combining with local influence")]
+    [SerializeField] private float navWeight = 1.0f;
+    [Tooltip("Weight of the local influence (attraction/repulsion) relative to NavMesh")]
+    [SerializeField] private float fieldWeight = 0.75f;
+    [Tooltip("Local variance magnitude applied to NavMesh waypoint using the influence vector")]
+    [SerializeField] private float variance = 0.5f;
 
-    private List<TargetData> targetsData = new List<TargetData>();
-    private List<TargetData> obstaclesData = new List<TargetData>();
+    private List<TargetData> targetsData = new List<TargetData>(); // favored (attractive)
+    private List<TargetData> obstaclesData = new List<TargetData>(); // unfavored (repulsive)
+    private Vector3 destinationTarget;
+    private bool hasDestination = false;
 
-    private GameObject[] targets;
-    private GameObject[] obstacles;
+    // Agent settings (injected from EnemyData)
+    private float agentRadius = 0.5f;
+    private float agentHeight = 2f;
+    private float agentStepHeight = 0.4f;
+    private float agentSlopeLimit = 45f;
+    private float agentSpeed = 3.5f;
 
-    private void Start()
+
+    public Vector3 GetInfluenceVector(Vector3 sourcePosition)
     {
-        InitializeRays();
+        Vector3 influence = Vector3.zero;
+        const float eps = 0.0001f;
 
-        targets = GameObject.FindGameObjectsWithTag(targetTag);
-        foreach (GameObject target in targets)
-            targetsData.Add(new TargetData(target.transform.position, targetDistanceWeight, target));
-
-        obstacles = GameObject.FindGameObjectsWithTag(repelTag);
-        foreach (GameObject obstacle in obstacles)
-        {
-            if (obstacle != this.gameObject)
-                obstaclesData.Add(new TargetData(obstacle.transform.position, repelWeight, obstacle));
-        }
-    }
-
-    private void OnValidate()
-    {
-        InitializeRays();
-    }
-
-    private void InitializeRays()
-    {
-        rayDirections = new Vector3[rayCount];
-        rayLengths = new float[rayCount];
-
-        float angleStep = 360f / rayCount;
-
-        for (int i = 0; i < rayCount; i++)
-        {
-            float angle = i * angleStep;
-
-            rayDirections[i] = Quaternion.Euler(0, angle, 0) * Vector3.forward;
-        }
-    }
-
-    private void Update()
-    {
-        //Vector3 move = GetBestDir().normalized * 2f * Time.deltaTime;
-
-        //transform.position += new Vector3(move.x, 0, move.z);
-    }
-
-    private Vector3 GetBestDir()
-    {
-        rayLengths = new float[rayCount];
-
+        // attractive points: pull toward favored positions
         foreach (var target in targetsData)
         {
-            Vector3 targetPos = target.targetGameObject != null
-                ? target.targetGameObject.transform.position
-                : target.position;
+            if (target == null) continue;
+            Vector3 dir = target.position - sourcePosition;
+            dir.y = 0f;
+            float dist = dir.magnitude;
+            if (dist <= eps) continue;
+            Vector3 ndir = dir / dist;
 
-            Vector3 toTarget = targetPos - transform.position;
-            toTarget.y = 0;
-
-            float distance = toTarget.magnitude;
-            float distanceWeight = targetDistanceWeight / Mathf.Clamp(distance / 2f, 0.5f, 3f);
-
-            float attractionStart = 3f;
-            float attractionEnd = 1f;
-            float minNegative = -1f;
-
-            if (distance < attractionStart)
-            {
-                float t = Mathf.Clamp01((distance - attractionEnd) / (attractionStart - attractionEnd));
-                distanceWeight = distanceWeight * t + minNegative * (1f - t);
-            }
-
-            AddWeightedDirection(toTarget, distanceWeight, rayDirections, rayLengths, 2f);
+            // strength falls off with distance; closer points influence more
+            float strength = target.weight / (1f + dist);
+            influence += ndir * strength;
         }
 
-        foreach (var obstacle in obstaclesData)
+        // repulsive points: push away from unfavored positions
+        foreach (var obs in obstaclesData)
         {
-            Vector3 targetPos = obstacle.targetGameObject != null
-                ? obstacle.targetGameObject.transform.position
-                : obstacle.position;
+            if (obs == null) continue;
+            Vector3 dir = sourcePosition - obs.position;
+            dir.y = 0f;
+            float dist = dir.magnitude;
+            if (dist <= eps) continue;
+            Vector3 ndir = dir / dist;
 
-            Vector3 toTarget = targetPos - transform.position;
-            toTarget.y = 0;
-
-            float distance = toTarget.magnitude;
-            float distanceWeight = -repelWeight * (1f / distance);
-
-            if (Mathf.Abs(distanceWeight) < 0.1f)
-                distanceWeight = 0;
-
-            AddWeightedDirection(toTarget, distanceWeight, rayDirections, rayLengths, 0.65f);
+            // repulsion also falls off with distance
+            float strength = obs.weight / (1f + dist);
+            influence += ndir * strength;
         }
 
-        bestRayLength = 0f;
-        bestDirection = Vector3.zero;
-
-        for (int i = 0; i < rayCount; i++)
-        {
-            float length = rayLengths[i];
-            if (length > bestRayLength)
-            {
-                bestRayLength = length;
-                bestDirection = rayDirections[i];
-            }
-        }
-
-        return bestDirection;
+        return influence;
     }
 
-    public void AddWeightedDirection(
-        Vector3 targetDir,
-        float weight,
-        Vector3[] rayDirections,
-        float[] rayLengths,
-        float offset)
+    public void Initialize(IEnumerable<TargetData> targets = null, IEnumerable<TargetData> obstacles = null)
     {
-        targetDir.Normalize();
-
-        for (int i = 0; i < rayDirections.Length; i++)
-        {
-            float dot = Vector3.Dot(rayDirections[i].normalized, targetDir) * weight;
-
-            if (offset == 2)
-                rayLengths[i] += dot;
-            else
-                rayLengths[i] += 1 - Mathf.Abs(dot - offset);
-        }
+        targetsData = targets != null ? new List<TargetData>(targets) : new List<TargetData>();
+        obstaclesData = obstacles != null ? new List<TargetData>(obstacles) : new List<TargetData>();
     }
 
-    private void OnDrawGizmos()
+    // Inject agent/nav settings from an EnemyData instance so pathfinding
+    // can sample/compute against the NavMesh with appropriate agent tolerances.
+    public void SetAgentSettings(EnemyData data)
     {
-        if (rayDirections == null || rayDirections.Length != rayCount)
-            InitializeRays();
+        if (data == null) return;
+        agentRadius = data.agentRadius;
+        agentHeight = data.agentHeight;
+        agentStepHeight = data.agentStepHeight;
+        agentSlopeLimit = data.agentSlopeLimit;
+        agentSpeed = data.agentSpeed;
+    }
 
-        for (int i = 0; i < rayCount; i++)
+    // Set the player/world target position. This is the single true destination
+    // the NavMesh path will be computed towards.
+    public void SetDestinationTarget(Vector3 destinationPos)
+    {
+        destinationTarget = destinationPos;
+        hasDestination = true;
+    }
+
+    public Vector3 ComputeDirectionTowards(Vector3 fromPosition, Vector3 targetPosition)
+    {
+        // Use NavMesh to get a coarse global direction towards the explicit targetPosition.
+        // First, sample positions on the NavMesh near the source and target using the agent radius,
+        // so the computed path is biased toward valid positions for this agent size.
+        Vector3 navDir = Vector3.zero;
+        NavMeshPath path = new NavMeshPath();
+        Vector3 fromSample = fromPosition;
+        Vector3 toSample = targetPosition;
+        NavMeshHit hit;
+        float sampleDist = Mathf.Max(agentRadius * 2f, 0.5f);
+        if (NavMesh.SamplePosition(fromPosition, out hit, sampleDist, NavMesh.AllAreas))
+            fromSample = hit.position;
+        if (NavMesh.SamplePosition(targetPosition, out hit, sampleDist, NavMesh.AllAreas))
+            toSample = hit.position;
+
+        if (NavMesh.CalculatePath(fromSample, toSample, NavMesh.AllAreas, path) && path.corners != null && path.corners.Length > 1)
         {
-            float length = rayLengths[i];
-
-            //regular rays
-            Gizmos.color = Color.green;
-            Gizmos.DrawLine(transform.position,
-                transform.position + rayDirections[i] * (length / Mathf.Max(bestRayLength, 0.01f)));
+            Vector3 nextCorner = path.corners[1];
+            navDir = nextCorner - fromSample;
+            navDir.y = 0f;
+            if (navDir.sqrMagnitude > 1e-6f) navDir = navDir.normalized;
+            else navDir = Vector3.zero;
+        }
+        else
+        {
+            // fallback to direct vector
+            navDir = targetPosition - fromPosition;
+            navDir.y = 0f;
+            if (navDir.sqrMagnitude > 1e-6f) navDir = navDir.normalized;
+            else navDir = Vector3.zero;
         }
 
-        //best ray
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(transform.position, transform.position + bestDirection * 1);
+        Vector3 localField = GetInfluenceVector(fromPosition).normalized;
 
-        Gizmos.color = new Color(0.3f, 0.8f, 0.8f, 0.2f);
-        Gizmos.DrawWireSphere(transform.position, 1);
+        // Blend directions: NavMesh global direction + local influence (attraction/repulsion)
+        Vector3 blended = navDir * navWeight + localField * fieldWeight;
+        blended.y = 0f;
+        if (blended.sqrMagnitude < 1e-6f) return Vector3.zero;
+        return blended.normalized;
+    }
+
+    public Vector3 ComputeBestTargetPosition(Vector3 fromPosition)
+    {
+        // If we have an externally injected a destination, use NavMesh towards it
+        if (hasDestination)
+        {
+            Vector3 navTarget = destinationTarget;
+            NavMeshPath path = new NavMeshPath();
+            if (NavMesh.CalculatePath(fromPosition, destinationTarget, NavMesh.AllAreas, path) && path.corners != null && path.corners.Length > 1)
+            {
+                // prefer the next corner as the coarse target
+                navTarget = path.corners[1];
+            }
+
+            // local vector field adds variance and local avoidance behavior
+            var localDir = GetInfluenceVector(fromPosition).normalized;
+            Vector3 finalTarget = navTarget + localDir * variance;
+            return finalTarget;
+        }
+
+        // no destination: fall back to local vector field only
+        var fallbackDir = GetInfluenceVector(fromPosition).normalized;
+        return fromPosition + fallbackDir * variance;
+    }
+
+    public void SetUpdateInterval(float seconds)
+    {
+        //TODO: schedule internal updates, not implemented yet. Potentially managed by pathfinder manager
     }
 }
 
 [System.Serializable]
 public class TargetData
 {
-    public GameObject targetGameObject;
     public Vector3 position;
     public float weight;
 
-    public TargetData(Vector3 position, float weight, GameObject targetGameObject)
+    public TargetData(Vector3 position, float weight)
     {
         this.position = position;
         this.weight = weight;
-        this.targetGameObject = targetGameObject;
     }
 
     public void SetWeight(float weight)

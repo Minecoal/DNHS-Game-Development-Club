@@ -22,4 +22,14 @@ public class EnemyStateMachine
     {
         currentState?.Tick(owner, deltaTime);
     }
+
+    public void FixedTick(Enemy owner, float fixedDeltaTime)
+    {
+        currentState?.FixedTick(owner, fixedDeltaTime);
+    }
+
+    public string GetState()
+    {
+        return currentState.ToString();
+    }
 }

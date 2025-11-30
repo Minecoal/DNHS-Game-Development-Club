@@ -3,14 +3,14 @@ using UnityEngine.PlayerLoop;
 
 public class PlayerMovingState : IPlayerState
 {
-    PlayerStateManager ctx;
+    PlayerStateMachine ctx;
     Transform player;
     PlayerInputHandler input;
     PlayerData data;
     Rigidbody rb;
     Animator animator;
 
-    public void Enter(PlayerStateManager ctx)
+    public void Enter(PlayerStateMachine ctx)
     {
         // ensure animator trigger uses the MovementController available from PlayerManager when possible
         this.ctx = ctx;
@@ -24,12 +24,12 @@ public class PlayerMovingState : IPlayerState
         input.AttackPressed += OnAttack;
     }
 
-    public void Exit(PlayerStateManager ctx)
+    public void Exit(PlayerStateMachine ctx)
     {
         input.AttackPressed -= OnAttack;
     }
 
-    public void UpdateFixed(PlayerStateManager ctx)
+    public void UpdateFixed(PlayerStateMachine ctx)
     {
         if (input.MoveInput.sqrMagnitude <= 0.01f)
         {
@@ -39,7 +39,7 @@ public class PlayerMovingState : IPlayerState
         ApplyMovement(input.MoveInput, player, rb, data);
     }
 
-    public void Update(PlayerStateManager ctx)
+    public void Update(PlayerStateMachine ctx)
     {
 
     }

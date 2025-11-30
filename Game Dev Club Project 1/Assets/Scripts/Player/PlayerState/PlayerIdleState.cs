@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class PlayerIdleState : IPlayerState
 {
-    PlayerStateManager ctx;
+    PlayerStateMachine ctx;
     PlayerInputHandler input;
     PlayerData data;
     Rigidbody rb;
     Animator animator;
 
-    public void Enter(PlayerStateManager ctx)
+    public void Enter(PlayerStateMachine ctx)
     {
         this.ctx = ctx;
         input = this.ctx.Input;
@@ -20,12 +20,12 @@ public class PlayerIdleState : IPlayerState
         input.AttackPressed += OnAttack;
     }
 
-    public void Exit(PlayerStateManager ctx)
+    public void Exit(PlayerStateMachine ctx)
     {
         input.AttackPressed -= OnAttack;
     }
 
-    public void UpdateFixed(PlayerStateManager ctx)
+    public void UpdateFixed(PlayerStateMachine ctx)
     {
         
         if (input.MoveInput.sqrMagnitude > 0.01f)
@@ -36,7 +36,7 @@ public class PlayerIdleState : IPlayerState
         Decelerate();
     }
 
-    public void Update(PlayerStateManager ctx)
+    public void Update(PlayerStateMachine ctx)
     {
 
     }

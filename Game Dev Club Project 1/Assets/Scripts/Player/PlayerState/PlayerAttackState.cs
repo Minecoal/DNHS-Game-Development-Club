@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PlayerAttackState : IPlayerState
 {
-    private PlayerStateManager ctx;
+    private PlayerStateMachine ctx;
     private PlayerInputHandler input;
     private PlayerData data;
     private Animator animator;
@@ -44,7 +44,7 @@ public class PlayerAttackState : IPlayerState
     }
     
 
-    public void Enter(PlayerStateManager ctx)
+    public void Enter(PlayerStateMachine ctx)
     {
         this.ctx = ctx;
         input = this.ctx.Input;
@@ -58,17 +58,17 @@ public class PlayerAttackState : IPlayerState
         input.AttackPressed += OnAttack;
     }
 
-    public void Exit(PlayerStateManager ctx)
+    public void Exit(PlayerStateMachine ctx)
     {
         input.AttackPressed -= OnAttack;
     }
 
-    public void UpdateFixed(PlayerStateManager ctx)
+    public void UpdateFixed(PlayerStateMachine ctx)
     {
 
     }
 
-    public void Update(PlayerStateManager ctx)
+    public void Update(PlayerStateMachine ctx)
     {
         Decelerate();
         TestBufferedInput();
