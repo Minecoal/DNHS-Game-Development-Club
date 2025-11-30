@@ -16899,13 +16899,13 @@ MonoBehaviour:
   - item: {fileID: 11400000, guid: 10a98d2c95a32434388590398245201c, type: 2}
     quantity: 1
   - item: {fileID: 11400000, guid: 7de61f306e68a6845b0fa40e66a86b3a, type: 2}
-    quantity: 3
+    quantity: 1
   - item: {fileID: 11400000, guid: 7de61f306e68a6845b0fa40e66a86b3a, type: 2}
-    quantity: 3
+    quantity: 1
   - item: {fileID: 11400000, guid: 7de61f306e68a6845b0fa40e66a86b3a, type: 2}
-    quantity: 3
+    quantity: 1
   - item: {fileID: 11400000, guid: c86d4c53362fb904d9e5d53d279c89c4, type: 2}
-    quantity: 3
+    quantity: 1
   items: []
   equipment: []
   slots:

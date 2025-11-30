@@ -16,7 +16,6 @@ public class InventoryManager : MonoBehaviour
 
     public ItemSlot[] items;
     public ItemSlot[] equipment;
-    public Action<PlayerManager>[] equipEffects;
     public GameObject[] slots;
     public GameObject[] equipmentSlots;
 
@@ -38,7 +37,6 @@ public class InventoryManager : MonoBehaviour
         items = new ItemSlot[slots.Length];
         equipmentSlots = new GameObject[equipmentSlotHolder.transform.childCount];
         equipment = new ItemSlot[equipmentSlots.Length];
-        equipEffects = new Action<PlayerManager>[equipmentSlots.Length];
 
         for (int i = 0; i < items.Length; i++)
         {
@@ -70,6 +68,13 @@ public class InventoryManager : MonoBehaviour
             equipmentSlots[i] = equipmentSlotHolder.transform.GetChild(i).gameObject;
         }
 
+        foreach (var item in equipment)
+        {
+            if (item.GetItem() != null)
+                if (item.GetItem().GetEquipment() != null)
+                    item.GetItem().GetEquipment().OnEquip();
+        }
+
         //AddItem(itemToAdd, 1);
         RemoveItem(itemToRemove);
 
@@ -94,10 +99,6 @@ public class InventoryManager : MonoBehaviour
                 BeginItemMove();
         }
 
-        if (Input.GetMouseButtonDown(1))
-        {
-            GetEquipmentEffects();
-        }
 
         if (Input.GetKeyDown(toggleKey))
         {
@@ -180,7 +181,6 @@ public class InventoryManager : MonoBehaviour
                 equipmentSlots[i].transform.GetChild(0).GetComponent<Image>().sprite = equipment[i].GetItem().itemIcon;
                 equipmentSlots[i].transform.GetChild(1).GetComponent<TMPro.TextMeshProUGUI>().text = "";
 
-                equipEffects[i] = equipment[i].GetItem().GetEquipment().OnEquip;
             }
             catch
             {
@@ -188,7 +188,6 @@ public class InventoryManager : MonoBehaviour
                 equipmentSlots[i].transform.GetChild(0).GetComponent<Image>().enabled = false;
                 equipmentSlots[i].transform.GetChild(1).GetComponent<TMPro.TextMeshProUGUI>().text = "";
 
-                equipEffects[i] = null;
             }
         }
     }
@@ -211,9 +210,17 @@ public class InventoryManager : MonoBehaviour
             return false;
 
         movingSlot = new ItemSlot(originalSlot);
+
+        if (IsEquipmentItemAndSlot(originalSlot, originalSlot.GetItem()))
+        {
+            originalSlot.GetItem().GetEquipment().OnUnequip();
+        }
+
         originalSlot.Clear();
         isMovingItem = true;
         RefreshUI();
+
+        
         return true;
     }
 
@@ -227,10 +234,11 @@ public class InventoryManager : MonoBehaviour
 
         if (originalSlot == null)
         {
+            //not click on a slot
             if(oldSlotBeforeMove.GetItem() != null)
                 AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
             else
-                oldSlotBeforeMove.AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
+                oldSlotBeforeMove.AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());            
 
             movingSlot.Clear();
         }
@@ -253,13 +261,23 @@ public class InventoryManager : MonoBehaviour
                     tempSlot = new ItemSlot(originalSlot);
                     originalSlot.AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
                     movingSlot.AddItem(tempSlot.GetItem(), tempSlot.GetQuantity());
+                    if (IsEquipmentItemAndSlot(originalSlot, movingSlot.GetItem()))
+                    {
+                        originalSlot.GetItem().GetEquipment().OnEquip();
+                        movingSlot.GetItem().GetEquipment().OnUnequip();
+                    }
                     RefreshUI();
                     return true;
                 }
             }
             else
             {
+                //no item in slot
                 originalSlot.AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
+                if (IsEquipmentItemAndSlot(originalSlot, movingSlot.GetItem()))
+                {
+                    originalSlot.GetItem().GetEquipment().OnEquip();
+                }
                 movingSlot.Clear();
             }
         }
@@ -303,14 +321,32 @@ public class InventoryManager : MonoBehaviour
     }
 
     //run this to apply effects
-    private void GetEquipmentEffects()
+    //i might remove this and put everything in the onequip and uneqiup function
+    public void GetEquipmentEffects()
     {
-        foreach (var action in equipEffects)
+        //reset playerdata to base (implemnt later)
+        foreach (var item in equipment)
         {
-            if (action != null)
-                action(PlayerManager.Instance);
-            //
+            if(item.GetItem() != null)
+                if(item.GetItem().GetEquipment() != null)
+                {
+                    item.GetItem().GetEquipment().EquipmentEffect();
+                }
+                    
         }
+    }
+
+    private bool IsEquipmentItemAndSlot(ItemSlot itemSlot, ItemClass item)
+    {
+        for (int i = 0; i < equipment.Length; i++)
+        {
+            if(itemSlot == equipment[i])
+            {
+                if(item.GetEquipment() != null)
+                    return true;
+            }
+        }
+        return false;
     }
 
     public void ToggleInventory()

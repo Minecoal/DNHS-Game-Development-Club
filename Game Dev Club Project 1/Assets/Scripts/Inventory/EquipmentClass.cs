@@ -3,10 +3,10 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "new Equipment Class", menuName = "Item/Equipment")]
 public class EquipmentClass : ItemClass
 {
-    public void OnEquip(PlayerManager stats) { Debug.Log(itemName); }
+    public void OnEquip() { Debug.Log("equipped: " + itemName); }
     //effects
-    //create a new stat list for runtime and modify that
-    public void OnUnequip(PlayerManager stats) { }
+    public void EquipmentEffect() { }
+    public void OnUnequip() { Debug.Log("unequipped: " + itemName); }
 
     public override EquipmentClass GetEquipment() { return this; }
 }

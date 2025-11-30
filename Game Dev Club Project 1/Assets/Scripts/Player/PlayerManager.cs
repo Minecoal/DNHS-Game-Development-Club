@@ -5,7 +5,8 @@ public class PlayerManager : MonoBehaviour
     public static PlayerManager Instance;
 
     [SerializeField] private PlayerData data;
-    public PlayerData Data => data;
+    public PlayerData BaseData => data;
+    public PlayerData RunTimeData => data;
 
     public GameObject Player { get; private set; }
     public Transform Transform { get; private set; }
