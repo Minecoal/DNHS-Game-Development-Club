@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class InventoryManager : MonoBehaviour
 {
+    public static InventoryManager Instance;
+
     [SerializeField] private GameObject itemCursor;
 
     [SerializeField] private GameObject slotHolder;
@@ -29,6 +31,19 @@ public class InventoryManager : MonoBehaviour
     private bool previousCursorState;
     private bool isInventoryOpen = false;
 
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            // DontDestroyOnLoad(gameObject); // Disable when parented to a DonDestoryOnLoad object
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -113,14 +128,37 @@ public class InventoryManager : MonoBehaviour
             slot.AddQuantity(quantity);
         else
         {
-            for (int i = 0; i < items.Length; i++)
+            if (item.isStackable)
             {
-                if (items[i].GetItem() == null)
+                for (int i = 0; i < items.Length; i++)
                 {
-                    items[i].AddItem(item, quantity);
-                    break;
+                    if (items[i].GetItem() == null)
+                    {
+                        items[i].AddItem(item, quantity);
+                        break;
+                    }
                 }
             }
+            else
+            {
+                for (int i = 0; i < items.Length; i++)
+                {
+                    if (items[i].GetItem() == null && quantity > 0)
+                    {
+                        items[i].AddItem(item, 1);
+                        quantity--;
+                    }
+                    else if(quantity == 0)
+                    {
+                        break;
+                    }
+                    else if(i == items.Length - 1 && quantity > 0)
+                    {
+                        //drop items
+                    }
+                }
+            }
+            
         }
 
         RefreshUI();
@@ -134,6 +172,32 @@ public class InventoryManager : MonoBehaviour
         {
             if (temp.GetQuantity() > 1)
                 temp.SubQuantity(1);
+            else
+            {
+                int slotToRemoveIndex = 0;
+
+                for (int i = 0; i < items.Length; i++)
+                {
+                    if (items[i].GetItem() == item)
+                    {
+                        slotToRemoveIndex = i;
+                        break;
+                    }
+                }
+                items[slotToRemoveIndex].Clear();
+            }
+        }
+        RefreshUI();
+    }
+
+    public void RemoveItem(ItemClass item, int quantity)
+    {
+
+        ItemSlot temp = Contains(item);
+        if (temp != null)
+        {
+            if (temp.GetQuantity() > quantity)
+                temp.SubQuantity(quantity);
             else
             {
                 int slotToRemoveIndex = 0;
@@ -201,6 +265,42 @@ public class InventoryManager : MonoBehaviour
         }
 
         return null;
+    }
+
+    public bool Contains(ItemClass item, int quantity)
+    {
+        for (int i = 0; i < items.Length; i++)
+        {
+            if (items[i].GetItem() == item && items[i].GetQuantity() >= quantity)
+                return true;
+        }
+
+        return false;
+    }
+
+    public int ContainAmount(ItemClass item)
+    {
+        if (item.isStackable)
+        {
+            for (int i = 0; i < items.Length; i++)
+            {
+                if (items[i].GetItem() == item)
+                    return items[i].GetQuantity();
+            }
+        }
+        else
+        {
+            int totalAmount = 0;
+            for (int i = 0; i < items.Length; i++)
+            {
+                if (items[i].GetItem() == item)
+                    totalAmount += items[i].GetQuantity();
+            }
+
+            return totalAmount;
+        }
+
+        return 0;
     }
 
     private bool BeginItemMove()
