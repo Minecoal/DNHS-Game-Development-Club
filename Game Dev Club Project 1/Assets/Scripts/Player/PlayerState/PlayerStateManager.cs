@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerStateManager : MonoBehaviour
+public class PlayerStateMachine : MonoBehaviour
 {
     IPlayerState currentState;
     // pre create state instances to avoid constant allocations on state switches

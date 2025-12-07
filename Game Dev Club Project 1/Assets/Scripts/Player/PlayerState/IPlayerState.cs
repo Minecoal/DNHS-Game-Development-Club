@@ -1,7 +1,7 @@
 public interface IPlayerState
 {
-    public void Enter(PlayerStateManager playerStateManager);
-    public void Exit(PlayerStateManager playerStateManager);
-    public void Update(PlayerStateManager playerStateManager);
-    public void UpdateFixed(PlayerStateManager playerStateManager);
+    public void Enter(PlayerStateMachine playerStateManager);
+    public void Exit(PlayerStateMachine playerStateManager);
+    public void Update(PlayerStateMachine playerStateManager);
+    public void UpdateFixed(PlayerStateMachine playerStateManager);
 }

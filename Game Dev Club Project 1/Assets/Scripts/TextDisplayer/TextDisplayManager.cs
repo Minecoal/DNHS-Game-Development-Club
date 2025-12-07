@@ -40,6 +40,9 @@ public class TextDisplayManager : MonoBehaviour
         GameObject containerObj = parent != null ? parent.gameObject : GetOrCreateContainer();
         GameObject textObject = new GameObject("Text Display");
 
+        RectTransform rectTransform = textObject.AddComponent<RectTransform>();
+        rectTransform.anchoredPosition3D = position;
+
         if (parent != null) {
             textObject.transform.SetParent(parent, false); // don't keep world position
         } else {

@@ -2,27 +2,40 @@ using UnityEngine;
 
 public class EnemyChaseState : IEnemyState
 {
-    public void Enter(Enemy enemy) { }
-    public void Exit(Enemy enemy) { }
-
-    public void Tick(Enemy enemy, float deltaTime)
+    public void Enter(EnemyContext context)
     {
-        if (!enemy.IsPlayerInDetectionRange())
+        //play aggro animation  
+    }
+
+    public void Exit(EnemyContext context)
+    {
+        //play deaggro animation
+    }
+
+    public void Tick(EnemyContext context, float deltaTime)
+    {
+        if (!context.Enemy.IsPlayerInChaseRange())
         {
-            enemy.StateMachine.ChangeState(new EnemyIdleState(), enemy);
+            context.StateMachine.ChangeState(new EnemyIdleState(), context);
             return;
         }
 
-        Transform player = enemy.GetPlayerTransform();
-        if (player == null) return;
-
-        Vector3 dir = (player.position - enemy.transform.position).normalized;
-        float speed = 2f; // TODO: expose via enemy or state
-        enemy.transform.position += dir * speed * deltaTime;
-
-        if (enemy.IsPlayerInAttackRange())
+        // for now just stop and log
+        if (context.Enemy.IsPlayerInAttackRange())
         {
-            // TODO: change to attack state
+            // TODO: Change to an AttackState that handles animation/hitbox timing
+            Debug.Log("Enemy in attack range");
         }
+
+    }
+
+    public void FixedTick(EnemyContext context, float fixedDeltaTime)
+    {
+        context.Enemy.MoveTowardsPosition(context.Target.position, context.EnemyData.speed, context.EnemyData.accelAmount, context.EnemyData.decelAmount);
+    }
+
+    public override string ToString()
+    {
+        return "Chase";
     }
 }

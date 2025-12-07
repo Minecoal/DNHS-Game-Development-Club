@@ -1,49 +1,153 @@
 using UnityEngine;
 using System;
+using UnityEngine.AI;
 
 [RequireComponent(typeof(Health))]
+[RequireComponent(typeof(Pathfinder))]
+[RequireComponent(typeof(NavMeshAgent))]
+[RequireComponent(typeof(Rigidbody))]
 public class Enemy : MonoBehaviour
 {
     public EnemyStateMachine StateMachine { get; private set; }
-    public Transform[] patrolPoints;
-    public float detectionRadius = 5f;
-    public float attackRadius = 1f;
 
-    private Health health;
-    private Transform player;
+    public Rigidbody Rb { get; private set; }
+    public Health Health { get; private set; }
+    public IPathfinder Pathfinder { get; private set; }
+
+    [SerializeField] private EnemyData enemyData; // TODO later add a enemy builder and spawn manager to automate EnemyData assignment
+    public EnemyData EnemyData => enemyData; // change to { get; private set; } when [SerializedField] is removed
+    private Transform playerTransform;
 
     public event Action<DamageInfo> OnDamagedBy;
+    
+
+    public EnemyContext context { get; private set; }
 
     private void Awake()
     {
         StateMachine = new EnemyStateMachine();
-        health = GetComponent<Health>();
-        health.OnDied += HandleDeath;
-        player = GameObject.FindGameObjectWithTag("Player")?.transform;
+        Rb = GetComponent<Rigidbody>();
+        Health = GetComponent<Health>();
+        playerTransform = PlayerManager.Instance.Player.transform;
+        Pathfinder = GetComponent<Pathfinder>();
+        Health.OnDied += HandleDeath;
+        
+        context = new EnemyContext(
+            StateMachine,
+            this,
+            Rb,
+            Health,
+            playerTransform,
+            Pathfinder,
+            enemyData
+        );
+
+        var targetList = new System.Collections.Generic.List<TargetData>(); //temp
+        var obstacleList = new System.Collections.Generic.List<TargetData>(); //temp supplied by pathfinder manager later
+        Pathfinder.InitializeTargets(targetList, obstacleList);
+
+        if (enemyData != null)
+            Pathfinder.SetEnemyData(enemyData);
+
+        IEnemyState initial = (IEnemyState)new EnemyIdleState();
+        StateMachine.Initialize(initial, context);
+    }
+
+    public void MoveTowardsPosition(Vector3 currentPos, Vector3 targetPos, float moveSpeed, float accelAmount, float decelAmount)
+    {
+        // Compute direction towards target
+        Vector3 dir = Pathfinder.ComputeDirectionTowards(currentPos, targetPos);
+        dir.Normalize();
+
+        // Desired target velocity
+        Vector3 targetVelocity = dir * moveSpeed;
+
+        // Acceleration/deceleration per axis
+        Vector3 accelRate = new Vector3(
+            Mathf.Abs(targetVelocity.x) > 0.01f ? accelAmount : decelAmount,
+            0f,
+            Mathf.Abs(targetVelocity.z) > 0.01f ? accelAmount : decelAmount
+        );
+
+        // Conserve momentum: don't decelerate if we are already faster than target
+        if (Mathf.Abs(Rb.linearVelocity.x) > Mathf.Abs(targetVelocity.x) && Mathf.Sign(Rb.linearVelocity.x) == Mathf.Sign(targetVelocity.x))
+            accelRate.x = 0;
+        if (Mathf.Abs(Rb.linearVelocity.z) > Mathf.Abs(targetVelocity.z) && Mathf.Sign(Rb.linearVelocity.z) == Mathf.Sign(targetVelocity.z))
+            accelRate.z = 0;
+
+        // Difference between current velocity and target velocity
+        Vector3 velocityDiff = targetVelocity - new Vector3(Rb.linearVelocity.x, 0f, Rb.linearVelocity.z);
+
+        // Calculate force to apply
+        Vector3 force = new Vector3(
+            velocityDiff.x * accelRate.x,
+            0f,
+            velocityDiff.z * accelRate.z
+        );
+
+        // Apply forces along world axes
+        Rb.AddForce(force.x * Vector3.right, ForceMode.Force);
+        Rb.AddForce(force.z * Vector3.forward, ForceMode.Force);
+
+        // Smooth rotation toward movement direction
+        if (dir.sqrMagnitude > 0.001f)
+        {
+            Quaternion targetRot = Quaternion.LookRotation(dir);
+            Rb.rotation = Quaternion.Slerp(Rb.rotation, targetRot, 10f * Time.fixedDeltaTime);
+        }
+    }
+
+    public void Decel(float decelAmount)
+    {
+        Vector3 movement = new Vector3(-Rb.linearVelocity.x * decelAmount, 0f, -Rb.linearVelocity.z * decelAmount);
+        Rb.AddForce(movement.x * Vector3.right, ForceMode.Force);
+        Rb.AddForce(movement.y * Vector3.up, ForceMode.Force);
+        Rb.AddForce(movement.z * Vector3.forward, ForceMode.Force);
+    }
+
+
+    public void MoveTowardsPosition(Vector3 targetPos, float speed, float accelAmount, float decelAmount)
+    {
+        MoveTowardsPosition(transform.position, targetPos, speed, accelAmount, decelAmount);
     }
 
     private void Update()
     {
-        StateMachine.Tick(this, Time.deltaTime);
+        StateMachine.Tick(context, Time.deltaTime);
+    }
+
+    private void FixedUpdate()
+    {
+        StateMachine.FixedTick(context, Time.fixedDeltaTime);
     }
 
     private void HandleDeath()
     {
-        // Default death behavior
-        gameObject.SetActive(false);
+        gameObject.SetActive(false); //temporary
     }
 
     public bool IsPlayerInDetectionRange()
     {
-        if (player == null) return false;
-        return Vector3.Distance(transform.position, player.position) <= detectionRadius;
+        if (playerTransform == null) return false;
+        return Vector3.Distance(transform.position, playerTransform.position) <= enemyData.detectionRadius;
     }
 
     public bool IsPlayerInAttackRange()
     {
-        if (player == null) return false;
-        return Vector3.Distance(transform.position, player.position) <= attackRadius;
+        if (playerTransform == null) return false;
+        return Vector3.Distance(transform.position, playerTransform.position) <= enemyData.attackRadius;
+    
+    }
+    public bool IsPlayerInChaseRange()
+    {
+        if (playerTransform == null) return false;
+        return Vector3.Distance(transform.position, playerTransform.position) <= enemyData.chaseRadius;
     }
 
-    public Transform GetPlayerTransform() => player;
+    public Transform GetPlayerTransform() => playerTransform;
+
+    public string GetState()
+    {
+        return StateMachine.GetState();     
+    }
 }

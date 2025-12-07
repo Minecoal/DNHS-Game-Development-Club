@@ -2,28 +2,39 @@ using UnityEngine;
 
 public class EnemyIdleState : IEnemyState
 {
-    public void Enter(Enemy enemy)
+    public void Enter(EnemyContext context)
     {
-        // maybe play idle anim
+        //play idle animation here
     }
 
-    public void Exit(Enemy enemy)
+    public void Exit(EnemyContext context)
     {
+
     }
 
-    public void Tick(Enemy enemy, float deltaTime)
+    public void Tick(EnemyContext context, float deltaTime)
     {
-        // transition to patrol or chase
-        if (enemy.IsPlayerInDetectionRange())
+        // If player in range, chase. Otherwise, if there are patrol points, go to patrol.
+        if (context.Enemy.IsPlayerInDetectionRange())
         {
-            enemy.StateMachine.ChangeState(new EnemyChaseState(), enemy);
+            context.StateMachine.ChangeState(new EnemyChaseState(), context);
             return;
         }
 
-        if (enemy.patrolPoints != null && enemy.patrolPoints.Length > 0)
-        {
-            enemy.StateMachine.ChangeState(new EnemyPatrolState(), enemy);
-            return;
-        }
+        // if (enemy.patrolPoints != null && enemy.patrolPoints.Length > 0)
+        // {
+        //     context.StateMachine.ChangeState(new EnemyPatrolState(), context);
+        //     return;
+        // }
+    }
+
+    public void FixedTick(EnemyContext context, float fixedDeltaTime)
+    {
+        context.Enemy.Decel(context.EnemyData.decelAmount);
+    }
+    
+    public override string ToString()
+    {
+        return "Idle";
     }
 }

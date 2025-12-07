@@ -2,7 +2,8 @@ using UnityEngine;
 
 public interface IEnemyState
 {
-    void Enter(Enemy enemy);
-    void Exit(Enemy enemy);
-    void Tick(Enemy enemy, float deltaTime);
+    void Enter(EnemyContext context);
+    void Exit(EnemyContext context);
+    void Tick(EnemyContext context, float deltaTime);
+    void FixedTick(EnemyContext context, float fixedDeltaTime);
 }
