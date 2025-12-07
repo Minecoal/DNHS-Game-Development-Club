@@ -4,28 +4,28 @@ public class EnemyStateMachine
 {
     private IEnemyState currentState;
 
-    public void Initialize(IEnemyState startingState, Enemy owner)
+    public void Initialize(IEnemyState startingState, EnemyContext context)
     {
         currentState = startingState;
-        currentState?.Enter(owner);
+        currentState?.Enter(context);
     }
 
-    public void ChangeState(IEnemyState newState, Enemy owner)
+    public void ChangeState(IEnemyState newState, EnemyContext context)
     {
         if (currentState == newState) return;
-        currentState?.Exit(owner);
+        currentState?.Exit(context);
         currentState = newState;
-        currentState?.Enter(owner);
+        currentState?.Enter(context);
     }
 
-    public void Tick(Enemy owner, float deltaTime)
+    public void Tick(EnemyContext context, float deltaTime)
     {
-        currentState?.Tick(owner, deltaTime);
+        currentState?.Tick(context, deltaTime);
     }
 
-    public void FixedTick(Enemy owner, float fixedDeltaTime)
+    public void FixedTick(EnemyContext context, float fixedDeltaTime)
     {
-        currentState?.FixedTick(owner, fixedDeltaTime);
+        currentState?.FixedTick(context, fixedDeltaTime);
     }
 
     public string GetState()

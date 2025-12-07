@@ -31,11 +31,11 @@ public class EnemyGizmos : MonoBehaviour
     void OnDrawGizmos()
     {
         Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(enemy.transform.position, enemy.chaseRadius);
+        Gizmos.DrawWireSphere(enemy.transform.position, enemy.EnemyData.chaseRadius);
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(enemy.transform.position, enemy.detectionRadius);
+        Gizmos.DrawWireSphere(enemy.transform.position, enemy.EnemyData.detectionRadius);
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(enemy.transform.position, enemy.attackRadius);
+        Gizmos.DrawWireSphere(enemy.transform.position, enemy.EnemyData.attackRadius);
     }
 
     void Start()

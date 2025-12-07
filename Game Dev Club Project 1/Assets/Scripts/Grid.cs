@@ -1,7 +1,4 @@
 using System;
-using TMPro;
-using Unity.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Grid<T>

@@ -22,7 +22,7 @@ public class PlayerInputHandler : MonoBehaviour
         {
             AttackPressed?.Invoke();
         }
-        if (Input.GetKeyDown(KeyCode.X))
+        if (Input.GetKeyDown(dashButton))
         {
             OnDash?.Invoke();
         }
