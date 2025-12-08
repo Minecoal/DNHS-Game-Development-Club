@@ -33,6 +33,8 @@ public class CraftingManager : MonoBehaviour
     private bool previousCursorState;
     private bool isCraftingMenuOpen = false;
 
+    public List<GameObject> recipeGameObjects = new List<GameObject>();
+
     private void Awake()
     {
         if (Instance == null)
@@ -89,38 +91,67 @@ public class CraftingManager : MonoBehaviour
 
     public void SelectRecipe(CraftingRecipeClass recipe)
     {
-        selectedRecipe = recipe;
-
-        for (int i = craftMaterialInfoHolder.childCount - 1; i >= 0; i--)
+        if (recipe != null)
         {
-            Destroy(craftMaterialInfoHolder.GetChild(i).gameObject);
+            selectedRecipe = recipe;
+
+            for (int i = craftMaterialInfoHolder.childCount - 1; i >= 0; i--)
+            {
+                Destroy(craftMaterialInfoHolder.GetChild(i).gameObject);
+            }
+
+            SetSlider(recipe);
+
+
+
+            craftInfoHolder.Find("Recipe Output Image").GetComponent<Image>().sprite = recipe.outputItem.GetItem().itemIcon;
+            craftInfoHolder.Find("Output Amount Text").GetComponent<TMPro.TextMeshProUGUI>().text = (recipe.outputItem.GetQuantity() * numberToCraft).ToString();
+
+            foreach (ItemSlot input in recipe.inputItems)
+            {
+                GameObject material = Instantiate(craftMaterialInfoPrefab, craftMaterialInfoHolder, false);
+
+                material.transform.Find("Image").GetComponent<Image>().sprite = input.GetItem().itemIcon;
+
+                string textColorTag = InventoryManager.Instance.ContainAmount(input.GetItem()) >= (input.GetQuantity() * numberToCraft) ? "<color=#04bf97>" : "<color=#FF0000>";
+                material.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = textColorTag + InventoryManager.Instance.ContainAmount(input.GetItem()) + "</color> / " + (input.GetQuantity() * numberToCraft);
+
+            }
+
+            craftButton.interactable = recipe.CanCraft();
         }
-
-        SetSlider(recipe);
-
-        
-
-        craftInfoHolder.Find("Recipe Output Image").GetComponent<Image>().sprite = recipe.outputItem.GetItem().itemIcon;
-        craftInfoHolder.Find("Output Amount Text").GetComponent<TMPro.TextMeshProUGUI>().text = (recipe.outputItem.GetQuantity() * numberToCraft).ToString();
-
-        foreach (ItemSlot input in recipe.inputItems)
+        else
         {
-            GameObject material = Instantiate(craftMaterialInfoPrefab, craftMaterialInfoHolder, false);
+            selectedRecipe = null;
 
-            material.transform.Find("Image").GetComponent<Image>().sprite = input.GetItem().itemIcon;
+            for (int i = craftMaterialInfoHolder.childCount - 1; i >= 0; i--)
+            {
+                Destroy(craftMaterialInfoHolder.GetChild(i).gameObject);
+            }
 
-            string textColorTag = InventoryManager.Instance.ContainAmount(input.GetItem()) >= (input.GetQuantity() * numberToCraft) ? "<color=#04bf97>" : "<color=#FF0000>";
-            material.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = textColorTag + InventoryManager.Instance.ContainAmount(input.GetItem()) + "</color> / " + (input.GetQuantity() * numberToCraft);
+            mostCraftableAmount = 0;
+            amountSlider.maxValue = 2;
+            amountSlider.interactable = false;
 
+            amountSlider.gameObject.SetActive(false);
+            minAmountText.gameObject.SetActive(false);
+            maxAmountText.gameObject.SetActive(false);
+
+
+
+            craftInfoHolder.Find("Recipe Output Image").GetComponent<Image>().sprite = null;
+            craftInfoHolder.Find("Output Amount Text").GetComponent<TMPro.TextMeshProUGUI>().text = "0";
+
+
+            craftButton.interactable = false;
         }
-
-        craftButton.interactable = recipe.CanCraft();
     }
 
     public void LoadRecipes()
     {
         craftableRecipes.Clear();
         uncraftableRecipes.Clear();
+        recipeGameObjects.Clear();
 
         amountSlider.value = 1;
 
@@ -149,6 +180,8 @@ public class CraftingManager : MonoBehaviour
             recipeButton.transform.Find("Image").GetComponent<Image>().sprite = recipe.outputItem.GetItem().itemIcon;
             recipeButton.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = recipe.outputItem.GetItem().itemName;
             recipeButton.GetComponent<CraftingRecipeSlotUI>().SetRecipe(recipe);
+
+            recipeGameObjects.Add(recipeButton);
 
         }
 
@@ -237,10 +270,14 @@ public class CraftingManager : MonoBehaviour
 
     public void CloseCraftingMenu()
     {
+        SelectRecipe(null);
+
         isCraftingMenuOpen = false;
         craftingUICanvas?.SetActive(false);
         Cursor.visible = previousCursorState;
         Cursor.lockState = CursorLockMode.Locked;
+
+        selectedRecipe = null;
     }
 
     public void OpenCraftingMenu()

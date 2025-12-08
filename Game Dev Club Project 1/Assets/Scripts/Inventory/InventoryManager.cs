@@ -123,6 +123,9 @@ public class InventoryManager : MonoBehaviour
 
     public void AddItem(ItemClass item, int quantity)
     {
+        bool itemsAdded = false;
+        int quantityLeft = quantity;
+
         ItemSlot slot = Contains(item);
         if (slot != null && slot.GetItem().isStackable)
             slot.AddQuantity(quantity);
@@ -135,6 +138,7 @@ public class InventoryManager : MonoBehaviour
                     if (items[i].GetItem() == null)
                     {
                         items[i].AddItem(item, quantity);
+                        itemsAdded = true;
                         break;
                     }
                 }
@@ -143,22 +147,25 @@ public class InventoryManager : MonoBehaviour
             {
                 for (int i = 0; i < items.Length; i++)
                 {
-                    if (items[i].GetItem() == null && quantity > 0)
+                    if (items[i].GetItem() == null && quantityLeft > 0)
                     {
                         items[i].AddItem(item, 1);
-                        quantity--;
+                        quantityLeft--;
                     }
-                    else if(quantity == 0)
+                    else if(quantityLeft == 0)
                     {
+                        itemsAdded = true;
                         break;
-                    }
-                    else if(i == items.Length - 1 && quantity > 0)
-                    {
-                        //drop items
                     }
                 }
             }
             
+        }
+
+        if (!itemsAdded)
+        {
+            //drop items(quantityLeft)
+            Debug.Log("Drop items: " + quantityLeft + " | " + item.itemName);
         }
 
         RefreshUI();

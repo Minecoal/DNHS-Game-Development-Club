@@ -1497,6 +1497,7 @@ MonoBehaviour:
   craftButton: {fileID: 1839696278}
   amountSlider: {fileID: 1618438529}
   craftingUICanvas: {fileID: 719318093}
+  recipeGameObjects: []
 --- !u!1001 &186323326
 PrefabInstance:
   m_ObjectHideFlags: 0

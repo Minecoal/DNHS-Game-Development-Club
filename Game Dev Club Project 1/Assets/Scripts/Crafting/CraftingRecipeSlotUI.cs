@@ -5,15 +5,13 @@ using UnityEngine.UI;
 public class CraftingRecipeSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     private CraftingRecipeClass recipe;
-    private Button button;
-    private Image recipeIcon;
 
     public void OnPointerClick(PointerEventData eventData)
     {
         CraftingManager.Instance.SelectRecipe(recipe);
         CraftingManager.Instance.RefreshCurrentRecipe();
 
-        //change color
+        
     }
 
     public void OnPointerEnter(PointerEventData eventData)
