@@ -18,6 +18,9 @@ public class CraftingManager : MonoBehaviour
     [SerializeField] private Button craftButton;
 
     [SerializeField] private Slider amountSlider;
+    private TMPro.TextMeshProUGUI minAmountText;
+    private TMPro.TextMeshProUGUI maxAmountText;
+
 
     private List<CraftingRecipeClass> craftableRecipes = new List<CraftingRecipeClass>();
     private List<CraftingRecipeClass> uncraftableRecipes = new List<CraftingRecipeClass>();
@@ -47,6 +50,9 @@ public class CraftingManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        minAmountText = craftInfoHolder.Find("Min Amount Craftable").GetComponent<TMPro.TextMeshProUGUI>();
+        maxAmountText = craftInfoHolder.Find("Max Amount Craftable").GetComponent<TMPro.TextMeshProUGUI>();
+
         recipes = Resources.LoadAll<CraftingRecipeClass>("CraftingRecipes").ToList();
 
         LoadRecipes();
@@ -92,6 +98,8 @@ public class CraftingManager : MonoBehaviour
 
         SetSlider(recipe);
 
+        
+
         craftInfoHolder.Find("Recipe Output Image").GetComponent<Image>().sprite = recipe.outputItem.GetItem().itemIcon;
         craftInfoHolder.Find("Output Amount Text").GetComponent<TMPro.TextMeshProUGUI>().text = (recipe.outputItem.GetQuantity() * numberToCraft).ToString();
 
@@ -100,14 +108,16 @@ public class CraftingManager : MonoBehaviour
             GameObject material = Instantiate(craftMaterialInfoPrefab, craftMaterialInfoHolder, false);
 
             material.transform.Find("Image").GetComponent<Image>().sprite = input.GetItem().itemIcon;
-            material.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = InventoryManager.Instance.ContainAmount(input.GetItem()) + " / " + (input.GetQuantity() * numberToCraft);
+
+            string textColorTag = InventoryManager.Instance.ContainAmount(input.GetItem()) >= (input.GetQuantity() * numberToCraft) ? "<color=#04bf97>" : "<color=#FF0000>";
+            material.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = textColorTag + InventoryManager.Instance.ContainAmount(input.GetItem()) + "</color> / " + (input.GetQuantity() * numberToCraft);
 
         }
 
         craftButton.interactable = recipe.CanCraft();
     }
 
-    private void LoadRecipes()
+    public void LoadRecipes()
     {
         craftableRecipes.Clear();
         uncraftableRecipes.Clear();
@@ -154,11 +164,20 @@ public class CraftingManager : MonoBehaviour
         }
     }
 
+    public void RefreshCurrentRecipe()
+    {
+        amountSlider.value = 1;
+    }
+
     private void SetSlider(CraftingRecipeClass recipe)
     {
         if (recipe.CanCraft())
         {
             amountSlider.gameObject.SetActive(true);
+            minAmountText.gameObject.SetActive(true);
+            maxAmountText.gameObject.SetActive(true);
+
+
             int tempMostAmountCraftable = int.MaxValue;
 
             foreach (ItemSlot input in recipe.inputItems)
@@ -180,7 +199,9 @@ public class CraftingManager : MonoBehaviour
                 amountSlider.maxValue = mostCraftableAmount;
                 amountSlider.interactable = true;
             }
-            
+
+            minAmountText.text = "1";
+            maxAmountText.text = mostCraftableAmount.ToString();
         }
         else
         {
@@ -189,6 +210,8 @@ public class CraftingManager : MonoBehaviour
             amountSlider.interactable = false;
 
             amountSlider.gameObject.SetActive(false);
+            minAmountText.gameObject.SetActive(false);
+            maxAmountText.gameObject.SetActive(false);
         }
 
     }

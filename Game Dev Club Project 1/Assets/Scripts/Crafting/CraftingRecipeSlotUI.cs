@@ -10,8 +10,9 @@ public class CraftingRecipeSlotUI : MonoBehaviour, IPointerEnterHandler, IPointe
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        Debug.Log("craft");
         CraftingManager.Instance.SelectRecipe(recipe);
+        CraftingManager.Instance.RefreshCurrentRecipe();
+
         //change color
     }
 

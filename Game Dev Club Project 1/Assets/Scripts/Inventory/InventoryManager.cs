@@ -193,26 +193,48 @@ public class InventoryManager : MonoBehaviour
     public void RemoveItem(ItemClass item, int quantity)
     {
 
-        ItemSlot temp = Contains(item);
-        if (temp != null)
+        if (item.isStackable)
         {
-            if (temp.GetQuantity() > quantity)
-                temp.SubQuantity(quantity);
-            else
+            ItemSlot temp = Contains(item);
+            if (temp != null)
             {
-                int slotToRemoveIndex = 0;
-
-                for (int i = 0; i < items.Length; i++)
+                if (temp.GetQuantity() > quantity)
+                    temp.SubQuantity(quantity);
+                else
                 {
-                    if (items[i].GetItem() == item)
+                    int slotToRemoveIndex = 0;
+
+                    for (int i = 0; i < items.Length; i++)
                     {
-                        slotToRemoveIndex = i;
-                        break;
+                        if (items[i].GetItem() == item)
+                        {
+                            slotToRemoveIndex = i;
+                            break;
+                        }
                     }
+                    items[slotToRemoveIndex].Clear();
                 }
-                items[slotToRemoveIndex].Clear();
             }
         }
+        else
+        {
+            int quantityLeft = quantity;
+
+            for (int i = 0; i < items.Length; i++)
+            {
+                if (items[i].GetItem() == item)
+                {
+                    items[i].Clear();
+                    quantityLeft--;
+                }
+                if(quantityLeft <= 0)
+                {
+                    break;
+                }
+            }
+        }
+
+
         RefreshUI();
     }
 

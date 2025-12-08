@@ -65,12 +65,11 @@ public class PlayerAttackState : IPlayerState
 
     public void UpdateFixed(PlayerStateMachine ctx)
     {
-
+        Decelerate();
     }
 
     public void Update(PlayerStateMachine ctx)
     {
-        Decelerate();
         TestBufferedInput();
 
         if (isAttacking) return;
