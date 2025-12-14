@@ -1,12 +1,16 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class InventoryManager : MonoBehaviour
 {
+    public static InventoryManager Instance;
+
     [SerializeField] private GameObject itemCursor;
 
+    [Header("Inventory Slots")]
     [SerializeField] private GameObject slotHolder;
     [SerializeField] private GameObject equipmentSlotHolder;
     [SerializeField] private ItemClass itemToAdd;
@@ -29,6 +33,25 @@ public class InventoryManager : MonoBehaviour
     private bool previousCursorState;
     private bool isInventoryOpen = false;
 
+    [Header("Currency")]
+    public int currency = 0;
+    [SerializeField] private TMPro.TextMeshProUGUI currencyText;
+
+    [SerializeField] private GameObject droppedItemPrefab;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            // DontDestroyOnLoad(gameObject); // Disable when parented to a DonDestoryOnLoad object
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -108,19 +131,51 @@ public class InventoryManager : MonoBehaviour
 
     public void AddItem(ItemClass item, int quantity)
     {
+        bool itemsAdded = false;
+        int quantityLeft = quantity;
+
         ItemSlot slot = Contains(item);
         if (slot != null && slot.GetItem().isStackable)
             slot.AddQuantity(quantity);
         else
         {
-            for (int i = 0; i < items.Length; i++)
+            if (item.isStackable)
             {
-                if (items[i].GetItem() == null)
+                for (int i = 0; i < items.Length; i++)
                 {
-                    items[i].AddItem(item, quantity);
-                    break;
+                    if (items[i].GetItem() == null)
+                    {
+                        items[i].AddItem(item, quantity);
+                        itemsAdded = true;
+                        break;
+                    }
                 }
             }
+            else
+            {
+                for (int i = 0; i < items.Length; i++)
+                {
+                    if (items[i].GetItem() == null && quantityLeft > 0)
+                    {
+                        items[i].AddItem(item, 1);
+                        quantityLeft--;
+                    }
+                    else if(quantityLeft == 0)
+                    {
+                        itemsAdded = true;
+                        break;
+                    }
+                }
+            }
+            
+        }
+
+        if (!itemsAdded)
+        {
+            //drop items(quantityLeft)
+            if(quantityLeft != 0)
+                DropItem(new ItemSlot(item, quantityLeft));
+            Debug.Log("Drop items: " + quantityLeft + " | " + item.itemName);
         }
 
         RefreshUI();
@@ -150,6 +205,104 @@ public class InventoryManager : MonoBehaviour
             }
         }
         RefreshUI();
+    }
+
+    public void RemoveItem(ItemClass item, int quantity)
+    {
+
+        if (item.isStackable)
+        {
+            ItemSlot temp = Contains(item);
+            if (temp != null)
+            {
+                if (temp.GetQuantity() > quantity)
+                    temp.SubQuantity(quantity);
+                else
+                {
+                    int slotToRemoveIndex = 0;
+
+                    for (int i = 0; i < items.Length; i++)
+                    {
+                        if (items[i].GetItem() == item)
+                        {
+                            slotToRemoveIndex = i;
+                            break;
+                        }
+                    }
+                    items[slotToRemoveIndex].Clear();
+                }
+            }
+        }
+        else
+        {
+            int quantityLeft = quantity;
+
+            for (int i = 0; i < items.Length; i++)
+            {
+                if (items[i].GetItem() == item)
+                {
+                    items[i].Clear();
+                    quantityLeft--;
+                }
+                if(quantityLeft <= 0)
+                {
+                    break;
+                }
+            }
+        }
+
+
+        RefreshUI();
+    }
+
+    public int CanAddItem(ItemClass item, int quantity)
+    {
+        //returns -1 if can add item, else returns amount that can add
+        bool itemsAdded = false;
+        int quantityLeft = quantity;
+        int quantityAdded = 0;
+
+        ItemSlot slot = Contains(item);
+        if (slot != null && slot.GetItem().isStackable)
+            return -1;
+        else
+        {
+            if (item.isStackable)
+            {
+                for (int i = 0; i < items.Length; i++)
+                {
+                    if (items[i].GetItem() == null)
+                    {
+                        itemsAdded = true;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < items.Length; i++)
+                {
+                    if (items[i].GetItem() == null && quantityLeft > 0)
+                    {
+                        quantityLeft--;
+                        quantityAdded++;
+                    }
+                    else if (quantityLeft == 0)
+                    {
+                        itemsAdded = true;
+                        break;
+                    }
+                }
+            }
+
+        }
+
+        if (!itemsAdded)
+        {
+            return quantityAdded;
+        }
+
+        return -1;
     }
 
     public void RefreshUI()
@@ -190,6 +343,8 @@ public class InventoryManager : MonoBehaviour
 
             }
         }
+
+        currencyText.text = currency.ToString();
     }
 
     public ItemSlot Contains(ItemClass item)
@@ -201,6 +356,42 @@ public class InventoryManager : MonoBehaviour
         }
 
         return null;
+    }
+
+    public bool Contains(ItemClass item, int quantity)
+    {
+        for (int i = 0; i < items.Length; i++)
+        {
+            if (items[i].GetItem() == item && items[i].GetQuantity() >= quantity)
+                return true;
+        }
+
+        return false;
+    }
+
+    public int ContainAmount(ItemClass item)
+    {
+        if (item.isStackable)
+        {
+            for (int i = 0; i < items.Length; i++)
+            {
+                if (items[i].GetItem() == item)
+                    return items[i].GetQuantity();
+            }
+        }
+        else
+        {
+            int totalAmount = 0;
+            for (int i = 0; i < items.Length; i++)
+            {
+                if (items[i].GetItem() == item)
+                    totalAmount += items[i].GetQuantity();
+            }
+
+            return totalAmount;
+        }
+
+        return 0;
     }
 
     private bool BeginItemMove()
@@ -226,61 +417,71 @@ public class InventoryManager : MonoBehaviour
 
     private bool EndItemMove()
     {
-        ItemSlot oldSlotBeforeMove = originalSlot;
-        if (movingSlot.GetItem().GetEquipment() != null)
-            originalSlot = GetClosestEquipmentSlot();
-        else
-            originalSlot = GetClosestSlot();
-
-        if (originalSlot == null)
+        if (!IsMouseOverUI())
         {
-            //not click on a slot
-            if(oldSlotBeforeMove.GetItem() != null)
-                AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
-            else
-                oldSlotBeforeMove.AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());            
-
+            DropItem(new ItemSlot(movingSlot.GetItem(), movingSlot.GetQuantity()));
             movingSlot.Clear();
         }
         else
         {
-            if (originalSlot.GetItem() != null)
+            ItemSlot oldSlotBeforeMove = originalSlot;
+
+            if (movingSlot.GetItem().GetEquipment() != null)
+                originalSlot = GetClosestEquipmentSlot();
+            else
+                originalSlot = GetClosestSlot();
+
+            if (originalSlot == null)
             {
-                if (originalSlot.GetItem() == movingSlot.GetItem())//same item so stack
-                {
-                    if (originalSlot.GetItem().isStackable)
-                    {
-                        originalSlot.AddQuantity(movingSlot.GetQuantity());
-                        movingSlot.Clear();
-                    }
-                    else
-                        return false;
-                }
-                else //swap item with the one in hand
-                {
-                    tempSlot = new ItemSlot(originalSlot);
-                    originalSlot.AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
-                    movingSlot.AddItem(tempSlot.GetItem(), tempSlot.GetQuantity());
-                    if (IsEquipmentItemAndSlot(originalSlot, movingSlot.GetItem()))
-                    {
-                        originalSlot.GetItem().GetEquipment().OnEquip();
-                        movingSlot.GetItem().GetEquipment().OnUnequip();
-                    }
-                    RefreshUI();
-                    return true;
-                }
+                //not click on a slot
+                if (oldSlotBeforeMove.GetItem() != null)
+                    AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
+                else
+                    oldSlotBeforeMove.AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
+
+                movingSlot.Clear();
             }
             else
             {
-                //no item in slot
-                originalSlot.AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
-                if (IsEquipmentItemAndSlot(originalSlot, movingSlot.GetItem()))
+                if (originalSlot.GetItem() != null)
                 {
-                    originalSlot.GetItem().GetEquipment().OnEquip();
+                    if (originalSlot.GetItem() == movingSlot.GetItem())//same item so stack
+                    {
+                        if (originalSlot.GetItem().isStackable)
+                        {
+                            originalSlot.AddQuantity(movingSlot.GetQuantity());
+                            movingSlot.Clear();
+                        }
+                        else
+                            return false;
+                    }
+                    else //swap item with the one in hand
+                    {
+                        tempSlot = new ItemSlot(originalSlot);
+                        originalSlot.AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
+                        movingSlot.AddItem(tempSlot.GetItem(), tempSlot.GetQuantity());
+                        if (IsEquipmentItemAndSlot(originalSlot, movingSlot.GetItem()))
+                        {
+                            originalSlot.GetItem().GetEquipment().OnEquip();
+                            movingSlot.GetItem().GetEquipment().OnUnequip();
+                        }
+                        RefreshUI();
+                        return true;
+                    }
                 }
-                movingSlot.Clear();
+                else
+                {
+                    //no item in slot
+                    originalSlot.AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
+                    if (IsEquipmentItemAndSlot(originalSlot, movingSlot.GetItem()))
+                    {
+                        originalSlot.GetItem().GetEquipment().OnEquip();
+                    }
+                    movingSlot.Clear();
+                }
             }
         }
+
         isMovingItem = false;
         RefreshUI();
         return true;
@@ -363,6 +564,19 @@ public class InventoryManager : MonoBehaviour
 
     public void CloseInventory()
     {
+        //close inv when holding item
+        if (originalSlot != null)
+        {
+            if (originalSlot.GetItem() != null)
+                AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
+            else
+                originalSlot.AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
+
+            movingSlot.Clear();
+        }
+        isMovingItem = false;
+
+
         isInventoryOpen = false;
         inventoryUIRoot?.SetActive(false);
         Cursor.visible = previousCursorState;
@@ -377,5 +591,24 @@ public class InventoryManager : MonoBehaviour
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
         RefreshUI();
+    }
+
+    private bool IsMouseOverUI()
+    {
+        var data = new PointerEventData(EventSystem.current)
+        {
+            position = Input.mousePosition
+        };
+
+        var results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(data, results);
+        //has to be 1 cus cursor counts
+        return results.Count > 1;
+    }
+
+    private void DropItem(ItemSlot itemToDrop)
+    {
+        GameObject droppedItem = Instantiate(droppedItemPrefab, PlayerManager.Instance.Player.transform.position, Quaternion.identity);
+        droppedItem.GetComponent<DroppedItem>().SetDroppedItem(itemToDrop);
     }
 }
