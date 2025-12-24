@@ -36,8 +36,9 @@ public class InventoryManager : MonoBehaviour
     [Header("Currency")]
     public int currency = 0;
     [SerializeField] private TMPro.TextMeshProUGUI currencyText;
+    [SerializeField] private CurrencyInfo[] coinData;
 
-    [SerializeField] private GameObject droppedItemPrefab;
+    public GameObject droppedItemPrefab;
 
     private void Awake()
     {
@@ -127,6 +128,13 @@ public class InventoryManager : MonoBehaviour
         {
             ToggleInventory();
         }
+
+        if (Input.GetMouseButtonDown(2))
+        {
+            GetComponent<DropItem>().DropItems(new ItemSlot(startingItems[0]), PlayerManager.Instance.Player.transform.position);
+            GetComponent<DropItem>().DropItems(new ItemSlot(startingItems[1]), PlayerManager.Instance.Player.transform.position);
+            GetComponent<DropItem>().DropItems(new ItemSlot(startingItems[2]), PlayerManager.Instance.Player.transform.position);
+        }
     }
 
     public void AddItem(ItemClass item, int quantity)
@@ -136,7 +144,10 @@ public class InventoryManager : MonoBehaviour
 
         ItemSlot slot = Contains(item);
         if (slot != null && slot.GetItem().isStackable)
+        {
             slot.AddQuantity(quantity);
+            itemsAdded = true;
+        }
         else
         {
             if (item.isStackable)
@@ -159,11 +170,11 @@ public class InventoryManager : MonoBehaviour
                     {
                         items[i].AddItem(item, 1);
                         quantityLeft--;
-                    }
-                    else if(quantityLeft == 0)
-                    {
-                        itemsAdded = true;
-                        break;
+                        if (quantityLeft <= 0)
+                        {
+                            itemsAdded = true;
+                            break;
+                        }
                     }
                 }
             }
@@ -173,8 +184,8 @@ public class InventoryManager : MonoBehaviour
         if (!itemsAdded)
         {
             //drop items(quantityLeft)
-            if(quantityLeft != 0)
-                DropItem(new ItemSlot(item, quantityLeft));
+            if(quantityLeft > 0)
+                GetComponent<DropItem>().DropItems(new ItemSlot(item, quantityLeft), PlayerManager.Instance.Player.transform.position);
             Debug.Log("Drop items: " + quantityLeft + " | " + item.itemName);
         }
 
@@ -419,7 +430,7 @@ public class InventoryManager : MonoBehaviour
     {
         if (!IsMouseOverUI())
         {
-            DropItem(new ItemSlot(movingSlot.GetItem(), movingSlot.GetQuantity()));
+            GetComponent<DropItem>().DropItems(new ItemSlot(movingSlot.GetItem(), movingSlot.GetQuantity()), PlayerManager.Instance.Player.transform.position);
             movingSlot.Clear();
         }
         else
@@ -567,8 +578,11 @@ public class InventoryManager : MonoBehaviour
         //close inv when holding item
         if (originalSlot != null)
         {
-            if (originalSlot.GetItem() != null)
+            if (originalSlot.GetItem() != null && movingSlot.GetItem() != null)
+            {
+                Debug.Log("here");
                 AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
+            }
             else
                 originalSlot.AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
 
@@ -604,11 +618,5 @@ public class InventoryManager : MonoBehaviour
         EventSystem.current.RaycastAll(data, results);
         //has to be 1 cus cursor counts
         return results.Count > 1;
-    }
-
-    private void DropItem(ItemSlot itemToDrop)
-    {
-        GameObject droppedItem = Instantiate(droppedItemPrefab, PlayerManager.Instance.Player.transform.position, Quaternion.identity);
-        droppedItem.GetComponent<DroppedItem>().SetDroppedItem(itemToDrop);
     }
 }
