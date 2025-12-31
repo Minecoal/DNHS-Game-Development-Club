@@ -55,12 +55,12 @@ public class PlayerAttackState : IPlayerState
         animator.SetTrigger("EnterAttack");
 
         TryStartAttack(attackIndex);
-        input.AttackPressed += OnAttack;
+        input.OnAttack += OnAttack;
     }
 
     public void Exit(PlayerStateMachine ctx)
     {
-        input.AttackPressed -= OnAttack;
+        input.OnAttack -= OnAttack;
     }
 
     public void UpdateFixed(PlayerStateMachine ctx)
@@ -73,7 +73,7 @@ public class PlayerAttackState : IPlayerState
         TestBufferedInput();
 
         if (isAttacking) return;
-        if (input.MoveInput.sqrMagnitude > 0.01f)
+        if (input.MoveInputNormalized.sqrMagnitude > 0.01f)
         {
             ctx.SwitchState(ctx.MovingState);
         }
@@ -99,13 +99,13 @@ public class PlayerAttackState : IPlayerState
         if (!data.useAnimationEvent)
         {
             // spawn hit effects at attackAnchor, but pass the player transform as the logical originator
-            attackList[index].ExecuteAttack(attackAnchor, ctx.transform, input.MoveInput);
+            attackList[index].ExecuteAttack(attackAnchor, ctx.transform, input.MoveInputNormalized);
         }
     }
 
     public void OnAnimationAttack(int attackIndex)
     {
-        attackList[attackIndex].ExecuteAttack(attackAnchor, ctx.transform, input.MoveInput);
+        attackList[attackIndex].ExecuteAttack(attackAnchor, ctx.transform, input.MoveInputNormalized);
     }
 
     public void TryStartAttack(int index)

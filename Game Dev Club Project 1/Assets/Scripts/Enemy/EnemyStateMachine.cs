@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public class EnemyStateMachine
 {
     private IEnemyState currentState;

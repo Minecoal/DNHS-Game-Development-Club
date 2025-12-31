@@ -44,19 +44,34 @@ public class Enemy : MonoBehaviour
 
         var targetList = new System.Collections.Generic.List<TargetData>(); //temp
         var obstacleList = new System.Collections.Generic.List<TargetData>(); //temp supplied by pathfinder manager later
-        Pathfinder.InitializeTargets(targetList, obstacleList);
 
         if (enemyData != null)
             Pathfinder.SetEnemyData(enemyData);
+        
+        Collider collider = GetComponent<BoxCollider>();
+        collider.enabled = false;
 
         IEnemyState initial = (IEnemyState)new EnemyIdleState();
         StateMachine.Initialize(initial, context);
     }
 
+    private void Update()
+    {
+        StateMachine.Tick(context, Time.deltaTime);
+    }
+
+    private void FixedUpdate()
+    {
+        StateMachine.FixedTick(context, Time.fixedDeltaTime);
+
+        Decel(context.EnemyData.decelAmount);
+        if (EnemyData != null) UpdateVectorField(transform.position);
+    }
+
     public void MoveTowardsPosition(Vector3 currentPos, Vector3 targetPos, float moveSpeed, float accelAmount, float decelAmount)
     {
         // Compute direction towards target
-        Vector3 dir = Pathfinder.ComputeDirectionTowards(currentPos, targetPos);
+        Vector3 dir = Pathfinder.CalculateNavMeshDirection(currentPos, targetPos);
         dir.Normalize();
 
         // Desired target velocity
@@ -97,28 +112,26 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    public void MoveTowardsPosition(Vector3 targetPos, float speed, float accelAmount, float decelAmount)
+    {
+        MoveTowardsPosition(transform.position, targetPos, speed, accelAmount, decelAmount);
+    }
+
+    public void UpdateVectorField(Vector3 currentPos)
+    {
+        Vector3 force = Pathfinder.CalculateInfluenceVector(currentPos);
+
+        Rb.AddForce(force.x * Vector3.right, ForceMode.Force);
+        Rb.AddForce(force.z * Vector3.forward, ForceMode.Force);
+        
+    }
+
     public void Decel(float decelAmount)
     {
         Vector3 movement = new Vector3(-Rb.linearVelocity.x * decelAmount, 0f, -Rb.linearVelocity.z * decelAmount);
         Rb.AddForce(movement.x * Vector3.right, ForceMode.Force);
         Rb.AddForce(movement.y * Vector3.up, ForceMode.Force);
         Rb.AddForce(movement.z * Vector3.forward, ForceMode.Force);
-    }
-
-
-    public void MoveTowardsPosition(Vector3 targetPos, float speed, float accelAmount, float decelAmount)
-    {
-        MoveTowardsPosition(transform.position, targetPos, speed, accelAmount, decelAmount);
-    }
-
-    private void Update()
-    {
-        StateMachine.Tick(context, Time.deltaTime);
-    }
-
-    private void FixedUpdate()
-    {
-        StateMachine.FixedTick(context, Time.fixedDeltaTime);
     }
 
     private void HandleDeath()

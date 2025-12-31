@@ -1,48 +1,44 @@
 using System;
 using System.Collections.Generic;
-using Unity.AI.Navigation;
 using UnityEngine;
+using Unity.AI.Navigation;
 using UnityEngine.AI;
 
-
-public class DynamicNavMeshManager : MonoBehaviour
+public class DynamicNavMeshManager : PersistentGenericSingleton<DynamicNavMeshManager>
 {
-    public static DynamicNavMeshManager Instance;
     public Dictionary<AgentType, NavMeshSurface> surfaces;
     private Dictionary<AgentType, NavMeshDataInstance> dataInstances;
 
-    private void Awake()
+    protected override void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            // DontDestroyOnLoad(gameObject); // Disable when parented to a DonDestoryOnLoad object
-        }
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
-
+        base.Awake();
         surfaces = new Dictionary<AgentType, NavMeshSurface>();
         dataInstances = new Dictionary<AgentType, NavMeshDataInstance>();
     }
 
-    public void RegisterSurface(AgentType agentType, NavMeshSurface surface){
+    public void RegisterSurface(AgentType agentType, NavMeshSurface surface)
+    {
+        if (surfaces.ContainsKey(agentType))
+            Debug.LogWarning("An Agent of the same type has already been registered");
+
+        if (surface.navMeshData == null)
+            surface.BuildNavMesh();
         surfaces.Add(agentType, surface);
-        NavMeshData data = surface.navMeshData;
-        NavMeshDataInstance instance = NavMesh.AddNavMeshData(data);
+
+        NavMeshDataInstance instance = NavMesh.AddNavMeshData(surface.navMeshData);
         dataInstances.Add(agentType, instance);
     }
 
     public void UnregisterSurface(AgentType agentType){
-        if (dataInstances.TryGetValue(agentType, out NavMeshDataInstance instance)){
-            NavMesh.RemoveNavMeshData(instance);
-            dataInstances.Remove(agentType);
-            surfaces.Remove(agentType);
-        } else {
+
+        if (!dataInstances.TryGetValue(agentType, out NavMeshDataInstance instance)){
             Debug.LogWarning("Unregistration of NavMesh Surface Failed");
+            return;
         }
+
+        NavMesh.RemoveNavMeshData(instance); // this is the entire reason for dataInstances
+        dataInstances.Remove(agentType);
+        surfaces.Remove(agentType);
     }
 
     public NavMeshSurface GetSurface(AgentType type)
@@ -63,7 +59,7 @@ public class DynamicNavMeshManager : MonoBehaviour
 }
 
 [Serializable]
-public enum AgentType 
+public enum AgentType
 {
     Small,
     Big

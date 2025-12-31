@@ -4,10 +4,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class InventoryManager : MonoBehaviour
+public class InventoryManager : PersistentGenericSingleton<InventoryManager>
 {
-    public static InventoryManager Instance;
-
     [SerializeField] private GameObject itemCursor;
 
     [Header("Inventory Slots")]
@@ -39,20 +37,6 @@ public class InventoryManager : MonoBehaviour
     [SerializeField] private CurrencyInfo[] coinData;
 
     public GameObject droppedItemPrefab;
-
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-            // DontDestroyOnLoad(gameObject); // Disable when parented to a DonDestoryOnLoad object
-        }
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
-    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()

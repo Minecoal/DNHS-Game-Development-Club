@@ -3,10 +3,8 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CraftingManager : MonoBehaviour
+public class CraftingManager : PersistentGenericSingleton<CraftingManager>
 {
-    public static CraftingManager Instance;
-
     private List<CraftingRecipeClass> recipes = new List<CraftingRecipeClass>();
     [SerializeField] private GameObject recipePrefab;
     [SerializeField] private GameObject recipeHolder;
@@ -34,20 +32,6 @@ public class CraftingManager : MonoBehaviour
     private bool isCraftingMenuOpen = false;
 
     public List<GameObject> recipeGameObjects = new List<GameObject>();
-
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-            // DontDestroyOnLoad(gameObject); // Disable when parented to a DonDestoryOnLoad object
-        }
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
-    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()

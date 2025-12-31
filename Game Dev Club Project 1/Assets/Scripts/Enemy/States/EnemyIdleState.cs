@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public class EnemyIdleState : IEnemyState
 {
     public void Enter(EnemyContext context)
@@ -21,7 +19,7 @@ public class EnemyIdleState : IEnemyState
             return;
         }
 
-        // if (enemy.patrolPoints != null && enemy.patrolPoints.Length > 0)
+        // if (context.Enemy. != null && context.Enemy..Length > 0)
         // {
         //     context.StateMachine.ChangeState(new EnemyPatrolState(), context);
         //     return;
@@ -30,7 +28,7 @@ public class EnemyIdleState : IEnemyState
 
     public void FixedTick(EnemyContext context, float fixedDeltaTime)
     {
-        context.Enemy.Decel(context.EnemyData.decelAmount);
+        
     }
     
     public override string ToString()

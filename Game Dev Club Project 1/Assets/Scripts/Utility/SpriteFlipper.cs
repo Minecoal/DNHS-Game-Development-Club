@@ -4,6 +4,8 @@ public class SpriteFlipper : MonoBehaviour
 {
     Rigidbody rb;
     float scalex;
+    PlayerInputHandler handler;
+    
     void Awake()
     {
         scalex = transform.localScale.x;
