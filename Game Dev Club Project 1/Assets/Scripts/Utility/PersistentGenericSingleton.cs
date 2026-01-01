@@ -4,6 +4,7 @@ using UnityEngine;
 public class PersistentGenericSingleton<T> : MonoBehaviour where T : Component
 {
     public bool autoUnparentOnAwake = true;
+    protected static bool isClosing = false;
     
     public bool IsReady { get; private set; } = false;
     public Action OnReady;
@@ -11,11 +12,11 @@ public class PersistentGenericSingleton<T> : MonoBehaviour where T : Component
     protected static T instance;
     public static T Instance {
         get {
+            if (!Application.isPlaying || isClosing) return null; // don't auto-create when closing
             if (instance == null) {
                 instance = FindAnyObjectByType<T>();
                 if (instance == null)
                 {
-                    if (!Application.isPlaying) return null; // don't auto-create when closing
                     GameObject obj = new GameObject(typeof(T).Name + " Auto Generated" );
                     instance = obj.AddComponent<T>();
                 }
@@ -32,7 +33,7 @@ public class PersistentGenericSingleton<T> : MonoBehaviour where T : Component
     } 
 
     protected virtual void InitializeSingleton(){
-        if (!Application.isPlaying) return;
+        if (!Application.isPlaying || isClosing) return;
         if (autoUnparentOnAwake)
             transform.SetParent(null);
 
@@ -45,5 +46,10 @@ public class PersistentGenericSingleton<T> : MonoBehaviour where T : Component
                 Destroy(gameObject);
             }
         }
+    }
+
+    void OnApplicationQuit()
+    {
+        isClosing = true;
     }
 }

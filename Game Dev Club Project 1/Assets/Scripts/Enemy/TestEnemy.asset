@@ -17,7 +17,7 @@ MonoBehaviour:
   attackRadius: 1
   health: 10
   damage: 1
-  speed: 2
+  speed: 4
   accelAmount: 12
   decelAmount: 9
   agentType: 0

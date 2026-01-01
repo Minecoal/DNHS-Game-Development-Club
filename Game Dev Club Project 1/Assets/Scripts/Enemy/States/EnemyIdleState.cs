@@ -1,7 +1,14 @@
+using UnityEngine;
+
 public class EnemyIdleState : IEnemyState
 {
+    private float idleTimer;
+    private float idleDuration; // time to wait before patrolling
+
     public void Enter(EnemyContext context)
     {
+        idleTimer = 0f;
+        idleDuration = Random.Range(1f, 5f);
         //play idle animation here
     }
 
@@ -19,11 +26,11 @@ public class EnemyIdleState : IEnemyState
             return;
         }
 
-        // if (context.Enemy. != null && context.Enemy..Length > 0)
-        // {
-        //     context.StateMachine.ChangeState(new EnemyPatrolState(), context);
-        //     return;
-        // }
+        idleTimer += deltaTime;
+        if (idleTimer >= idleDuration)
+        {
+            context.StateMachine.ChangeState(new EnemyPatrolState(), context);
+        }
     }
 
     public void FixedTick(EnemyContext context, float fixedDeltaTime)

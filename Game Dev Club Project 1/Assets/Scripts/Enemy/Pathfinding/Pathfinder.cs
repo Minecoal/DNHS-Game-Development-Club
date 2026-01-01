@@ -156,7 +156,7 @@ public class Pathfinder : MonoBehaviour, IPathfinder
     /// Find the cloest position on the Navmesh to the given position
     /// (Taking account for when the agent might be off the navmesh)
     /// </summary>
-    private Vector3 SampleOnNavMesh(Vector3 pos, NavMeshQueryFilter filter)
+    public Vector3 SampleOnNavMesh(Vector3 pos, NavMeshQueryFilter filter)
     {
         if (_enemyData == null) return pos;
         NavMeshHit hit;
@@ -165,6 +165,15 @@ public class Pathfinder : MonoBehaviour, IPathfinder
             return hit.position;
 
         return pos;
+    }
+
+    public Vector3 SampleOnNavMesh(Vector3 pos)
+    {
+        NavMeshQueryFilter filter = new NavMeshQueryFilter();
+        filter.agentTypeID = _enemyData.agentTypeID;
+        filter.areaMask = NavMesh.AllAreas;
+
+        return SampleOnNavMesh(pos, filter);
     }
 }
 

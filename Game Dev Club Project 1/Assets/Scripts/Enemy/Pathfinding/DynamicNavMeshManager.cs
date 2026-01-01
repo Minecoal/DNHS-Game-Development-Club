@@ -18,8 +18,10 @@ public class DynamicNavMeshManager : PersistentGenericSingleton<DynamicNavMeshMa
 
     public void RegisterSurface(AgentType agentType, NavMeshSurface surface)
     {
-        if (surfaces.ContainsKey(agentType))
-            Debug.LogWarning("An Agent of the same type has already been registered");
+        if (surfaces.ContainsKey(agentType)){
+            Debug.LogWarning($"An Agent of type {agentType} has already been registered");
+            return;
+        }
 
         if (surface.navMeshData == null)
             surface.BuildNavMesh();

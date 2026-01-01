@@ -24,7 +24,6 @@ public class EnemyChaseState : IEnemyState
         if (context.Enemy.IsPlayerInAttackRange())
         {
             // TODO: Change to an AttackState that handles animation/hitbox timing
-            Debug.Log("Enemy in attack range");
         }
 
     }

@@ -26,7 +26,7 @@ public class EnemyStateMachine
         currentState?.FixedTick(context, fixedDeltaTime);
     }
 
-    public string GetState()
+    public string GetStateName()
     {
         return currentState.ToString();
     }
