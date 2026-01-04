@@ -12,6 +12,7 @@ public class PlayerManager : PersistentGenericSingleton<PlayerManager>
     public PlayerInputHandler Input { get; private set; }
     public Animator Animator { get; private set; }
     public CameraController Camera { get; private set; }
+    public PlayerSpriteFlipper PlayerFlipper { get; private set; }
 
     public void RegisterPlayer(GameObject player)
     {
@@ -20,6 +21,7 @@ public class PlayerManager : PersistentGenericSingleton<PlayerManager>
         Rb = Player.GetComponent<Rigidbody>();
         Input = Player.GetComponent<PlayerInputHandler>();
         Animator = Player.GetComponentInChildren<Animator>();
+        PlayerFlipper = player.GetComponentInChildren<PlayerSpriteFlipper>();
     }
 
     public void RegisterCamera(CameraController camera)
