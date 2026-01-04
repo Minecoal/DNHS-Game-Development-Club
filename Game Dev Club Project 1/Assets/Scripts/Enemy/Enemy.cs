@@ -4,7 +4,6 @@ using UnityEngine.AI;
 
 [RequireComponent(typeof(Health))]
 [RequireComponent(typeof(Pathfinder))]
-[RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(Rigidbody))]
 public class Enemy : MonoBehaviour
 {
@@ -13,17 +12,22 @@ public class Enemy : MonoBehaviour
     public Rigidbody Rb { get; private set; }
     public Health Health { get; private set; }
     public IPathfinder Pathfinder { get; private set; }
-
-    [SerializeField] private EnemyData enemyData; // TODO later add a enemy builder and spawn manager to automate EnemyData assignment
-    public EnemyData EnemyData => enemyData; // change to { get; private set; } when [SerializedField] is removed
     private Transform playerTransform;
+    [SerializeField] private EnemyData enemyData;
+    public EnemyData EnemyData => enemyData;
+    public Vector3 patrolCenter { get; private set; } = Vector3.zero;
 
     public event Action<DamageInfo> OnDamagedBy;
-    
-
     public EnemyContext context { get; private set; }
 
-    private void Awake()
+    private bool isInitialized = false;
+
+    public void SetPatrolCenter(Vector3 patrolCenter)
+    {
+        this.patrolCenter = patrolCenter;
+    }
+
+    public void Initialize()
     {
         StateMachine = new EnemyStateMachine();
         Rb = GetComponent<Rigidbody>();
@@ -39,24 +43,48 @@ public class Enemy : MonoBehaviour
             Health,
             playerTransform,
             Pathfinder,
-            enemyData
+            enemyData,
+            patrolCenter
         );
-
-        var targetList = new System.Collections.Generic.List<TargetData>(); //temp
-        var obstacleList = new System.Collections.Generic.List<TargetData>(); //temp supplied by pathfinder manager later
-        Pathfinder.InitializeTargets(targetList, obstacleList);
 
         if (enemyData != null)
             Pathfinder.SetEnemyData(enemyData);
+        
+        Collider collider = GetComponent<BoxCollider>();
+        collider.enabled = false;
 
         IEnemyState initial = (IEnemyState)new EnemyIdleState();
         StateMachine.Initialize(initial, context);
+
+        isInitialized = true;
+    }
+
+    private void AutoInit() // for when enemy prefab is manually placed into the scene
+    {
+        patrolCenter = transform.position;
+        Initialize();
+        isInitialized = true;
+    }
+
+    private void Update()
+    {
+        if (!isInitialized) AutoInit();
+        StateMachine.Tick(context, Time.deltaTime);
+    }
+
+    private void FixedUpdate()
+    {
+        if (!isInitialized) AutoInit();
+        StateMachine.FixedTick(context, Time.fixedDeltaTime);
+
+        Decel(context.EnemyData.decelAmount);
+        UpdateVectorField(transform.position);
     }
 
     public void MoveTowardsPosition(Vector3 currentPos, Vector3 targetPos, float moveSpeed, float accelAmount, float decelAmount)
     {
         // Compute direction towards target
-        Vector3 dir = Pathfinder.ComputeDirectionTowards(currentPos, targetPos);
+        Vector3 dir = Pathfinder.CalculateNavMeshDirection(currentPos, targetPos);
         dir.Normalize();
 
         // Desired target velocity
@@ -97,28 +125,26 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    public void MoveTowardsPosition(Vector3 targetPos, float speed, float accelAmount, float decelAmount)
+    {
+        MoveTowardsPosition(transform.position, targetPos, speed, accelAmount, decelAmount);
+    }
+
+    public void UpdateVectorField(Vector3 currentPos)
+    {
+        Vector3 force = Pathfinder.CalculateInfluenceVector(currentPos);
+
+        Rb.AddForce(force.x * Vector3.right, ForceMode.Force);
+        Rb.AddForce(force.z * Vector3.forward, ForceMode.Force);
+        
+    }
+
     public void Decel(float decelAmount)
     {
         Vector3 movement = new Vector3(-Rb.linearVelocity.x * decelAmount, 0f, -Rb.linearVelocity.z * decelAmount);
         Rb.AddForce(movement.x * Vector3.right, ForceMode.Force);
         Rb.AddForce(movement.y * Vector3.up, ForceMode.Force);
         Rb.AddForce(movement.z * Vector3.forward, ForceMode.Force);
-    }
-
-
-    public void MoveTowardsPosition(Vector3 targetPos, float speed, float accelAmount, float decelAmount)
-    {
-        MoveTowardsPosition(transform.position, targetPos, speed, accelAmount, decelAmount);
-    }
-
-    private void Update()
-    {
-        StateMachine.Tick(context, Time.deltaTime);
-    }
-
-    private void FixedUpdate()
-    {
-        StateMachine.FixedTick(context, Time.fixedDeltaTime);
     }
 
     private void HandleDeath()
@@ -146,8 +172,8 @@ public class Enemy : MonoBehaviour
 
     public Transform GetPlayerTransform() => playerTransform;
 
-    public string GetState()
+    public string GetStateName()
     {
-        return StateMachine.GetState();     
+        return StateMachine.GetStateName();     
     }
 }

@@ -15,4 +15,8 @@ public class EnemyData : ScriptableObject
 
     public AgentType agentType;
     public int agentTypeID;
+
+    [Header("Pathfinding Related")]
+    public float vectorFieldRadius;
+    public float weight;
 }

@@ -3,25 +3,9 @@ using System;
 using TMPro;
 
 //Call TextDisplayManager.New(...) from main thread.
-public class TextDisplayManager : MonoBehaviour
+public class TextDisplayManager : PersistentGenericSingleton<TextDisplayManager>
 {
-    public static TextDisplayManager Instance;
     [SerializeField] private Canvas canvas;
-
-    void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-            // DontDestroyOnLoad(gameObject); // Disable when parented to a DonDestoryOnLoad object
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-
-    }
-
     private GameObject container;
 
     private GameObject GetOrCreateContainer()

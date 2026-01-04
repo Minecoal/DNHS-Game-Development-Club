@@ -41,7 +41,7 @@ public class EnemyGizmos : MonoBehaviour
     void Start()
     {
         if (showState){
-            TextDisplayManager.New3D(new Vector3(0, 2f, 0), 0.25f).WithParent(transform).WithTrackedProvider(()=>enemy.GetState()).Build();
+            TextDisplayManager.New3D(new Vector3(0, 2f, 0), 0.25f).WithParent(transform).WithTrackedProvider(()=>enemy.GetStateName()).Build();
         }
     }
 }

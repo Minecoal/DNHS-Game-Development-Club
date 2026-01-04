@@ -20,22 +20,22 @@ public class PlayerMovingState : IPlayerState
         animator = this.ctx.Animator;
 
         animator?.SetTrigger("EnterWalk");
-        input.AttackPressed += OnAttack;
+        input.OnAttack += OnAttack;
     }
 
     public void Exit(PlayerStateMachine ctx)
     {
-        input.AttackPressed -= OnAttack;
+        input.OnAttack -= OnAttack;
     }
 
     public void UpdateFixed(PlayerStateMachine ctx)
     {
-        if (input.MoveInput.sqrMagnitude <= 0.01f)
+        if (input.MoveInputNormalized.sqrMagnitude <= 0.01f)
         {
             ctx.SwitchState(ctx.IdleState);
             return;
         }
-        ApplyMovement(input.MoveInput, player, rb, data);
+        ApplyMovement(input.MoveInputNormalized, player, rb, data);
     }
 
     public void Update(PlayerStateMachine ctx)

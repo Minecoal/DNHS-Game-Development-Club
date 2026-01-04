@@ -17,18 +17,18 @@ public class PlayerIdleState : IPlayerState
         animator = this.ctx.Animator;
 
         animator?.SetTrigger("EnterIdle");
-        input.AttackPressed += OnAttack;
+        input.OnAttack += OnAttack;
     }
 
     public void Exit(PlayerStateMachine ctx)
     {
-        input.AttackPressed -= OnAttack;
+        input.OnAttack -= OnAttack;
     }
 
     public void UpdateFixed(PlayerStateMachine ctx)
     {
         
-        if (input.MoveInput.sqrMagnitude > 0.01f)
+        if (input.MoveInputNormalized.sqrMagnitude > 0.01f)
         {
             ctx.SwitchState(ctx.MovingState);
             return;

@@ -9,6 +9,7 @@ public class EnemyContext
     public Transform Target;
     public IPathfinder Pathfinder;
     public EnemyData EnemyData;
+    public Vector3 PatrolCenter;
 
     public EnemyContext(
         EnemyStateMachine stateMachine,
@@ -17,7 +18,8 @@ public class EnemyContext
         Health health, 
         Transform target, 
         IPathfinder pathfinder, 
-        EnemyData enemyData)
+        EnemyData enemyData,
+        Vector3 patrolCenter)
     {
         StateMachine = stateMachine;
         Enemy = enemy;
@@ -26,5 +28,6 @@ public class EnemyContext
         Target = target;
         Pathfinder = pathfinder;
         EnemyData = enemyData;
+        PatrolCenter = patrolCenter;
     }
 }

@@ -9,147 +9,171 @@ using UnityEngine.AI;
 public class Pathfinder : MonoBehaviour, IPathfinder
 {
     [Header("NavMesh + Local Influence")]
-    [SerializeField] private float navWeight = 1.0f;
-    [SerializeField] private float fieldWeight = 0.75f;
     [SerializeField] private float sampleDist = 0.5f; 
 
-    private NavMeshSurface navMeshSurface;
-    private EnemyData enemyData;
+    private NavMeshSurface _navMeshSurface;
+    private NavMeshPath _navPath;
+    private EnemyData _enemyData;
+    public TargetData targetData { get; private set; }
 
-    private List<TargetData> targetsData = new List<TargetData>(); // favored (attractive)
-    private List<TargetData> obstaclesData = new List<TargetData>(); // unfavored (repulsive)
+    private List<TargetData> _targets;
+    private List<TargetData> _obstacles;
+    
+    private void Awake()
+    {
+        targetData = new TargetData();
+        _navPath = new NavMeshPath();
+    }
 
     private void OnEnable()
     {
-        if (PathfinderManager.Instance != null)
-            PathfinderManager.Instance.RegisterPathfinder(this);
+        PathfinderManager instance = PathfinderManager.Instance; // this is garanteed -- go see GenericSingleton
+
+        if (instance.IsReady)
+        {
+            RegisterToInstance();
+        }
+        else
+        {
+            // Wait for OnReady event
+            instance.OnReady += RegisterToInstance;
+        }
     }
 
     private void OnDisable()
     {
-        if (PathfinderManager.Instance != null)
-            PathfinderManager.Instance.UnregisterPathfinder(this);
+        var instance = PathfinderManager.Instance;
+        if (instance == null) return;
+
+        instance.OnReady -= RegisterToInstance; // unsubscribe in case we never registered
+        instance.UnregisterObstacle(targetData);
+        instance.UnregisterPathfinder(this);
     }
 
-    public void InitializeTargets(IEnumerable<TargetData> targets = null, IEnumerable<TargetData> obstacles = null)
+    private void RegisterToInstance()
     {
-        targetsData = targets != null ? new List<TargetData>(targets) : new List<TargetData>();
-        obstaclesData = obstacles != null ? new List<TargetData>(obstacles) : new List<TargetData>();
-    }
+        PathfinderManager instance = PathfinderManager.Instance;
+        instance.RegisterPathfinder(this);
+        instance.RegisterObstacle(targetData);
 
-    public void UpdateTargets(IEnumerable<TargetData> targets, IEnumerable<TargetData> obstacles){
-        targetsData = new List<TargetData>(targets);
-        targetsData = new List<TargetData>(obstacles);
+        _targets = instance.globalTargetData;
+        _obstacles = instance.globalObstacleData;
     }
 
     public void SetEnemyData(EnemyData data)
     {
-        enemyData = data;
+        _enemyData = data;
 
         DynamicNavMeshManager.Instance.surfaces.TryGetValue(
-            enemyData.agentType, 
-            out navMeshSurface
+            _enemyData.agentType,
+            out _navMeshSurface
         );
 
-        enemyData.agentTypeID = navMeshSurface.agentTypeID;
+        _enemyData.agentTypeID = _navMeshSurface.agentTypeID;
+        targetData.weight = _enemyData.weight;
     }
 
+    private void FixedUpdate()
+    {
+        targetData.position = transform.position;
+    }
+
+    public static float DistanceFalloff(float distance, float strength, float falloff) // graph it on desmos lol
+    {
+        return strength / (1f + falloff * distance);
+    }
     /// <summary>
     /// Calculates a direction vector based on local influences
     /// </summary>
-    public Vector3 GetInfluenceVector(Vector3 sourcePosition)
+    public Vector3 CalculateInfluenceVector(Vector3 sourcePosition)
     {
+        int strength = 8;
+        int falloff = 80;
+
         Vector3 influence = Vector3.zero;
-        const float eps = 0.0001f;
+        if (_enemyData == null) return Vector3.zero;
+        float radius = _enemyData.vectorFieldRadius;
+
+        if (_targets == null || _obstacles == null)
+        {
+            Debug.LogError("Pathfinder not registered correctly.");
+            return Vector3.zero;
+        }
 
         // attractive points: pull toward favored positions
-        foreach (var target in targetsData)
+        foreach (var target in _targets)
         {
             if (target == null) continue;
             Vector3 dir = target.position - sourcePosition;
             dir.y = 0f;
             float dist = dir.magnitude;
-            if (dist <= eps) continue;
-            Vector3 ndir = dir / dist;
+            if (dist > radius) continue; // only check for targets within a certain radius
 
-            // strength falls off with distance; closer points influence more
-            float strength = target.weight / (1f + dist);
-            influence += ndir * strength;
+            influence += dir.normalized * DistanceFalloff(dist, strength, falloff) * target.weight;
         }
 
         // repulsive points: push away from unfavored positions
-        foreach (var obs in obstaclesData)
+        foreach (var obs in _obstacles)
         {
             if (obs == null) continue;
             Vector3 dir = sourcePosition - obs.position;
             dir.y = 0f;
             float dist = dir.magnitude;
-            if (dist <= eps) continue;
-            Vector3 ndir = dir / dist;
+            if (dist > radius) continue; // only check for targets within a certain radius
 
-            // repulsion also falls off with distance
-            float strength = obs.weight / (1f + dist);
-            influence += ndir * strength;
+            influence += dir.normalized * DistanceFalloff(dist, strength, falloff) * obs.weight;
         }
 
         return influence;
     }
-    /// <summary>
-    /// This method calculates the direction with respect to both the local influence vector and navmesh direction
-    /// </summary>
-    public Vector3 ComputeDirectionTowards(Vector3 fromPosition, Vector3 targetPosition)
-    {
-        Vector3 navDir = Vector3.zero;
 
-        if (navMeshSurface != null)
+    public Vector3 CalculateNavMeshDirection(Vector3 from, Vector3 to)
+    {
+        if (_navMeshSurface == null)
+            return (to - from).normalized;
+
+        NavMeshQueryFilter filter = new NavMeshQueryFilter();
+        filter.agentTypeID = _enemyData.agentTypeID;
+        filter.areaMask = NavMesh.AllAreas;
+
+        Vector3 fromSample = SampleOnNavMesh(from, filter);
+        Vector3 toSample = SampleOnNavMesh(to, filter);
+        
+        if (NavMesh.CalculatePath(fromSample, toSample, filter, _navPath) && _navPath.corners.Length > 1)
         {
-            Vector3 fromSample = SampleOnNavMesh(fromPosition);
-            Vector3 toSample = SampleOnNavMesh(targetPosition);
-            navDir = ComputeNavMeshDirection(fromSample, toSample);
+            Vector3 dir = _navPath.corners[1] - fromSample;
+            dir.y = 0;
+            return dir.normalized;
         }
 
-        Vector3 localDir = GetInfluenceVector(fromPosition).normalized;
-        Vector3 blended = navDir * navWeight + localDir * fieldWeight;
-        blended.y = 0f;
-
-        return blended.sqrMagnitude < 1e-6f ? Vector3.zero : blended.normalized;
+        // fallback
+        Vector3 fb = toSample - fromSample;
+        fb.y = 0;
+        return fb.normalized;
     }
 
     /// <summary>
     /// Find the cloest position on the Navmesh to the given position
     /// (Taking account for when the agent might be off the navmesh)
     /// </summary>
-    private Vector3 SampleOnNavMesh(Vector3 pos)
+    public Vector3 SampleOnNavMesh(Vector3 pos, NavMeshQueryFilter filter)
     {
-        if (enemyData == null) return pos;
+        if (_enemyData == null) return pos;
         NavMeshHit hit;
-        var surf = DynamicNavMeshManager.Instance.GetSurface(enemyData.agentType);
-        int mask = 1 << surf.agentTypeID;  // <-- use agent type filter
-        if (NavMesh.SamplePosition(pos, out hit, sampleDist, mask))
+
+        if (NavMesh.SamplePosition(pos, out hit, sampleDist, filter.areaMask))
             return hit.position;
 
         return pos;
     }
-    
-    private Vector3 ComputeNavMeshDirection(Vector3 from, Vector3 to)
+
+    public Vector3 SampleOnNavMesh(Vector3 pos)
     {
-        var surf = DynamicNavMeshManager.Instance.GetSurface(enemyData.agentType);
-        int mask = 1 << surf.agentTypeID;  // <-- use agent type filter
+        NavMeshQueryFilter filter = new NavMeshQueryFilter();
+        filter.agentTypeID = _enemyData.agentTypeID;
+        filter.areaMask = NavMesh.AllAreas;
 
-        NavMeshPath path = new NavMeshPath();
-        
-        if (NavMesh.CalculatePath(from, to, mask, path) &&
-            path.corners.Length > 1)
-        {
-            Vector3 dir = path.corners[1] - from;
-            dir.y = 0;
-            return dir.normalized;
-        }
-
-        // fallback
-        Vector3 fb = to - from;
-        fb.y = 0;
-        return fb.normalized;
+        return SampleOnNavMesh(pos, filter);
     }
 }
 
@@ -165,14 +189,6 @@ public class TargetData
         this.weight = weight;
     }
 
-    public void SetWeight(float weight)
-    {
-        this.weight = weight;
-    }
-
-    public void SetPos(Vector3 pos)
-    {
-        this.position = pos;
-    }
+    public TargetData() : this(Vector3.zero, 0f) {}
 }
 

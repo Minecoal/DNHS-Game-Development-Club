@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public class EnemyStateMachine
 {
     private IEnemyState currentState;
@@ -28,7 +26,7 @@ public class EnemyStateMachine
         currentState?.FixedTick(context, fixedDeltaTime);
     }
 
-    public string GetState()
+    public string GetStateName()
     {
         return currentState.ToString();
     }

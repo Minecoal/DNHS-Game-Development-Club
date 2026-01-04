@@ -3,7 +3,7 @@ using UnityEngine;
 public class PlayerStateMachine : MonoBehaviour
 {
     IPlayerState currentState;
-    // pre create state instances to avoid constant allocations on state switches
+    // pre create state instances to avoid constant allocations on state switches / edit: not a good idea :(
     public PlayerIdleState IdleState { get; private set; }
     public PlayerMovingState MovingState { get; private set; }
     public PlayerAttackState AttackState { get; private set; }

@@ -1,45 +1,47 @@
 using System.Collections.Generic;
-using Unity.AI.Navigation;
 using UnityEngine;
 
 /// <summary>
 /// Manages all IPathfinder instances in the scene
 /// Provides centralized storage and distribution of NavMesh surfaces and EnemyData
 /// </summary>
-public class PathfinderManager : MonoBehaviour
+public class PathfinderManager : PersistentGenericSingleton<PathfinderManager>
 {
-    public static PathfinderManager Instance;
-
-    private HashSet<IPathfinder> pathfinders = new HashSet<IPathfinder>();
-
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-            // DontDestroyOnLoad(gameObject); // Disable when parented to a DonDestoryOnLoad object
-        }
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
-    }
+    public readonly List<TargetData> globalTargetData = new List<TargetData>();
+    public readonly List<TargetData> globalObstacleData = new List<TargetData>();
+    public readonly List<IPathfinder> globalPathfinders = new List<IPathfinder>();
 
     public void RegisterPathfinder(IPathfinder pathfinder)
     {
         if (pathfinder == null) return;
-        pathfinders.Add(pathfinder);
+        globalPathfinders.Add(pathfinder);
     }
 
     public void UnregisterPathfinder(IPathfinder pathfinder)
     {
         if (pathfinder == null) return;
-        pathfinders.Remove(pathfinder);
+        globalPathfinders.Remove(pathfinder);
     }
 
-    public IEnumerable<IPathfinder> GetAllPathfinders()
+    public void RegisterTarget(TargetData target)
     {
-        return new List<IPathfinder>(pathfinders);
+        if (target == null) return;
+        globalTargetData.Add(target);
+    }
+    public void UnregisterTarget(TargetData target)
+    {
+        if (target == null) return;
+        globalTargetData.Remove(target);
+    }
+
+    public void RegisterObstacle(TargetData target)
+    {
+        if (target == null) return;
+        globalObstacleData.Add(target);
+    }
+    public void UnregisterObstacle(TargetData target)
+    {
+        if (target == null) return;
+        globalObstacleData.Remove(target);
     }
 }
