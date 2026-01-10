@@ -15,3 +15,6 @@ MonoBehaviour:
   moveSpeed: 6
   accelAmount: 15
   decelAmount: 12
+  dashForce: 25
+  dashDuration: 0.1
+  dashCooldown: 1

@@ -7,12 +7,16 @@ public class PlayerStateMachine : MonoBehaviour
     public PlayerIdleState IdleState { get; private set; }
     public PlayerMovingState MovingState { get; private set; }
     public PlayerAttackState AttackState { get; private set; }
+    public PlayerDashingState DashState { get; private set; }
 
     public Transform Player { get; private set; }
     public PlayerData Data { get; private set; }
     public PlayerInputHandler Input { get; private set; }
     public Rigidbody Rb { get; private set; }
     public Animator Animator { get; private set; }
+    public PlayerSpriteFlipper PlayerFlipper { get; private set; }
+    public float LastDashTime { get; private set; }
+
 
     [SerializeField] private AttackData[] AttackDataList;
     [SerializeField] private Transform AttackAnchor;
@@ -29,11 +33,17 @@ public class PlayerStateMachine : MonoBehaviour
         Input = PlayerManager.Instance.Input;
         Rb = PlayerManager.Instance.Rb;
         Animator = PlayerManager.Instance.Animator;
+        PlayerFlipper = PlayerManager.Instance.PlayerFlipper;
+        PlayerFlipper.RegisterInputHandler(Input);
 
         // create and cache state instances
         IdleState = new PlayerIdleState();
         MovingState = new PlayerMovingState();
         AttackState = new PlayerAttackState(AttackDataList, AttackAnchor);
+        DashState = new PlayerDashingState();
+
+        
+        
 
         // default
         currentState = IdleState;
@@ -61,5 +71,15 @@ public class PlayerStateMachine : MonoBehaviour
         currentState.Exit(this);
         currentState = state;
         currentState.Enter(this);
+    }
+
+    public bool CanDash()
+    {
+        return Time.time >= LastDashTime + Data.dashCooldown;
+    }
+
+    public void ConsumeDash()
+    {
+        LastDashTime = Time.time;
     }
 }

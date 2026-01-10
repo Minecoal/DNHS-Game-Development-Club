@@ -21,11 +21,13 @@ public class PlayerMovingState : IPlayerState
 
         animator?.SetTrigger("EnterWalk");
         input.OnAttack += OnAttack;
+        input.OnDash += OnDash;
     }
 
     public void Exit(PlayerStateMachine ctx)
     {
         input.OnAttack -= OnAttack;
+        input.OnDash -= OnDash;
     }
 
     public void UpdateFixed(PlayerStateMachine ctx)
@@ -76,6 +78,14 @@ public class PlayerMovingState : IPlayerState
     private void OnAttack()
     {
         ctx.SwitchState(ctx.AttackState);
+    }
+
+    private void OnDash()
+    {
+        if (ctx.CanDash())
+        {
+            ctx.SwitchState(ctx.DashState);
+        }
     }
 
     public override string ToString()
