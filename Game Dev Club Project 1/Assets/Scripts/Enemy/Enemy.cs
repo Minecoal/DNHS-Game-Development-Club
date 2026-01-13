@@ -21,6 +21,9 @@ public class Enemy : MonoBehaviour
     public EnemyContext context { get; private set; }
 
     private bool isInitialized = false;
+    private Vector3 lastAppliedForce = Vector3.zero;
+    [SerializeField] private float gizmoForceScale = 0.5f;
+    [SerializeField] private Color gizmoForceColor = Color.cyan;
 
     public void SetPatrolCenter(Vector3 patrolCenter)
     {
@@ -85,6 +88,15 @@ public class Enemy : MonoBehaviour
     {
         // Compute direction towards target
         Vector3 dir = Pathfinder.CalculateNavMeshDirection(currentPos, targetPos);
+        // If NavMesh returns a near-zero direction (pathing glitch), fallback to direct vector to target
+        if (dir.sqrMagnitude < 0.0001f)
+        {
+            dir = targetPos - currentPos;
+            dir.y = 0f;
+            // If still nearly zero then nothing to do
+            if (dir.sqrMagnitude < 0.0001f)
+                return;
+        }
         dir.Normalize();
 
         // Desired target velocity
@@ -117,12 +129,25 @@ public class Enemy : MonoBehaviour
         Rb.AddForce(force.x * Vector3.right, ForceMode.Force);
         Rb.AddForce(force.z * Vector3.forward, ForceMode.Force);
 
+        // If we detected an unexpectedly small force (no movement) then apply a small directional nudge
+        Vector3 nudge = Vector3.zero;
+        if (force.sqrMagnitude < 0.001f && (targetPos - transform.position).sqrMagnitude > 0.01f)
+        {
+            nudge = dir * Mathf.Max(0.1f, moveSpeed * 0.1f);
+            Rb.AddForce(nudge.x * Vector3.right, ForceMode.Force);
+            Rb.AddForce(nudge.z * Vector3.forward, ForceMode.Force);
+            // Debug fallback for intermittent stopping
+            Debug.Log("Enemy nudge applied to avoid getting stuck.");
+        }
+
         // Smooth rotation toward movement direction
         if (dir.sqrMagnitude > 0.001f)
         {
             Quaternion targetRot = Quaternion.LookRotation(dir);
             Rb.rotation = Quaternion.Slerp(Rb.rotation, targetRot, 10f * Time.fixedDeltaTime);
         }
+
+        lastAppliedForce = force + nudge;
     }
 
     public void MoveTowardsPosition(Vector3 targetPos, float speed, float accelAmount, float decelAmount)
@@ -175,5 +200,21 @@ public class Enemy : MonoBehaviour
     public string GetStateName()
     {
         return StateMachine.GetStateName();     
+    }
+
+    public void ShowForceVector(){
+        Gizmos.color = gizmoForceColor;
+        Vector3 start = transform.position + Vector3.up * 0.5f;
+        Vector3 end = start + lastAppliedForce * gizmoForceScale;
+        Gizmos.DrawLine(start, end);
+        if (lastAppliedForce.sqrMagnitude > 0.0001f)
+        {
+            Vector3 dir = (end - start).normalized;
+            float headLen = 0.2f * gizmoForceScale;
+            Vector3 right = Quaternion.LookRotation(dir) * Quaternion.Euler(0, 150, 0) * Vector3.forward;
+            Vector3 left = Quaternion.LookRotation(dir) * Quaternion.Euler(0, -150, 0) * Vector3.forward;
+            Gizmos.DrawLine(end, end + right * headLen);
+            Gizmos.DrawLine(end, end + left * headLen);
+        }
     }
 }

@@ -1,0 +1,1 @@
+public class PlayerStateMachine : GenericStateMachine<IPlayerState, PlayerContext> {}

@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 using System;
-using Unity.VisualScripting;
 
 public class Health : MonoBehaviour, IDamagable
 {
@@ -10,7 +9,7 @@ public class Health : MonoBehaviour, IDamagable
     [SerializeField] private float currentHealth = 100f;
 
     [Header("Defense")]
-    [Tooltip("Damage reduction as a fraction: 0 = no reduction, 0.5 = 50% damage reduced, 1 = fully immune")]
+    [Tooltip("Damage reduction as a fraction: 0 = no reduction, 1 = fully immune")]
     [Range(0f, 1f)]
     [SerializeField] private float damageReduction = 0f;
 
@@ -57,6 +56,7 @@ public class Health : MonoBehaviour, IDamagable
         if (isInvulnerable) return DamageResult.Immune;
 
         float raw = info.Amount;
+        if (raw == 0f) return DamageResult.Immune;
         float final = Mathf.Max(0f, raw * (1f - damageReduction));
 
         if (final <= 0f)
@@ -99,7 +99,8 @@ public class Health : MonoBehaviour, IDamagable
     public void ResetToFull()
     {
         currentHealth = maxHealth;
-        StartCoroutine(TemporaryInvulnerability(invulnerabilityDuration));
+        if (startInvulnerable)
+            StartCoroutine(TemporaryInvulnerability(invulnerabilityDuration));
     }
 
     private IEnumerator TemporaryInvulnerability(float seconds)

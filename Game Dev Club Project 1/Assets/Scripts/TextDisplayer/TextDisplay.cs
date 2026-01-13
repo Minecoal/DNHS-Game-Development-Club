@@ -1,24 +1,29 @@
 using UnityEngine;
 using System;
-using TMPro;
+using UnityEngine.UI;
 
 public class TextDisplay
 {
-    // Use the TMP_Text base class so this supports both TextMeshPro (3D) and TextMeshProUGUI (UI)
-    public TMP_Text tMPro { get; private set; }
+    // Supports both TextMesh (3D) and UnityEngine.UI.Text (UI)
+    public Component textComponent { get; private set; }
     public GameObject textObject { get; private set; }
     private Func<string> trackedProvider;
 
-    internal TextDisplay(GameObject obj, TMP_Text tm, Func<string> provider)
+    internal TextDisplay(GameObject obj, Component txtComp, Func<string> provider)
     {
         textObject = obj;
-        tMPro = tm;
+        textComponent = txtComp;
         trackedProvider = provider;
     }
 
     public void UpdateTrackedText()
     {
-        if (trackedProvider != null && tMPro != null) tMPro.text = trackedProvider();
+        if (trackedProvider == null || textComponent == null) return;
+        string s = trackedProvider();
+        if (textComponent is TextMesh tm)
+            tm.text = s;
+        else if (textComponent is Text ui)
+            ui.text = s;
     }
 
     public void SetUpdateTracker(Func<string> provider)
@@ -28,7 +33,11 @@ public class TextDisplay
 
     public void UpdateText(string text)
     {
-        if (tMPro != null) tMPro.text = text;
+        if (textComponent == null) return;
+        if (textComponent is TextMesh tm)
+            tm.text = text;
+        else if (textComponent is Text ui)
+            ui.text = text;
     }
 
     public void UpdatePosition(Vector3 position)

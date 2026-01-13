@@ -36,6 +36,8 @@ public class EnemyGizmos : MonoBehaviour
         Gizmos.DrawWireSphere(enemy.transform.position, enemy.EnemyData.detectionRadius);
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(enemy.transform.position, enemy.EnemyData.attackRadius);
+
+        enemy.ShowForceVector();
     }
 
     void Start()

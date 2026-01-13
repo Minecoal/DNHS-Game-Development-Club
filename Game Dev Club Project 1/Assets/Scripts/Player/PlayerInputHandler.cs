@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class PlayerInputHandler : MonoBehaviour
 {
+    public Vector3 MoveInputRaw { get; private set; }
     public Vector3 MoveInputNormalized { get; private set; }
 
     [SerializeField] private KeyCode attackButton = KeyCode.Z;
@@ -15,11 +16,14 @@ public class PlayerInputHandler : MonoBehaviour
     void Update()
     {
         // XZ plane: Horizontal -> X, Vertical -> Z
-        Vector3 raw = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical"));
-        if (raw.sqrMagnitude > 0.01f) raw.Normalize();
-        MoveInputNormalized = raw;
+        MoveInputRaw = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical"));
+        if (MoveInputRaw.sqrMagnitude > 0.01f) MoveInputRaw.Normalize();
+        MoveInputNormalized = MoveInputRaw;
 
-        OnMove?.Invoke(raw);
+        if (MoveInputRaw.magnitude != 0)
+        {
+            OnMove?.Invoke(MoveInputRaw);
+        }
 
         if (Input.GetKeyDown(attackButton))
         {

@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using System;
 
-// Handles UI click/drag events for TextMeshProUGUI objects.
+// Handles UI click/drag events for UI Text objects.
 public class TextDisplayUIUpdater : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     private TextDisplay displayer;
