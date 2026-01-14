@@ -18,7 +18,7 @@ public class PlayerMovingState : PlayerLocomotionState
         }
         context.Player.ApplyMovement(context.Input.MoveInputNormalized, context.PlayerGO.transform, context.Rb, context.Data);
     }
-
+    
     public override string ToString()
     {
         return "Moving";
