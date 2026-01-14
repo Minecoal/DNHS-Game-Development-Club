@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 
 public class GenericStateMachine<IGenericState, TContext> where IGenericState : IGenericState<TContext>
 {
@@ -31,5 +32,13 @@ public class GenericStateMachine<IGenericState, TContext> where IGenericState : 
     public string GetStateName()
     {
         return currentState.ToString();
+    }
+
+    ///<summary>
+    ///return concrete state type
+    ///</summary>
+    public Type GetStateType()
+    {
+        return currentState.GetType();
     }
 }

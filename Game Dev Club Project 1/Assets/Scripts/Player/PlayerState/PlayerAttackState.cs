@@ -2,28 +2,19 @@ using UnityEngine;
 
 public class PlayerAttackState : IPlayerState
 {
-    PlayerContext playerContext;
-
-    private bool hasBufferedInput = false; //input buffering
-    private const float BUFFER_TIME = 0.25f;
-    private float bufferTimestamp = 0f;
-
     private bool canSwitchState = false;
 
     public void Enter(PlayerContext context)
     {
         canSwitchState = false;
-        playerContext = context;
-        playerContext.ActiveWeapon.OnEnableSwitchState += EnableSwitchState;
-        context.Input.OnAttack += OnAttack;
-        BufferInput();
+        // Trigger the attack immediately
+        context.ActiveWeapon.TryAttack(context);
+        context.ActiveWeapon.OnEnableSwitchState += EnableSwitchState;
     }
 
     public void Exit(PlayerContext context)
     {
-        playerContext.ActiveWeapon.OnEnableSwitchState -= EnableSwitchState;
-        context.Input.OnAttack -= OnAttack;
-        hasBufferedInput = false;
+        context.ActiveWeapon.OnEnableSwitchState -= EnableSwitchState;
     }
 
     public void FixedTick(PlayerContext context, float fixedDeltaTime)
@@ -33,42 +24,13 @@ public class PlayerAttackState : IPlayerState
 
     public void Tick(PlayerContext context, float deltaTime)
     {
-        TryStartAttack();        
-
         if (!canSwitchState) return;
-        if (context.Input.MoveInputNormalized.sqrMagnitude > 0.01f) {
+
+        // Then transition to appropriate locomotion state
+        if (context.Input.MoveInputNormalized.sqrMagnitude > 0.01f)
             context.StateMachine.ChangeState(new PlayerMovingState(), context);
-        } else {
+        else
             context.StateMachine.ChangeState(new PlayerIdleState(), context);
-        }
-    }
-
-    private void OnAttack()
-    {
-        BufferInput();
-    }
-
-    public void BufferInput()
-    {
-        hasBufferedInput = true;
-        bufferTimestamp = Time.time;
-    }
-
-    private void TryStartAttack()
-    {
-        if (!hasBufferedInput) return;
-
-        if (Time.time - bufferTimestamp > BUFFER_TIME) // clear buffer after a period of time
-        {
-            hasBufferedInput = false;
-            return;
-        }
-
-        if (playerContext.ActiveWeapon.TryAttack(playerContext)) // clear buffer after performing an attack successfully
-        {
-            canSwitchState = false;
-            hasBufferedInput = false;
-        }
     }
 
     private void EnableSwitchState()

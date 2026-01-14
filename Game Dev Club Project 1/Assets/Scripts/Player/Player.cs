@@ -10,6 +10,7 @@ public class Player : MonoBehaviour
     private PlayerInputHandler input;
     private Rigidbody rb;
     private PlayerAnimationManager animationManager;
+    private PlayerSpriteFlipper playerFlipper;
 
     [SerializeField] private GameObject defaultWeaponGO;
     [SerializeField] private Transform attackAnchor;
@@ -27,6 +28,8 @@ public class Player : MonoBehaviour
         input = PlayerManager.Instance.Input;
         rb = PlayerManager.Instance.Rb;
         animationManager = PlayerManager.Instance.AnimationManager;
+        playerFlipper = PlayerManager.Instance.PlayerFlipper;
+        playerFlipper.RegisterInputHandler(input);
 
         
         playerContext = new PlayerContext(
@@ -38,7 +41,8 @@ public class Player : MonoBehaviour
             rb,
             animationManager,
             attackAnchor,
-            defaultWeaponGO.GetComponent<IWeapon>()
+            defaultWeaponGO.GetComponent<IWeapon>(),
+            playerFlipper
         );
 
         playerStateMachine.Initialize(new PlayerIdleState(), playerContext);

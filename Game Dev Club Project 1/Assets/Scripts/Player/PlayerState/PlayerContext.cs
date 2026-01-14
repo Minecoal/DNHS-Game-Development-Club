@@ -11,6 +11,7 @@ public class PlayerContext
     public PlayerAnimationManager AnimationManager;
     public Transform AttackAnchor;
     public IWeapon ActiveWeapon;
+    public PlayerSpriteFlipper PlayerFlipper;
 
     public PlayerContext(
         PlayerStateMachine StateMachine,
@@ -21,7 +22,8 @@ public class PlayerContext
         Rigidbody Rb, 
         PlayerAnimationManager AnimationManager,
         Transform AttackAnchor,
-        IWeapon ActiveWeapon)
+        IWeapon ActiveWeapon,
+        PlayerSpriteFlipper PlayerFlipper)
     {
         this.PlayerGO = PlayerGO;
         this.Data = Data;
@@ -32,5 +34,6 @@ public class PlayerContext
         this.AnimationManager = AnimationManager;
         this.AttackAnchor = AttackAnchor;
         this.ActiveWeapon = ActiveWeapon;
+        this.PlayerFlipper = PlayerFlipper;
     }
 }
