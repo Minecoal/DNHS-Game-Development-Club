@@ -23,7 +23,7 @@ public class EnemyChaseState : IEnemyState
         // for now just stop and log
         if (context.Enemy.IsPlayerInAttackRange())
         {
-            // TODO: Change to an AttackState that handles animation/hitbox timing
+            context.StateMachine.ChangeState(new EnemyAttackState(), context);
         }
 
     }

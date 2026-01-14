@@ -14,6 +14,7 @@ public class TextDisplayUpdater : MonoBehaviour
         if (displayer.textObject.GetComponent<Collider>() == null)
         {
             BoxCollider bc = displayer.textObject.AddComponent<BoxCollider>();
+            bc.isTrigger = true;
             bc.size = new Vector3(1f, 1f, 0.1f); ;
         }
 

@@ -4,16 +4,14 @@ public class PlayerSpriteFlipper : MonoBehaviour
 {
     public bool isFacingRight = true;
     float scalex;
-    PlayerInputHandler input;
 
     void Awake()
     {
         scalex = transform.localScale.x;
     }
 
-    public void RegisterInputHandler( PlayerInputHandler input)
+    public void RegisterInputHandler(PlayerInputHandler input)
     {
-        this.input = input;
         input.OnMove += Flip;
     }
     
