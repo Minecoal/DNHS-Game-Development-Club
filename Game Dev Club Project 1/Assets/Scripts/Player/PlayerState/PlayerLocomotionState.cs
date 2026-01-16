@@ -20,7 +20,8 @@ public class PlayerLocomotionState : IPlayerState
 
     if (context.Input.ConsumeAttack())
     {
-        context.StateMachine.ChangeState(new PlayerAttackState(), context);
+        if (context.ActiveWeapon != null)
+            context.StateMachine.ChangeState(new PlayerAttackState(), context);
         return;
     }
 }

@@ -16,10 +16,16 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
 
     [SerializeField] private ItemSlot[] startingItems;
 
+    [SerializeField] private GameObject primaryWeaponSlotGameObject;
+    [SerializeField] private GameObject secondaryWeaponSlotGameObject;
+
     public ItemSlot[] items;
     public ItemSlot[] equipment;
     public GameObject[] slots;
     public GameObject[] equipmentSlots;
+
+    private ItemSlot primaryWeapon = new ItemSlot();
+    private ItemSlot secondaryWeapon = new ItemSlot();
 
     private ItemSlot movingSlot;
     private ItemSlot tempSlot;
@@ -37,6 +43,10 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
     [SerializeField] private CurrencyInfo[] coinData;
 
     public GameObject droppedItemPrefab;
+
+
+    private GameObject primaryWeaponGameObject;
+    private GameObject secondaryWeaponGameObject;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -339,6 +349,32 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
             }
         }
 
+        try
+        {
+            primaryWeaponSlotGameObject.transform.GetChild(0).GetComponent<Image>().enabled = true;
+            primaryWeaponSlotGameObject.transform.GetChild(0).GetComponent<Image>().sprite = primaryWeapon.GetItem().itemIcon;
+            primaryWeaponSlotGameObject.transform.GetChild(1).GetComponent<TMPro.TextMeshProUGUI>().text = "";
+        }
+        catch
+        {
+            primaryWeaponSlotGameObject.transform.GetChild(0).GetComponent<Image>().sprite = null;
+            primaryWeaponSlotGameObject.transform.GetChild(0).GetComponent<Image>().enabled = false;
+            primaryWeaponSlotGameObject.transform.GetChild(1).GetComponent<TMPro.TextMeshProUGUI>().text = "";
+        }
+
+        try
+        {
+            secondaryWeaponSlotGameObject.transform.GetChild(0).GetComponent<Image>().enabled = true;
+            secondaryWeaponSlotGameObject.transform.GetChild(0).GetComponent<Image>().sprite = secondaryWeapon.GetItem().itemIcon;
+            secondaryWeaponSlotGameObject.transform.GetChild(1).GetComponent<TMPro.TextMeshProUGUI>().text = "";
+        }
+        catch
+        {
+            secondaryWeaponSlotGameObject.transform.GetChild(0).GetComponent<Image>().sprite = null;
+            secondaryWeaponSlotGameObject.transform.GetChild(0).GetComponent<Image>().enabled = false;
+            secondaryWeaponSlotGameObject.transform.GetChild(1).GetComponent<TMPro.TextMeshProUGUI>().text = "";
+        }
+
         currencyText.text = currency.ToString();
     }
 
@@ -391,7 +427,7 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
 
     private bool BeginItemMove()
     {
-        originalSlot = GetClosestEquipmentSlot();
+        originalSlot = GetAllClosestItemSlot();
         if (originalSlot == null || originalSlot.GetItem() == null)
             return false;
 
@@ -401,6 +437,14 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
         {
             originalSlot.GetItem().GetEquipment().OnUnequip();
         }
+        else if (isPrimaryWeaponItemAndSlot(originalSlot, movingSlot.GetItem()))
+        {
+            if (primaryWeaponGameObject != null)
+                Destroy(primaryWeaponGameObject);
+            primaryWeaponGameObject = null;
+            PlayerManager.instance.PlayerScript.SetPrimaryWeapon(null);
+        }
+
 
         originalSlot.Clear();
         isMovingItem = true;
@@ -423,6 +467,8 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
 
             if (movingSlot.GetItem().GetEquipment() != null)
                 originalSlot = GetClosestEquipmentSlot();
+            else if (movingSlot.GetItem().GetWeapon() != null)
+                originalSlot = GetClosestWeaponSlot();
             else
                 originalSlot = GetClosestSlot();
 
@@ -460,6 +506,15 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
                             originalSlot.GetItem().GetEquipment().OnEquip();
                             movingSlot.GetItem().GetEquipment().OnUnequip();
                         }
+                        else if (isPrimaryWeaponItemAndSlot(originalSlot, movingSlot.GetItem()))
+                        {
+                            if (primaryWeaponGameObject != null)
+                                Destroy(primaryWeaponGameObject);
+                            primaryWeaponGameObject = Instantiate(movingSlot.GetItem().GetWeapon().weaponPrefab);
+                            PlayerManager.instance.PlayerScript.SetPrimaryWeapon(primaryWeaponGameObject);
+                        }
+
+
                         RefreshUI();
                         return true;
                     }
@@ -472,6 +527,14 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
                     {
                         originalSlot.GetItem().GetEquipment().OnEquip();
                     }
+                    else if(isPrimaryWeaponItemAndSlot(originalSlot, movingSlot.GetItem()))
+                    {
+                        if (primaryWeaponGameObject != null)
+                            Destroy(primaryWeaponGameObject);
+                        primaryWeaponGameObject = Instantiate(movingSlot.GetItem().GetWeapon().weaponPrefab);
+                        PlayerManager.instance.PlayerScript.SetPrimaryWeapon(primaryWeaponGameObject);
+                    }
+                    
                     movingSlot.Clear();
                 }
             }
@@ -497,9 +560,10 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
 
     private ItemSlot GetClosestEquipmentSlot()
     {
+        int padding = 35;// half of slot size + half of padding size
         for (int i = 0; i < slots.Length; i++)
         {
-            if (Vector2.Distance(slots[i].transform.position, Input.mousePosition) <= 35) // half of slot size + half of padding size
+            if (Vector2.Distance(slots[i].transform.position, Input.mousePosition) <= padding) 
             {
                 return items[i];
             }
@@ -507,10 +571,66 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
 
         for (int i = 0; i < equipmentSlots.Length; i++)
         {
-            if (Vector2.Distance(equipmentSlots[i].transform.position, Input.mousePosition) <= 35) // half of slot size + half of padding size
+            if (Vector2.Distance(equipmentSlots[i].transform.position, Input.mousePosition) <= padding) // half of slot size + half of padding size
             {
                 return equipment[i];
             }
+        }
+
+        return null;
+    }
+
+    private ItemSlot GetClosestWeaponSlot()
+    {
+        int padding = 35;// half of slot size + half of padding size
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if (Vector2.Distance(slots[i].transform.position, Input.mousePosition) <= padding)
+            {
+                return items[i];
+            }
+        }
+
+        if (Vector2.Distance(primaryWeaponSlotGameObject.transform.position, Input.mousePosition) <= padding) // half of slot size + half of padding size
+        {
+            return primaryWeapon;
+        }
+
+        if (Vector2.Distance(secondaryWeaponSlotGameObject.transform.position, Input.mousePosition) <= padding) // half of slot size + half of padding size
+        {
+            return secondaryWeapon;
+        }
+
+        return null;
+    }
+
+    private ItemSlot GetAllClosestItemSlot()
+    {
+        int padding = 35;// half of slot size + half of padding size
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if (Vector2.Distance(slots[i].transform.position, Input.mousePosition) <= padding)
+            {
+                return items[i];
+            }
+        }
+
+        for (int i = 0; i < equipmentSlots.Length; i++)
+        {
+            if (Vector2.Distance(equipmentSlots[i].transform.position, Input.mousePosition) <= padding) // half of slot size + half of padding size
+            {
+                return equipment[i];
+            }
+        }
+
+        if (Vector2.Distance(primaryWeaponSlotGameObject.transform.position, Input.mousePosition) <= padding) // half of slot size + half of padding size
+        {
+            return primaryWeapon;
+        }
+
+        if (Vector2.Distance(secondaryWeaponSlotGameObject.transform.position, Input.mousePosition) <= padding) // half of slot size + half of padding size
+        {
+            return secondaryWeapon;
         }
 
         return null;
@@ -543,6 +663,35 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
             }
         }
         return false;
+    }
+
+    //add restrictions on primary vs secondary later
+    private bool isPrimaryWeaponItemAndSlot(ItemSlot itemSlot, ItemClass item)
+    {
+        if(itemSlot == primaryWeapon)
+        {
+            if(item.GetWeapon() != null)
+            {
+                //return true;
+            }
+        }
+        return false;
+    }
+    private bool isSecondaryWeaponItemAndSlot(ItemSlot itemSlot, ItemClass item)
+    {
+        if (itemSlot == secondaryWeapon)
+        {
+            if (item.GetWeapon() != null)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void CreateWeaponGameObject()
+    {
+
     }
 
     public void ToggleInventory()

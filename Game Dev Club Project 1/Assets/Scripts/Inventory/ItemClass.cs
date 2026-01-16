@@ -10,6 +10,7 @@ public class ItemClass : ScriptableObject
     public virtual ItemClass GetItem() { return this; }
     public virtual ToolClass GetTool() { return null; }
     public virtual MiscClass GetMisc() { return null; }
+    public virtual WeaponClass GetWeapon() { return null; }
     public virtual ConsumableClass GetConsumable() { return null; }
     public virtual EquipmentClass GetEquipment() { return null; }
 }
