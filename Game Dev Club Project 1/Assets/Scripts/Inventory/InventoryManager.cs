@@ -512,6 +512,7 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
                                 Destroy(primaryWeaponGameObject);
                             primaryWeaponGameObject = Instantiate(movingSlot.GetItem().GetWeapon().weaponPrefab);
                             PlayerManager.instance.PlayerScript.SetPrimaryWeapon(primaryWeaponGameObject);
+
                         }
 
 
@@ -539,6 +540,7 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
                 }
             }
         }
+
 
         isMovingItem = false;
         RefreshUI();
@@ -668,11 +670,12 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
     //add restrictions on primary vs secondary later
     private bool isPrimaryWeaponItemAndSlot(ItemSlot itemSlot, ItemClass item)
     {
-        if(itemSlot == primaryWeapon)
+        //temp for testing, remove secondary weapon part when seperating
+        if(itemSlot == primaryWeapon || itemSlot == secondaryWeapon)
         {
             if(item.GetWeapon() != null)
             {
-                //return true;
+                return true;
             }
         }
         return false;
@@ -709,13 +712,11 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
     public void CloseInventory()
     {
         //close inv when holding item
-        if (originalSlot != null)
+        if (isMovingItem)
         {
+            
             if (originalSlot.GetItem() != null && movingSlot.GetItem() != null)
-            {
-                Debug.Log("here");
                 AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
-            }
             else
                 originalSlot.AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
 
