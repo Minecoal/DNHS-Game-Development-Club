@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0825a9c77846cff4ab5f5eda5ccaa99d, type: 3}
+  m_Name: weapon1
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponClass
+  itemName: weapon1
+  itemIcon: {fileID: 6328364105444858170, guid: 4ad54f8c9520a48648d55a5ce1e44a6f, type: 3}
+  isStackable: 0
+  weaponPrefab: {fileID: 2970511425408201512, guid: 977d908fd4f038e40b7bba795d638cd5, type: 3}
+  weaponType: 0

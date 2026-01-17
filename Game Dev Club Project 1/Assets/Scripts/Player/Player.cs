@@ -41,7 +41,8 @@ public class Player : MonoBehaviour
             rb,
             animationManager,
             attackAnchor,
-            defaultWeaponGO.GetComponent<IWeapon>(),
+            //defaultWeaponGO.GetComponent<IWeapon>(),
+            null,
             playerFlipper
         );
 
@@ -101,5 +102,13 @@ public class Player : MonoBehaviour
         rb.AddForce(movement.x * Vector3.right, ForceMode.Force);
         rb.AddForce(movement.y * Vector3.up, ForceMode.Force);
         rb.AddForce(movement.z * Vector3.forward, ForceMode.Force);
+    }
+
+    public void SetPrimaryWeapon(GameObject weapon)
+    {
+        if (weapon != null)
+            playerContext.ActiveWeapon = weapon.GetComponent<IWeapon>();
+        else
+            playerContext.ActiveWeapon = null;
     }
 }
