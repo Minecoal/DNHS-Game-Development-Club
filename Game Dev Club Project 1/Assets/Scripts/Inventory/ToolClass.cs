@@ -7,9 +7,9 @@ public class ToolClass : ItemClass
     public ToolType toolType;
     public enum ToolType
     {
-        weapon,
-        pickaxe,
-        axe
+        Weapon,
+        Pickaxe,
+        Axe
     }
     public int dmg;
 

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerAttackState : IPlayerState
+public class PlayerSecondaryAttackState : IPlayerState
 {
     private bool canSwitchState = false;
 
@@ -8,18 +8,18 @@ public class PlayerAttackState : IPlayerState
     {
         canSwitchState = false;
         // Trigger the attack immediately
-        context.ActivePrimaryWeapon.TryAttack(context);
-        context.ActivePrimaryWeapon.OnEnableSwitchState += EnableSwitchState;
+        context.ActiveSecondaryWeapon.TryAttack(context);
+        context.ActiveSecondaryWeapon.OnEnableSwitchState += EnableSwitchState;
     }
 
     public void Exit(PlayerContext context)
     {
-        context.ActivePrimaryWeapon.OnEnableSwitchState -= EnableSwitchState;
+        context.ActiveSecondaryWeapon.OnEnableSwitchState -= EnableSwitchState;
     }
 
     public void FixedTick(PlayerContext context, float fixedDeltaTime)
     {
-        
+
     }
 
     public void Tick(PlayerContext context, float deltaTime)
@@ -40,6 +40,6 @@ public class PlayerAttackState : IPlayerState
 
     public override string ToString()
     {
-        return "Attack";
+        return "Secondary Attack";
     }
 }

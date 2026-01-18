@@ -18,10 +18,17 @@ public class PlayerLocomotionState : IPlayerState
         return;
     }
 
-    if (context.Input.ConsumeAttack())
+    if (context.Input.ConsumePrimaryAttack())
     {
-        if (context.ActiveWeapon != null)
+        if (context.ActivePrimaryWeapon != null)
             context.StateMachine.ChangeState(new PlayerAttackState(), context);
+        return;
+    }
+    
+    if (context.Input.ConsumeSecondaryAttack())
+    {
+        if (context.ActiveSecondaryWeapon != null)
+            context.StateMachine.ChangeState(new PlayerSecondaryAttackState(), context);
         return;
     }
 }
