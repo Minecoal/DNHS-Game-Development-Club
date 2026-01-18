@@ -44,18 +44,21 @@ public class PlayerInputHandler : MonoBehaviour
     public Vector3 MoveInputRaw { get; private set; }
     public Vector3 MoveInputNormalized { get; private set; }
 
-    [SerializeField] private KeyCode attackButton = KeyCode.Z;
+    [SerializeField] private KeyCode primaryAttackButton = KeyCode.Z;
+    [SerializeField] private KeyCode secondaryAttackButton = KeyCode.V;
     [SerializeField] private KeyCode dashButton = KeyCode.X;
 
     [Header("Input Buffering")]
     [SerializeField] private float attackBufferTime = 0.25f;
     [SerializeField] private float dashBufferTime = 0.25f;
 
-    private float lastAttackPressedTime = -1f;
+    private float lastPrimaryAttackPressedTime = -1f;
+    private float lastSecondaryAttackPressedTime = -1f;
     private float lastDashPressedTime = -1f;
 
     public Action<Vector3> OnMove;
-    public Action OnAttack;
+    public Action OnPrimaryAttack;
+    public Action OnSecondaryAttack;
     public Action OnDash;
 
     void Update()
@@ -75,11 +78,18 @@ public class PlayerInputHandler : MonoBehaviour
         if (MoveInputRaw.sqrMagnitude > 0.01f)
             OnMove?.Invoke(MoveInputRaw);
 
-        // Attack
-        if (Input.GetKeyDown(attackButton))
+        // Primary Attack
+        if (Input.GetKeyDown(primaryAttackButton))
         {
-            lastAttackPressedTime = Time.time;
-            OnAttack?.Invoke();
+            lastPrimaryAttackPressedTime = Time.time;
+            OnPrimaryAttack?.Invoke();
+        }
+        
+        // Secondary Attack
+        if (Input.GetKeyDown(secondaryAttackButton))
+        {
+            lastSecondaryAttackPressedTime = Time.time;
+            OnSecondaryAttack?.Invoke();
         }
 
         // Dash
@@ -91,17 +101,30 @@ public class PlayerInputHandler : MonoBehaviour
     }
 
     #region buffer consumption
-    public bool ConsumeAttack()
+    public bool ConsumePrimaryAttack()
     {
-        if (lastAttackPressedTime < 0f) return false;
+        if (lastPrimaryAttackPressedTime < 0f) return false;
 
-        if (Time.time - lastAttackPressedTime > attackBufferTime)
+        if (Time.time - lastPrimaryAttackPressedTime > attackBufferTime)
         {
-            lastAttackPressedTime = -1f;
+            lastPrimaryAttackPressedTime = -1f;
             return false;
         }
 
-        lastAttackPressedTime = -1f;
+        lastPrimaryAttackPressedTime = -1f;
+        return true;
+    }
+    public bool ConsumeSecondaryAttack()
+    {
+        if (lastSecondaryAttackPressedTime < 0f) return false;
+
+        if (Time.time - lastSecondaryAttackPressedTime > attackBufferTime)
+        {
+            lastSecondaryAttackPressedTime = -1f;
+            return false;
+        }
+
+        lastSecondaryAttackPressedTime = -1f;
         return true;
     }
 

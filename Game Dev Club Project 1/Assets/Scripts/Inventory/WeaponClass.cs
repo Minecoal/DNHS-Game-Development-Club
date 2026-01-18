@@ -9,8 +9,8 @@ public class WeaponClass : ItemClass
     public WeaponType weaponType;
     public enum WeaponType
     {
-        primary,
-        secondary
+        Primary,
+        Secondary
     }
 
     public override WeaponClass GetWeapon() { return this; }

@@ -10,7 +10,8 @@ public class PlayerContext
     public Rigidbody Rb;
     public PlayerAnimationManager AnimationManager;
     public Transform AttackAnchor;
-    public IWeapon ActiveWeapon;
+    public IWeapon ActivePrimaryWeapon;
+    public IWeapon ActiveSecondaryWeapon;
     public PlayerSpriteFlipper PlayerFlipper;
 
     public PlayerContext(
@@ -22,7 +23,8 @@ public class PlayerContext
         Rigidbody Rb, 
         PlayerAnimationManager AnimationManager,
         Transform AttackAnchor,
-        IWeapon ActiveWeapon,
+        IWeapon ActivePrimaryWeapon,
+        IWeapon ActiveSecondaryWeapon,
         PlayerSpriteFlipper PlayerFlipper)
     {
         this.PlayerGO = PlayerGO;
@@ -33,7 +35,8 @@ public class PlayerContext
         this.Rb = Rb;
         this.AnimationManager = AnimationManager;
         this.AttackAnchor = AttackAnchor;
-        this.ActiveWeapon = ActiveWeapon;
+        this.ActivePrimaryWeapon = ActivePrimaryWeapon;
+        this.ActiveSecondaryWeapon = ActiveSecondaryWeapon;
         this.PlayerFlipper = PlayerFlipper;
     }
 }

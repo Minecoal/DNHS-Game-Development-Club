@@ -2304,7 +2304,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95b324b0b56394141999e4ea7a6059e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInputHandler
-  attackButton: 122
+  primaryAttackButton: 122
+  secondaryAttackButton: 118
   dashButton: 120
   attackBufferTime: 0.25
   dashBufferTime: 0.25
@@ -37482,6 +37483,8 @@ MonoBehaviour:
   - item: {fileID: 11400000, guid: c86d4c53362fb904d9e5d53d279c89c4, type: 2}
     quantity: 1
   - item: {fileID: 11400000, guid: 747e26e4fe26f00478c9060963f76329, type: 2}
+    quantity: 1
+  - item: {fileID: 11400000, guid: 377d0242e5fc7d8459e8db6a26856ff8, type: 2}
     quantity: 1
   primaryWeaponSlotGameObject: {fileID: 1859507923}
   secondaryWeaponSlotGameObject: {fileID: 892927805}

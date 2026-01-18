@@ -43,6 +43,7 @@ public class Player : MonoBehaviour
             attackAnchor,
             //defaultWeaponGO.GetComponent<IWeapon>(),
             null,
+            null,
             playerFlipper
         );
 
@@ -107,8 +108,16 @@ public class Player : MonoBehaviour
     public void SetPrimaryWeapon(GameObject weapon)
     {
         if (weapon != null)
-            playerContext.ActiveWeapon = weapon.GetComponent<IWeapon>();
+            playerContext.ActivePrimaryWeapon = weapon.GetComponent<IWeapon>();
         else
-            playerContext.ActiveWeapon = null;
+            playerContext.ActivePrimaryWeapon = null;
+    }
+    
+    public void SetSecondaryWeapon(GameObject weapon)
+    {
+        if (weapon != null)
+            playerContext.ActiveSecondaryWeapon = weapon.GetComponent<IWeapon>();
+        else
+            playerContext.ActiveSecondaryWeapon = null;
     }
 }
