@@ -23,9 +23,11 @@ public class DropItem : MonoBehaviour
         ShootOut(droppedItem, Random.Range(1f, 3f));   
     }
 
-    public void DropCurrency(int money)
+    public void DropCurrency(int money, Vector3 dropPosition)
     {
-
+        GameObject droppedItem = Instantiate(droppedItemPrefab, dropPosition, Quaternion.identity);
+        droppedItem.GetComponent<DroppedItem>().SetCurrency(money, null);
+        ShootOut(droppedItem, Random.Range(1f, 3f));
     }
 
     public static void ShootOut(GameObject item, float force)
