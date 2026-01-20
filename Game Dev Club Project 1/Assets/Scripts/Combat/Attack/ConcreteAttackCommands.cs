@@ -8,6 +8,7 @@ public class Attack_Melee_Slash : AttackCommand
     public override void Execute()
     {
         context.AnimationManager.PlayAnimationForce(PlayerAnimationManager.SlashHash);
+        context.Player.ApplyForce(attackData.selfImpulseForce, context);
         GameObject hitbox = HitboxManager.Instance.CreateNewHitbox(HitboxType.SmallHorizontal).WithSpawnPoint(context.AttackAnchor).Build(context.PlayerGO, attackData.damage);
     }
 }
@@ -19,6 +20,7 @@ public class Attack_Melee_Heavy : AttackCommand
     public override void Execute()
     {
         context.AnimationManager.PlayAnimationForce(PlayerAnimationManager.SlashHash, 0.25f);
+        context.Player.ApplyForce(attackData.selfImpulseForce, context);
         GameObject hitbox = HitboxManager.Instance.CreateNewHitbox(HitboxType.LargeVertical).WithSpawnPoint(context.AttackAnchor).Build(context.PlayerGO, attackData.damage);
     }
 }

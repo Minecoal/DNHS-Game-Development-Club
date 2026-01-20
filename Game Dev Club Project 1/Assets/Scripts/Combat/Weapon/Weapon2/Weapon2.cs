@@ -10,8 +10,6 @@ public class Weapon2 : MonoBehaviour, IWeapon
 
     private bool canAttack = true;
 
-    private int temp = 0;
-
     public void Onable()
     {
         canAttack = true;
@@ -25,8 +23,6 @@ public class Weapon2 : MonoBehaviour, IWeapon
         AttackCommand attack = AttackCommand.Create<Attack_Melee_Slash>(context, slash);
         attack.Execute();
         StartCoroutine(AttackCooldownCoroutine(slash));
-        temp++;
-        
         return true;
     }
 
@@ -35,6 +31,6 @@ public class Weapon2 : MonoBehaviour, IWeapon
         canAttack = false;
         yield return new WaitForSeconds(data.cooldown);
         canAttack = true;
-        OnEnableSwitchState?.Invoke(); // move this logic out later to use animation time rather than cooldown
+        OnEnableSwitchState?.Invoke();
     }
 }

@@ -71,8 +71,8 @@ public class Player : MonoBehaviour
     {
         Vector3 targetSpeed = new Vector3(input.x * data.moveSpeed, 0f, input.z * data.moveSpeed);
 
-        Debug.DrawLine(player.transform.position, player.transform.position + targetSpeed, Color.green);
-        Debug.DrawLine(player.transform.position, player.transform.position + rb.linearVelocity, Color.yellow);
+        Debug.DrawLine(player.position, player.position + targetSpeed, Color.green);
+        Debug.DrawLine(player.position, player.position + rb.linearVelocity, Color.yellow);
 
         //calculate accel/deccel
         Vector3 accelRate = new Vector3();
@@ -103,6 +103,22 @@ public class Player : MonoBehaviour
         rb.AddForce(movement.x * Vector3.right, ForceMode.Force);
         rb.AddForce(movement.y * Vector3.up, ForceMode.Force);
         rb.AddForce(movement.z * Vector3.forward, ForceMode.Force);
+    }
+
+    public void ApplyForce(float inputForce, PlayerContext context)
+    {
+        Vector3 playerDir = GetPlayerDirNormalized(context);
+        context.Rb.AddForce(inputForce * playerDir, ForceMode.Impulse);
+    }
+
+    public Vector3 GetPlayerDirNormalized(PlayerContext context)
+    {
+        if(context.Input.MoveInputNormalized.sqrMagnitude > 0.01f)
+        {
+            return context.Input.MoveInputNormalized;
+        } else {
+            return context.PlayerFlipper.isFacingRight ? Vector3.right : Vector3.left;
+        }
     }
 
     public void SetPrimaryWeapon(GameObject weapon)

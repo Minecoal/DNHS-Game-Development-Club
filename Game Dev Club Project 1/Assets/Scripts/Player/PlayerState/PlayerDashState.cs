@@ -33,17 +33,7 @@ public class PlayerDashState : IPlayerState
         // context.AnimationManager.PlayAnimation(PlayerAnimationManager.DashHash);
 
         dashStartTime = Time.time;
-
-        if(context.Input.MoveInputNormalized.sqrMagnitude > 0.01f)
-        {
-            dashDirection = context.Input.MoveInputNormalized;
-        } else {
-            dashDirection = context.PlayerFlipper.isFacingRight ? Vector3.right : Vector3.left;
-        }
-        dashDirection.Normalize();
-
-        context.Rb.linearVelocity = Vector3.zero;
-        context.Rb.AddForce(dashDirection * context.Data.dashForce, ForceMode.Impulse);
+        context.Player.ApplyForce(context.Data.dashForce, context);
     }
 
     public override string ToString()

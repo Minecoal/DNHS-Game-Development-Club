@@ -9,11 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c0077e1e15674d8b99579559008c418, type: 3}
-  m_Name: HeavyAttack
-  m_EditorClassIdentifier: Assembly-CSharp::AttackData
-  damage: 20
-  cooldown: 1.5
-  selfImpulseForce: 10
-  targetImpulseForce: 10
-  interruptible: 1
+  m_Script: {fileID: 11500000, guid: 45ab375a38a5943dcb8e679744643cd9, type: 3}
+  m_Name: BasicAttackHitboxData
+  m_EditorClassIdentifier: Assembly-CSharp::HitboxData
+  lifetime: 0.2
+  triggerSlowmo: 0

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class HitboxManager : PersistentGenericSingleton<HitboxManager>
@@ -74,7 +75,8 @@ public class HitboxManager : PersistentGenericSingleton<HitboxManager>
 
         private void HandleOnHit(DamageResult result, DamageInfo info)
         {
-            Debug.Log("Handle On hit ex. camera shake, blood particle");
+            PlayerManager.Instance.Camera.ScreenShake(Mathf.Max(Mathf.Sqrt(info.Amount), 1f), 0.1f);
+            
         }
     }
 

@@ -42,6 +42,6 @@ public class Weapon1 : MonoBehaviour, IWeapon
         canAttack = false;
         yield return new WaitForSeconds(data.cooldown);
         canAttack = true;
-        OnEnableSwitchState?.Invoke(); // move this logic out later to use animation time rather than cooldown
+        OnEnableSwitchState?.Invoke();
     }
 }
