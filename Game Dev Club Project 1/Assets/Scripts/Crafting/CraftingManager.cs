@@ -31,7 +31,7 @@ public class CraftingManager : PersistentGenericSingleton<CraftingManager>
     private bool previousCursorState;
     private bool isCraftingMenuOpen = false;
 
-    public List<GameObject> recipeGameObjects = new List<GameObject>();
+    private List<GameObject> recipeGameObjects = new List<GameObject>();
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()

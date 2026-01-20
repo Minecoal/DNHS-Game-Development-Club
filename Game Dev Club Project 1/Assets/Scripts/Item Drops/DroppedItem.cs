@@ -33,7 +33,7 @@ public class DroppedItem : MonoBehaviour
     public void SetCurrency(int amount, Sprite coinSprite)
     {
         currencyAmount = amount;
-        GetComponent<SpriteRenderer>().sprite = item.GetItem().itemIcon;
+        //GetComponent<SpriteRenderer>().sprite = coinSprite;
         isItem = false;
     }
     
@@ -70,6 +70,11 @@ public class DroppedItem : MonoBehaviour
             else
             {
 
+                if (Time.time - spawnTime < pickupDelay)
+                    return;
+
+                inventory.AddCurrency(currencyAmount);
+                Destroy(gameObject);
             }
         }
         
