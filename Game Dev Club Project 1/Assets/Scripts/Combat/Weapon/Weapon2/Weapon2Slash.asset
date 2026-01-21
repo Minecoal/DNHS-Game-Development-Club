@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c0077e1e15674d8b99579559008c418, type: 3}
   m_Name: Weapon2Slash
   m_EditorClassIdentifier: Assembly-CSharp::AttackData
-  damage: 30
-  cooldown: 0.1
-  selfImpulseForce: 2
+  damage: 1
+  cooldown: 0.22
+  selfImpulseForce: -3.5
   targetImpulseForce: 0
   interruptible: 0

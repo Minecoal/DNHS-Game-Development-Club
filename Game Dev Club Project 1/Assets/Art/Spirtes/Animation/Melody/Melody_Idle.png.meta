@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 70b7115776abf420f814b010bf3b7755
+guid: 1c13d8d4da87d4c16bd1bb7a1d1d5c09
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -97,7 +97,73 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Melody_Idle_0
+      name: Melody_Idle 1_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2048
+        width: 2048
+        height: 2048
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf3a1f727abce4b19a15fef1f053a0d5
+      internalID: 1233195905
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Melody_Idle 1_1
+      rect:
+        serializedVersion: 2
+        x: 2048
+        y: 2048
+        width: 2048
+        height: 2048
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5cb1640a7a54847bc9b779a6502253d1
+      internalID: -1028046129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Melody_Idle 1_2
+      rect:
+        serializedVersion: 2
+        x: 4096
+        y: 2048
+        width: 2048
+        height: 2048
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c849ceaad8d4d43b2af88abce36e0a0b
+      internalID: -226061875
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Melody_Idle 1_3
       rect:
         serializedVersion: 2
         x: 0
@@ -112,14 +178,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5305a3a5889a0453c900fe557b50d95f
-      internalID: -1991556846
+      spriteID: e22825b218e1b48678f91f39f06f2ae7
+      internalID: -1433979149
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Melody_Idle_1
+      name: Melody_Idle 1_4
       rect:
         serializedVersion: 2
         x: 2048
@@ -134,8 +200,30 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8502f8ff1ab3a409bbb281999b53e8bb
-      internalID: 338520479
+      spriteID: 894c116aac47b4096ae5c7171392677c
+      internalID: 1237425485
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Melody_Idle 1_5
+      rect:
+        serializedVersion: 2
+        x: 4096
+        y: 0
+        width: 2048
+        height: 2048
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e9a33ef63c1040c485fb86c9860f4b7
+      internalID: 461477873
       vertices: []
       indices: 
       edges: []
@@ -144,7 +232,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: f35ee4083f82f47d992c7b77a4f3cb12
+    spriteID: 71060b2b06b634c1990359efdb4218a5
     internalID: 0
     vertices: []
     indices: 
@@ -154,10 +242,14 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":2.0,"y":1.0},"gridSpriteSize":{"x":2048.0,"y":2048.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":3.0,"y":2.0},"gridSpriteSize":{"x":2048.0,"y":2048.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Melody_Idle_0: -1991556846
-      Melody_Idle_1: 338520479
+      Melody_Idle 1_0: 1233195905
+      Melody_Idle 1_1: -1028046129
+      Melody_Idle 1_2: -226061875
+      Melody_Idle 1_3: -1433979149
+      Melody_Idle 1_4: 1237425485
+      Melody_Idle 1_5: 461477873
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

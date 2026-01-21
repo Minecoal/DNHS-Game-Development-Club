@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 08a4199860f9f432e8d05c422df44a70
+guid: 70e47a0d0afcf42f387a148f73ec74e7
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -97,7 +97,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Melody_Walk_0
+      name: Melody_Walk 1_0
       rect:
         serializedVersion: 2
         x: 0
@@ -112,14 +112,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c7748a022453a42a8a86c92d37a6b6f4
-      internalID: -104955915
+      spriteID: 421e6234cbbf54bbd9b29f6c04a7b970
+      internalID: 1500702481
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Melody_Walk_1
+      name: Melody_Walk 1_1
       rect:
         serializedVersion: 2
         x: 2048
@@ -134,14 +134,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 82fe4b1a8f1744f758ce39f59389e4ef
-      internalID: -1672824696
+      spriteID: 303d655d2d9164f2ab87891edc93e63c
+      internalID: 1498114
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Melody_Walk_2
+      name: Melody_Walk 1_2
       rect:
         serializedVersion: 2
         x: 4096
@@ -156,14 +156,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b5ec0eb6344874176ac8ecb34ee30707
-      internalID: 1460047462
+      spriteID: 406b9e898340542afaee880d6c32a7a8
+      internalID: -130615087
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Melody_Walk_3
+      name: Melody_Walk 1_3
       rect:
         serializedVersion: 2
         x: 0
@@ -178,14 +178,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ed15b9ef94ca745ffb3d8c8f63656d99
-      internalID: -988749830
+      spriteID: 53b51039484ad49378225af370723f0a
+      internalID: -812087879
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Melody_Walk_4
+      name: Melody_Walk 1_4
       rect:
         serializedVersion: 2
         x: 2048
@@ -200,14 +200,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b445698cfc94b4ed1bb1819fc48a50a4
-      internalID: 868264881
+      spriteID: 6f52a6914d7a347adadaa064453a0048
+      internalID: -398325993
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Melody_Walk_5
+      name: Melody_Walk 1_5
       rect:
         serializedVersion: 2
         x: 4096
@@ -222,8 +222,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 897edd55ef9ad47ce8e11bd2a2a44002
-      internalID: -810698966
+      spriteID: 245029bf4266d4f5b94ef1177ba53af5
+      internalID: -1355598098
       vertices: []
       indices: 
       edges: []
@@ -232,7 +232,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 76f41c5284f964837ae2cb7c3fb2db26
+    spriteID: 62761f79344a04c0c873adeb3332710e
     internalID: 0
     vertices: []
     indices: 
@@ -244,12 +244,12 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":3.0,"y":2.0},"gridSpriteSize":{"x":2048.0,"y":2048.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Melody_Walk_0: -104955915
-      Melody_Walk_1: -1672824696
-      Melody_Walk_2: 1460047462
-      Melody_Walk_3: -988749830
-      Melody_Walk_4: 868264881
-      Melody_Walk_5: -810698966
+      Melody_Walk 1_0: 1500702481
+      Melody_Walk 1_1: 1498114
+      Melody_Walk 1_2: -130615087
+      Melody_Walk 1_3: -812087879
+      Melody_Walk 1_4: -398325993
+      Melody_Walk 1_5: -1355598098
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
