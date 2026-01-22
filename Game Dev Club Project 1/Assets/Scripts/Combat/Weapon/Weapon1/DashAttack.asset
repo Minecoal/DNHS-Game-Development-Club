@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5c0077e1e15674d8b99579559008c418, type: 3}
-  m_Name: HeavyAttack
+  m_Name: DashAttack
   m_EditorClassIdentifier: Assembly-CSharp::AttackData
-  damage: 20
-  cooldown: 0.7
-  selfImpulseForce: 15
-  targetImpulseForce: 10
+  damage: 8
+  cooldown: 0.5
+  selfImpulseForce: 10
+  targetImpulseForce: 8
   interruptible: 1

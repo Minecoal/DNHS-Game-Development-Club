@@ -18,6 +18,14 @@ public class PlayerDashState : IPlayerState
         if (Time.time < dashStartTime + context.Data.dashDuration)
             return;
 
+        //dash attack
+        if (context.Input.ConsumePrimaryAttack())
+        {
+            if (context.ActivePrimaryWeapon != null)
+                context.StateMachine.ChangeState(new PlayerDashAttackState(), context);
+            return;
+        }
+
         // Dash finished
         if (context.Input.MoveInputNormalized.sqrMagnitude > 0.01f)
             context.StateMachine.ChangeState(new PlayerMovingState(), context);

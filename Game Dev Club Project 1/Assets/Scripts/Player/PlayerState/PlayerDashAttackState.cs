@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerAttackState : IPlayerState
+public class PlayerDashAttackState : IPlayerState
 {
     private bool canSwitchState = false;
 
@@ -8,7 +8,7 @@ public class PlayerAttackState : IPlayerState
     {
         canSwitchState = false;
         // Trigger the attack immediately
-        context.ActivePrimaryWeapon.TryAttack(context, false);
+        context.ActivePrimaryWeapon.TryAttack(context, true);
         context.ActivePrimaryWeapon.OnEnableSwitchState += EnableSwitchState;
     }
 
@@ -40,6 +40,6 @@ public class PlayerAttackState : IPlayerState
 
     public override string ToString()
     {
-        return "Attack";
+        return "DashAttack";
     }
 }

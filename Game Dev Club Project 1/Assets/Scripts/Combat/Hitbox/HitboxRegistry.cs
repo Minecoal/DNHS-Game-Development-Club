@@ -56,6 +56,7 @@ public struct HitboxPrefabEntry
 [Serializable]
 public enum HitboxType
 {
-    SmallHorizontal,
-    LargeVertical
+    Light,
+    Heavy,
+    Dash,
 }

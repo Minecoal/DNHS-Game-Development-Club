@@ -1,4 +1,5 @@
 using System;
+using UnityEditor.SearchService;
 using UnityEngine;
 
 public class HitboxManager : PersistentGenericSingleton<HitboxManager>
@@ -70,6 +71,9 @@ public class HitboxManager : PersistentGenericSingleton<HitboxManager>
             }
             hitbox.OnHit += HandleOnHit;
             hitbox.ConfigureAndDestroy(self, data, damage);
+
+            Animator animator = obj.GetComponentInChildren<Animator>();
+            if (animator != null) animator.Play(0, -1, 0f); // players default animation clip;
             return obj;
         }
 
