@@ -25,7 +25,6 @@ public class PlayerAttackState : IPlayerState
     public void Tick(PlayerContext context, float deltaTime)
     {
         if (!canSwitchState) return;
-        Debug.Log("1");
 
         // Then transition to appropriate locomotion state
         if (context.Input.MoveInputNormalized.sqrMagnitude > 0.01f)
