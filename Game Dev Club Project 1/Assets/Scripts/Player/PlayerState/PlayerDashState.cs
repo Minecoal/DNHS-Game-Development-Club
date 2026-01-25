@@ -18,6 +18,14 @@ public class PlayerDashState : IPlayerState
         if (Time.time < dashStartTime + context.Data.dashDuration)
             return;
 
+        //dash attack
+        if (context.Input.ConsumePrimaryAttack())
+        {
+            if (context.ActivePrimaryWeapon != null)
+                context.StateMachine.ChangeState(new PlayerDashAttackState(), context);
+            return;
+        }
+
         // Dash finished
         if (context.Input.MoveInputNormalized.sqrMagnitude > 0.01f)
             context.StateMachine.ChangeState(new PlayerMovingState(), context);
@@ -29,21 +37,10 @@ public class PlayerDashState : IPlayerState
 
     private void StartDash(PlayerContext context)
     {
-        //does not exist right now
-        // context.AnimationManager.PlayAnimation(PlayerAnimationManager.DashHash);
+        context.AnimationManager.PlayAnimation(context.AnimationManager.Dash);
 
         dashStartTime = Time.time;
-
-        if(context.Input.MoveInputNormalized.sqrMagnitude > 0.01f)
-        {
-            dashDirection = context.Input.MoveInputNormalized;
-        } else {
-            dashDirection = context.PlayerFlipper.isFacingRight ? Vector3.right : Vector3.left;
-        }
-        dashDirection.Normalize();
-
-        context.Rb.linearVelocity = Vector3.zero;
-        context.Rb.AddForce(dashDirection * context.Data.dashForce, ForceMode.Impulse);
+        context.Player.ApplyForce(context.Data.dashForce, context);
     }
 
     public override string ToString()

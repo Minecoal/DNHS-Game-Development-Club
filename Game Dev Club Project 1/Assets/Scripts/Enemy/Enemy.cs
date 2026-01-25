@@ -20,6 +20,9 @@ public class Enemy : MonoBehaviour
     public event Action<DamageInfo> OnDamagedBy;
     public EnemyContext context { get; private set; }
 
+    [SerializeField] private ParticlePlayer deathParticle;
+    [SerializeField] private ParticlePlayer hitParticle;
+
     private bool isInitialized = false;
     private Vector3 lastAppliedForce = Vector3.zero;
     [SerializeField] private float gizmoForceScale = 0.5f;
@@ -38,6 +41,7 @@ public class Enemy : MonoBehaviour
         playerTransform = PlayerManager.Instance.Player.transform;
         Pathfinder = GetComponent<Pathfinder>();
         Health.OnDied += HandleDeath;
+        Health.OnDamageTaken += HandleHit;
         
         context = new EnemyContext(
             StateMachine,
@@ -146,7 +150,6 @@ public class Enemy : MonoBehaviour
             Quaternion targetRot = Quaternion.LookRotation(dir);
             Rb.rotation = Quaternion.Slerp(Rb.rotation, targetRot, 10f * Time.fixedDeltaTime);
         }
-
         lastAppliedForce = force + nudge;
     }
 
@@ -174,7 +177,18 @@ public class Enemy : MonoBehaviour
 
     private void HandleDeath()
     {
+        deathParticle?.PlayParticle(transform.position);
+        PlayerManager.Instance.Camera.ScreenShake(Mathf.Max(Mathf.Sqrt(Health.GetMaxHealth()), 3f), 0.1f);
+        TimeController.Instance.StartCoroutine(TimeController.TimeStop(0.18f, 0.1f));
         gameObject.SetActive(false); //temporary
+    }
+
+    private void HandleHit(DamageInfo info)
+    {
+        hitParticle?.PlayParticle(transform.position);
+        Rb.AddForce(- info.HitNormal * info.KnockbackForce, ForceMode.Impulse);
+        PlayerManager.Instance.Camera.ScreenShake(Mathf.Max(Mathf.Sqrt(info.Amount), 1f), 0.1f);
+        TimeController.Instance.StartCoroutine(TimeController.TimeStop(0.12f, 0.2f));
     }
 
     public bool IsPlayerInDetectionRange()

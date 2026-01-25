@@ -465,14 +465,14 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
             if (primaryWeaponGameObject != null)
                 Destroy(primaryWeaponGameObject);
             primaryWeaponGameObject = null;
-            PlayerManager.instance.PlayerScript.SetPrimaryWeapon(null);
+            PlayerManager.Instance.PlayerScript.SetPrimaryWeapon(null);
         }
         else if (isSecondaryWeaponItemAndSlot(originalSlot, movingSlot.GetItem()))
         {
             if (secondaryWeaponGameObject != null)
                 Destroy(secondaryWeaponGameObject);
             secondaryWeaponGameObject = null;
-            PlayerManager.instance.PlayerScript.SetSecondaryWeapon(null);
+            PlayerManager.Instance.PlayerScript.SetSecondaryWeapon(null);
         }
 
 
