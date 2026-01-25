@@ -1,22 +1,21 @@
 using System;
 using UnityEngine;
 
-public abstract class AttackCommand : ICommand
+public class AttackCommand : ICommand
 {
     protected readonly PlayerContext context;
     protected readonly AttackData attackData;
-    // public Action OnReady; // called when attack cooldown ready
 
-    public abstract void Execute();
-
-    protected AttackCommand(PlayerContext context, AttackData attackData)
+    public AttackCommand(PlayerContext context, AttackData attackData)
     {
         this.context = context;
         this.attackData = attackData;
     }
 
-    public static T Create<T>(PlayerContext context, AttackData data) where T : AttackCommand
+    public void Execute()
     {
-        return (T) System.Activator.CreateInstance(typeof(T), context, data); // create instance of class with unknown type
+        context.AnimationManager.PlayAnimationForce(attackData.animationID, attackData.animationSpeed);
+        context.Player.ApplyForce(attackData.selfKnockbackForce, context);
+        GameObject hitbox = HitboxManager.Instance.CreateNewHitbox(attackData.hitboxData).WithSpawnPoint(context.AttackAnchor).Build(context.PlayerGO, attackData.damage);
     }
 }

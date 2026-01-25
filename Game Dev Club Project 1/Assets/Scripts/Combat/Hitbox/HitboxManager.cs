@@ -1,14 +1,14 @@
+using System;
+using UnityEditor.SearchService;
 using UnityEngine;
 
 public class HitboxManager : PersistentGenericSingleton<HitboxManager>
 {
-    [SerializeField] private HitboxRegistry registry;
     private Transform container;
 
     protected override void Awake()
     {
         base.Awake();
-        if (registry == null) Debug.LogWarning("missing hitbox registry in Hitbox Manager");
     }
 
     private Transform GetOrCreateContainer()
@@ -20,14 +20,13 @@ public class HitboxManager : PersistentGenericSingleton<HitboxManager>
         return container;
     }
 
-    public Builder CreateNewHitbox(HitboxType type)
+    public Builder CreateNewHitbox(HitboxData data)
     {
-        GameObject prefab = registry.GetPrefab(type);
-        HitboxData data = registry.GetData(type);
+        GameObject prefab = data.prefab;
 
         if (!prefab || !data)
         {
-            Debug.LogWarning($"Cannot spawn hitbox, prefab or data missing: {type}");
+            Debug.LogWarning($"Cannot spawn hitbox, prefab or data missing");
             return null;
         }
         return new Builder(prefab, data);
@@ -69,12 +68,15 @@ public class HitboxManager : PersistentGenericSingleton<HitboxManager>
             }
             hitbox.OnHit += HandleOnHit;
             hitbox.ConfigureAndDestroy(self, data, damage);
+
+            Animator animator = obj.GetComponentInChildren<Animator>();
+            if (animator != null) animator.Play(0, -1, 0f); // players default animation clip;
             return obj;
         }
 
         private void HandleOnHit(DamageResult result, DamageInfo info)
         {
-            Debug.Log("Handle On hit ex. camera shake, blood particle");
+
         }
     }
 

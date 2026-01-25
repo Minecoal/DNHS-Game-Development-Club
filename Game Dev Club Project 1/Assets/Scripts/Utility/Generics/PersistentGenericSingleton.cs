@@ -29,12 +29,13 @@ public class PersistentGenericSingleton<T> : MonoBehaviour, IInitializable where
 
     protected virtual void InitializeSingleton(){
         if (!Application.isPlaying || isClosing) return;
-        if (autoUnparentOnAwake)
+        if (autoUnparentOnAwake) {
             transform.SetParent(null);
+            DontDestroyOnLoad(gameObject);
+        }
 
         if (instance == null) {
             instance = this as T;
-            DontDestroyOnLoad(gameObject);
         } else { 
             if (instance != this)
             {
