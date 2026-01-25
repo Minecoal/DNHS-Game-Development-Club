@@ -127,9 +127,9 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
 
         if (Input.GetMouseButtonDown(2))
         {
-            GetComponent<DropItem>().DropItems(new ItemSlot(startingItems[0]), PlayerManager.Instance.Player.transform.position);
-            GetComponent<DropItem>().DropItems(new ItemSlot(startingItems[1]), PlayerManager.Instance.Player.transform.position);
-            GetComponent<DropItem>().DropItems(new ItemSlot(startingItems[2]), PlayerManager.Instance.Player.transform.position);
+            GetComponent<DropItem>().DropCurrency(10, PlayerManager.Instance.Player.transform.position);
+            //GetComponent<DropItem>().DropItems(new ItemSlot(startingItems[1]), PlayerManager.Instance.Player.transform.position);
+            //GetComponent<DropItem>().DropItems(new ItemSlot(startingItems[2]), PlayerManager.Instance.Player.transform.position);
         }
     }
 
@@ -312,6 +312,20 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
         }
 
         return -1;
+    }
+
+    public void AddCurrency(int amount)
+    {
+        currency += amount;
+
+        currencyText.text = currency.ToString();
+    }
+
+    public void RemoveCurrency(int amount)
+    {
+        currency -= amount;
+
+        currencyText.text = currency.ToString();
     }
 
     public void RefreshUI()
