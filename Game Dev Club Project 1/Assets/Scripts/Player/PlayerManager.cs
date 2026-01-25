@@ -3,9 +3,8 @@ using UnityEngine;
 public class PlayerManager : PersistentGenericSingleton<PlayerManager>
 {
     [SerializeField] private PlayerData data;
-    [SerializeField] private PlayerData runtimeData;
     public PlayerData BaseData => data;
-    public PlayerData RunTimeData => runtimeData;
+    public PlayerData RunTimeData => data;
 
     public GameObject Player { get; private set; }
     public Transform Transform { get; private set; }

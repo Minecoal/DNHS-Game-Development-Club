@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using System;
 
-public class Health : MonoBehaviour, IDamagable, IHealable
+public class Health : MonoBehaviour, IDamagable
 {
     [Header("Health")]
     [SerializeField] private float maxHealth = 100f;
@@ -17,8 +17,8 @@ public class Health : MonoBehaviour, IDamagable, IHealable
     [SerializeField] private bool startInvulnerable = false;
     [SerializeField] private float invulnerabilityDuration = 0.2f;
 
-    public Action<DamageInfo> OnDamageTaken; // passes final damage amount
-    public Action<HealInfo> OnHeal;
+    public Action<float> OnDamageTaken; // passes final damage amount
+    public Action<float> OnHeal;
     public Action OnDied;
 
     public bool isDead = false;
@@ -63,7 +63,7 @@ public class Health : MonoBehaviour, IDamagable, IHealable
             return DamageResult.Blocked;
 
         currentHealth -= final;
-        OnDamageTaken?.Invoke(info);
+        OnDamageTaken?.Invoke(final);
 
         if (invulnerabilityDuration > 0f)
             StartCoroutine(TemporaryInvulnerability(invulnerabilityDuration));
@@ -89,7 +89,7 @@ public class Health : MonoBehaviour, IDamagable, IHealable
     {
         if (info.Amount <= 0f || isDead) return HealResult.Invalid;
         currentHealth = Mathf.Min(maxHealth, currentHealth + info.Amount);
-        OnHeal?.Invoke(info);
+        OnHeal?.Invoke(info.Amount);
         return HealResult.Healed;
     }
 

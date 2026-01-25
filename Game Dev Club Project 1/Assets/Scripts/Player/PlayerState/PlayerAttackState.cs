@@ -8,7 +8,7 @@ public class PlayerAttackState : IPlayerState
     {
         canSwitchState = false;
         // Trigger the attack immediately
-        context.ActivePrimaryWeapon.TryAttack(context, false);
+        context.ActivePrimaryWeapon.TryAttack(context);
         context.ActivePrimaryWeapon.OnEnableSwitchState += EnableSwitchState;
     }
 

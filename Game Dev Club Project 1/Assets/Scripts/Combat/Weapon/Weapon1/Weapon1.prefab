@@ -44,6 +44,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98c71edb6dca2465fae85f243d36509b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Weapon1
-  slashAttack: {fileID: 11400000, guid: 0758918ae68714571b7313a8d5fc54e2, type: 2}
-  heavyAttack: {fileID: 11400000, guid: 002f9ef513b76470496b5fb89ef72962, type: 2}
-  dashAttack: {fileID: 11400000, guid: 0f4d5d4ed379c417b8149748c170def7, type: 2}
+  slash: {fileID: 11400000, guid: 0758918ae68714571b7313a8d5fc54e2, type: 2}
+  heavy: {fileID: 11400000, guid: 002f9ef513b76470496b5fb89ef72962, type: 2}

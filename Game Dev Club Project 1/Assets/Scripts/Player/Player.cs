@@ -3,34 +3,48 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     private PlayerStateMachine playerStateMachine;
-    public PlayerContext playerContext { get; private set; }
+    private PlayerContext playerContext;
 
+    private GameObject playerGO;
+    private PlayerData data;
+    private PlayerInputHandler input;
+    private Rigidbody rb;
+    private PlayerAnimationManager animationManager;
+    private PlayerSpriteFlipper playerFlipper;
+
+    [SerializeField] private GameObject defaultWeaponGO;
     [SerializeField] private Transform attackAnchor;
 
-    private void Awake()
+    void Awake()
     {
         PlayerManager.Instance.RegisterPlayer(gameObject);
     }
 
-    private void Start()
+    void Start()
     {
         playerStateMachine = new PlayerStateMachine();
-        var pm = PlayerManager.Instance;
+        playerGO = gameObject;
+        data = PlayerManager.Instance.RunTimeData;
+        input = PlayerManager.Instance.Input;
+        rb = PlayerManager.Instance.Rb;
+        animationManager = PlayerManager.Instance.AnimationManager;
+        playerFlipper = PlayerManager.Instance.PlayerFlipper;
+        playerFlipper.RegisterInputHandler(input);
 
-        pm.PlayerFlipper.RegisterInputHandler(pm.Input);
-
+        
         playerContext = new PlayerContext(
             playerStateMachine,
-            pm.RunTimeData,
+            data,
             this,
-            pm.Player,
-            pm.Input,
-            pm.Rb,
-            pm.AnimationManager,
+            playerGO,
+            input,
+            rb,
+            animationManager,
             attackAnchor,
+            //defaultWeaponGO.GetComponent<IWeapon>(),
             null,
             null,
-            pm.PlayerFlipper
+            playerFlipper
         );
 
         playerStateMachine.Initialize(new PlayerIdleState(), playerContext);
@@ -50,16 +64,17 @@ public class Player : MonoBehaviour
     void FixedUpdate()
     {
         playerStateMachine.FixedTick(playerContext, Time.fixedDeltaTime);
-        Decelerate(playerContext.Rb, playerContext.Data.decelAmount);
+        Decelerate(rb, data.decelAmount);
     }
 
     public void ApplyMovement(Vector3 input, Transform player, Rigidbody rb, PlayerData data)
     {
         Vector3 targetSpeed = new Vector3(input.x * data.moveSpeed, 0f, input.z * data.moveSpeed);
 
-        Debug.DrawLine(player.position, player.position + targetSpeed, Color.green);
-        Debug.DrawLine(player.position, player.position + rb.linearVelocity, Color.yellow);
+        Debug.DrawLine(player.transform.position, player.transform.position + targetSpeed, Color.green);
+        Debug.DrawLine(player.transform.position, player.transform.position + rb.linearVelocity, Color.yellow);
 
+        //calculate accel/deccel
         Vector3 accelRate = new Vector3();
         accelRate.x = (Mathf.Abs(targetSpeed.x) > 0.01f) ? data.accelAmount : data.decelAmount;
         accelRate.y = 0f;
@@ -90,37 +105,19 @@ public class Player : MonoBehaviour
         rb.AddForce(movement.z * Vector3.forward, ForceMode.Force);
     }
 
-    public void ApplyForce(float inputForce, PlayerContext context)
-    {
-        Vector3 playerDir = GetPlayerDirNormalized(context);
-        context.Rb.AddForce(inputForce * playerDir, ForceMode.Impulse);
-    }
-
-    public Vector3 GetPlayerDirNormalized(PlayerContext context)
-    {
-        if(context.Input.MoveInputNormalized.sqrMagnitude > 0.01f)
-        {
-            return context.Input.MoveInputNormalized;
-        } else {
-            return context.PlayerFlipper.isFacingRight ? Vector3.right : Vector3.left;
-        }
-    }
-
     public void SetPrimaryWeapon(GameObject weapon)
     {
-        if (weapon != null){
+        if (weapon != null)
             playerContext.ActivePrimaryWeapon = weapon.GetComponent<IWeapon>();
-            return;
-        }
-        playerContext.ActivePrimaryWeapon = null;
+        else
+            playerContext.ActivePrimaryWeapon = null;
     }
     
     public void SetSecondaryWeapon(GameObject weapon)
     {
-        if (weapon != null){
+        if (weapon != null)
             playerContext.ActiveSecondaryWeapon = weapon.GetComponent<IWeapon>();
-            return;
-        }
-        playerContext.ActiveSecondaryWeapon = null;
+        else
+            playerContext.ActiveSecondaryWeapon = null;
     }
 }

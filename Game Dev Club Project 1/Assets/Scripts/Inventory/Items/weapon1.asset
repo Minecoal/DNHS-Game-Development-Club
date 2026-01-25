@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: weapon1
   m_EditorClassIdentifier: Assembly-CSharp::WeaponClass
   itemName: weapon1
-  itemIcon: {fileID: 627861103, guid: a110aa86187df43c09617bc729935ff9, type: 3}
+  itemIcon: {fileID: 6328364105444858170, guid: 4ad54f8c9520a48648d55a5ce1e44a6f, type: 3}
   isStackable: 0
   weaponPrefab: {fileID: 2970511425408201512, guid: 977d908fd4f038e40b7bba795d638cd5, type: 3}
   weaponType: 0

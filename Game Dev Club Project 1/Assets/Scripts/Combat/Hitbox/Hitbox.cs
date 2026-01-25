@@ -19,6 +19,7 @@ public class Hitbox : MonoBehaviour
         hitboxData = data;
         this.self = self;
         StartCoroutine(LifetimeCoroutine());
+        
     }
 
     private IEnumerator LifetimeCoroutine()
@@ -59,7 +60,6 @@ public class Hitbox : MonoBehaviour
         if (target == null) target = collision.GetComponentInParent<IDamagable>();
         if (target == null) return;
 
-        // hit
         Vector3 hitPoint3 = collision.ClosestPoint(transform.position);
 
         DamageInfo info = new DamageInfo
@@ -67,14 +67,13 @@ public class Hitbox : MonoBehaviour
             Amount = damage,
             Source = self,
             HitPoint = hitPoint3,
-            HitNormal = (self.transform.position - hitPoint3).normalized,
-            KnockbackForce = hitboxData.targetKnockBackForce,
+            HitNormal = (transform.position - hitPoint3).normalized
         };
 
         DamageResult damageResult = target.ApplyDamage(in info);
         CreateDamageReading(damageResult, info);
         alreadyHit.Add(collision.gameObject);
-
+        // notify listeners
         OnHit?.Invoke(damageResult, info);
     }
 

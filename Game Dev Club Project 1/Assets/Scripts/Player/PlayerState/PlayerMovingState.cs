@@ -5,7 +5,7 @@ public class PlayerMovingState : PlayerLocomotionState
     public override void Enter(PlayerContext context)
     {
         base.Enter(context);
-        context.AnimationManager.PlayAnimation(context.AnimationManager.Walk);
+        context.AnimationManager.PlayAnimation(PlayerAnimationManager.WalkHash);
     }
 
     public override void FixedTick(PlayerContext context, float fixedDeltaTime)

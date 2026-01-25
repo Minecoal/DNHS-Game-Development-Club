@@ -5,7 +5,7 @@ public class PlayerIdleState : PlayerLocomotionState
     public override void Enter(PlayerContext context)
     {
         base.Enter(context);
-        context.AnimationManager.PlayAnimation(context.AnimationManager.Idle);
+        context.AnimationManager.PlayAnimation(PlayerAnimationManager.IdleHash);
     }
 
     public override void FixedTick(PlayerContext context, float fixedDeltaTime)

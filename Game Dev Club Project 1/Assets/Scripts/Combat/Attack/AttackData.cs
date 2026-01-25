@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Combat/Attack Data")]
+[CreateAssetMenu(menuName = "Attack Data")]
 public class AttackData : ScriptableObject
 {
     [Header(header: "Basic")]
@@ -8,15 +8,9 @@ public class AttackData : ScriptableObject
     public float cooldown = 0.5f; // attack cooldown
 
     [Header(header: "knockbacks")]
-    public float selfKnockbackForce = 0f; // negative for recoil, positive for forward boost;
+    public float selfImpulseForce = 0f; // negative for recoil, positive for forward boost;
+    public float targetImpulseForce = 0f; // negative for recoil, positive for forward boost;
      
     [Header(header: "Interrupt")]
     public bool interruptible;
-
-    [Header(header: "Animation")]
-    public float animationSpeed = 1f;
-    public AnimationID animationID;
-
-    [Header(header: "Hitbox")]
-    public HitboxData hitboxData;
 }

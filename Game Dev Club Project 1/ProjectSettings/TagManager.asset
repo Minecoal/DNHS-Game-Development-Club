@@ -45,9 +45,6 @@ TagManager:
   - name: Item Drops
     uniqueID: 2982319083
     locked: 0
-  - name: Ground
-    uniqueID: 2154141967
-    locked: 0
   m_RenderingLayers:
   - Default
   - Light Layer 1

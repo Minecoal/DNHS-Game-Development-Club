@@ -1,62 +1,47 @@
-using UnityEngine;
+using System;
 using System.Collections;
+using UnityEngine;
 
-public class Weapon1 : IWeapon
+public class Weapon1 : MonoBehaviour, IWeapon
 {
-    [SerializeField] private AttackData slashAttack;
-    [SerializeField] private AttackData heavyAttack;
-    [SerializeField] private AttackData dashAttack;
+    [SerializeField] private AttackData slash;
+    [SerializeField] private AttackData heavy;
 
-    private AttackData[] combo1;
-    private float comboResetTime = 1f;
-    private Coroutine resetCoroutine;
+    public Action OnEnableSwitchState { get; set; }
 
-    void Awake()
+    private bool canAttack = true;
+
+    private int temp = 0;
+
+    public void Onable()
     {
-        canAttack = true;
-        combo1 = new AttackData[]{
-            slashAttack,
-            dashAttack,
-            slashAttack,
-            heavyAttack,
-        };
+        canAttack = true;       
     }
 
-    private int comboIndex = 0;
-
-    override public bool TryAttack(PlayerContext context, bool isDashing)
+    public bool TryAttack(PlayerContext context)
     {
         if (!canAttack)
             return false;
-
-        AttackData attackData;
-        if (isDashing)
-        {
-            attackData = dashAttack;
+        // temperary attack logic : TODO change this logic
+        if (temp % 2 == 0){ 
+            AttackCommand attack = AttackCommand.Create<Attack_Melee_Slash>(context, slash);
+            attack.Execute();
+            StartCoroutine(AttackCooldownCoroutine(slash));
+            temp++;
+        } else {
+            AttackCommand attack = AttackCommand.Create<Attack_Melee_Heavy>(context, heavy);
+            attack.Execute();
+            StartCoroutine(AttackCooldownCoroutine(heavy));
+            temp++;
         }
-        else
-        {
-            attackData = combo1[comboIndex % combo1.Length];
-            comboIndex++;
-        }
-
-        AttackCommand attack = new AttackCommand(context, attackData);
-        attack.Execute();
-        StartCoroutine(AttackCooldownCoroutine(attackData));
-
-        if (resetCoroutine != null)
-            StopCoroutine(resetCoroutine);
-        resetCoroutine = StartCoroutine(ComboResetCoroutine());
-
         return true;
     }
 
-    private IEnumerator ComboResetCoroutine()
+    public IEnumerator AttackCooldownCoroutine(AttackData data)
     {
-        // wait for inactivity
-        yield return new WaitForSeconds(comboResetTime);
-
-        comboIndex = 0;
-        resetCoroutine = null;
+        canAttack = false;
+        yield return new WaitForSeconds(data.cooldown);
+        canAttack = true;
+        OnEnableSwitchState?.Invoke(); // move this logic out later to use animation time rather than cooldown
     }
 }
