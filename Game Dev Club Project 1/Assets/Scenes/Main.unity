@@ -7477,7 +7477,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3462279951801052583, guid: f1760dc30a8fb034f98394407781d99a, type: 3}
       propertyPath: m_Name
-      value: Slot Panel
+      value: Slot Panel equip 1
       objectReference: {fileID: 0}
     - target: {fileID: 8788688767840062729, guid: f1760dc30a8fb034f98394407781d99a, type: 3}
       propertyPath: m_Pivot.x
@@ -9612,7 +9612,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3462279951801052583, guid: f1760dc30a8fb034f98394407781d99a, type: 3}
       propertyPath: m_Name
-      value: Slot Panel (1)
+      value: Slot Panel (1) equip 2
       objectReference: {fileID: 0}
     - target: {fileID: 8788688767840062729, guid: f1760dc30a8fb034f98394407781d99a, type: 3}
       propertyPath: m_Pivot.x
@@ -12248,7 +12248,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3462279951801052583, guid: f1760dc30a8fb034f98394407781d99a, type: 3}
       propertyPath: m_Name
-      value: Slot Panel (2)
+      value: Slot Panel (2) equip 3
       objectReference: {fileID: 0}
     - target: {fileID: 8788688767840062729, guid: f1760dc30a8fb034f98394407781d99a, type: 3}
       propertyPath: m_Pivot.x
@@ -19545,7 +19545,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3462279951801052583, guid: f1760dc30a8fb034f98394407781d99a, type: 3}
       propertyPath: m_Name
-      value: Slot Panel (3)
+      value: Slot Panel (3) equip 4
       objectReference: {fileID: 0}
     - target: {fileID: 8788688767840062729, guid: f1760dc30a8fb034f98394407781d99a, type: 3}
       propertyPath: m_Pivot.x

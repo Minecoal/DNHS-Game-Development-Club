@@ -517,8 +517,11 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
                 {
                     oldSlotBeforeMove.AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
 
+                    Debug.Log(oldSlotBeforeMove.GetItem());
                     //add if statements checkjing for equipment/weapon
                     TryEquipEquipmentWeapon(oldSlotBeforeMove, movingSlot.GetItem());
+
+                    
                 }
                     
 
@@ -592,6 +595,7 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
                         secondaryWeaponGameObject = Instantiate(movingSlot.GetItem().GetWeapon().weaponPrefab);
                         playerManager.PlayerScript.SetSecondaryWeapon(secondaryWeaponGameObject);
                     }*/
+
                     TryEquipEquipmentWeapon(originalSlot, movingSlot.GetItem());
 
 
@@ -755,6 +759,7 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
 
     private void TryEquipEquipmentWeapon(ItemSlot itemSlot, ItemClass item)
     {
+        Debug.Log(itemSlot + "    ]    " + item);
         if (IsEquipmentItemAndSlot(itemSlot, item))
         {
             originalSlot.GetItem().GetEquipment().OnEquip(playerManager.PlayerScript.playerContext);
