@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45ab375a38a5943dcb8e679744643cd9, type: 3}
   m_Name: HeavyAttackHitboxData
   m_EditorClassIdentifier: Assembly-CSharp::HitboxData
-  lifetime: 0.6
-  triggerSlowmo: 0
+  prefab: {fileID: 7943019339696071975, guid: d71f351b891db4b028e04beaebba752e, type: 3}
+  lifetime: 0.8
+  targetKnockBackForce: 45

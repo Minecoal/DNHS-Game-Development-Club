@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: HeavyAttack
   m_EditorClassIdentifier: Assembly-CSharp::AttackData
   damage: 20
-  cooldown: 0.7
+  cooldown: 0.6
   selfImpulseForce: 15
   targetImpulseForce: 10
   interruptible: 1
+  animationSpeed: 1
+  animationID: {fileID: 11400000, guid: 505b7c4c7781a41468fa23181592bf96, type: 2}
+  hitboxData: {fileID: 11400000, guid: 88b30e7a829e6457caf2868653344ba9, type: 2}

@@ -1,4 +1,3 @@
-using UnityEngine;
 using System;
 
 public class GenericStateMachine<IGenericState, TContext> where IGenericState : IGenericState<TContext>
@@ -14,7 +13,7 @@ public class GenericStateMachine<IGenericState, TContext> where IGenericState : 
     public void ChangeState(IGenericState newState, TContext context)
     {
         currentState?.Exit(context);
-        Debug.Log($"Changed from {currentState.ToString()} to {newState.ToString()}");
+        // Debug.Log($"Changed from {currentState.ToString()} to {newState.ToString()}");
         currentState = newState;
         currentState?.Enter(context);
     }

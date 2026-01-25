@@ -1,13 +1,24 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class BaseAnimationManager : MonoBehaviour
 {
     Animator animator;
     const float crossFadeDuration = 0.0f;
+    [SerializeField] public AnimationList animationList;
+    private Dictionary<AnimationID, int> animationHashes;
 
     void Awake()
     {
         animator = GetComponent<Animator>();
+        if (animationList != null)
+        {
+            animationHashes = new Dictionary<AnimationID, int>();
+            foreach (var entry in animationList.entries)
+            {
+                animationHashes[entry.id] = entry.hash;
+            }
+        }
     }
 
     public void StopAnimation()
@@ -20,31 +31,65 @@ public class BaseAnimationManager : MonoBehaviour
         animator.StopPlayback();
     }
 
-    public void PlayAnimation(int stateHashName, float animationSpeed = 1f)
+    public void PlayAnimation(int stateHash, float animationSpeed = 1f)
     {
         if (animator == null){
             Debug.LogWarning($"{GetType().Name} missing reference to an animator");
             return;
         }
         animator.speed = animationSpeed;
-        animator.CrossFade(stateHashName, crossFadeDuration);
+        animator.CrossFade(stateHash, crossFadeDuration);
     }
 
-    public void PlayAnimation(int stateHashName)
+    public void PlayAnimation(int stateHash)
     {
-        PlayAnimation(stateHashName, 1f);
+        PlayAnimation(stateHash, 1f);
     }
 
-    public void PlayAnimationForce(int stateHashName, float speed = 1f)
+    public void PlayAnimationForce(int stateHash, float speed = 1f)
     {
         if (animator == null) return;
 
         animator.speed = speed;
-        animator.Play(stateHashName, 0, 0f);
+        animator.Play(stateHash, 0, 0f);
     }
 
-    public void PlayAnimationForce(int statehashName)
+    public void PlayAnimationForce(int statehash)
     {
-        PlayAnimationForce(statehashName, 1f);
+        PlayAnimationForce(statehash, 1f);
+    }
+
+    public void PlayAnimation(AnimationID id, float animationSpeed = 1f)
+    {
+        if (animationHashes != null && animationHashes.TryGetValue(id, out int hash))
+        {
+            PlayAnimation(hash, animationSpeed);
+        }
+        else
+        {
+            Debug.LogWarning($"Animation hash for {id} not found.");
+        }
+    }
+
+    public void PlayAnimation(AnimationID id)
+    {
+        PlayAnimation(id, 1f);
+    }
+
+    public void PlayAnimationForce(AnimationID id, float speed = 1f)
+    {
+        if (animationHashes != null && animationHashes.TryGetValue(id, out int hash))
+        {
+            PlayAnimationForce(hash, speed);
+        }
+        else
+        {
+            Debug.LogWarning($"Animation hash for {id} not found.");
+        }
+    }
+
+    public void PlayAnimationForce(AnimationID id)
+    {
+        PlayAnimationForce(id, 1f);
     }
 }

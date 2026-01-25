@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AttackData
   damage: 1
   cooldown: 0.22
-  selfImpulseForce: -3.5
-  targetImpulseForce: 0
-  interruptible: 0
+  selfKnockbackForce: 0
+  interruptible: 1
+  animationSpeed: 1
+  animationID: {fileID: 11400000, guid: 505b7c4c7781a41468fa23181592bf96, type: 2}
+  hitboxData: {fileID: 11400000, guid: fc9b0ac0db29443bfaf538db2fc28c9b, type: 2}

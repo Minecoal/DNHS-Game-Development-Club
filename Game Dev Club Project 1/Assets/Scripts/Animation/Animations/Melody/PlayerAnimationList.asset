@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73c88c36e8116470f99c5b4870155ec2, type: 3}
+  m_Name: PlayerAnimationList
+  m_EditorClassIdentifier: Assembly-CSharp::AnimationList
+  controllerReference: {fileID: 9100000, guid: 9a103cf0197554e40b20b4456d2133d8, type: 2}
+  entries:
+  - id: {fileID: 11400000, guid: 7c0c638e8b718482ea8b60802a908f5c, type: 2}
+    name: Walk
+    hash: 765711723
+  - id: {fileID: 11400000, guid: a4b46379760bb45ec95edf51da6f1f53, type: 2}
+    name: Idle
+    hash: 2081823275
+  - id: {fileID: 11400000, guid: 505b7c4c7781a41468fa23181592bf96, type: 2}
+    name: Slash
+    hash: -972068619
+  - id: {fileID: 11400000, guid: 84a84bd084a684d5896a311229a7e984, type: 2}
+    name: Dash
+    hash: 995914302

@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45ab375a38a5943dcb8e679744643cd9, type: 3}
   m_Name: DashAttackHitboxData
   m_EditorClassIdentifier: Assembly-CSharp::HitboxData
+  prefab: {fileID: 7943019339696071975, guid: 9f41e14431df54cddaf7412e409d6fa9, type: 3}
   lifetime: 0.4
-  triggerSlowmo: 0
+  targetKnockBackForce: 10

@@ -17,3 +17,6 @@ MonoBehaviour:
   selfImpulseForce: 10
   targetImpulseForce: 8
   interruptible: 1
+  animationSpeed: 1
+  animationID: {fileID: 11400000, guid: 84a84bd084a684d5896a311229a7e984, type: 2}
+  hitboxData: {fileID: 11400000, guid: 4bd71d79d0a084f8b87a62b3d4fb7bb3, type: 2}

@@ -37,8 +37,7 @@ public class PlayerDashState : IPlayerState
 
     private void StartDash(PlayerContext context)
     {
-        //does not exist right now
-        // context.AnimationManager.PlayAnimation(PlayerAnimationManager.DashHash);
+        context.AnimationManager.PlayAnimation(context.AnimationManager.Dash);
 
         dashStartTime = Time.time;
         context.Player.ApplyForce(context.Data.dashForce, context);

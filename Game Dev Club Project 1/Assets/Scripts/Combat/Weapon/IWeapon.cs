@@ -1,10 +1,20 @@
 using System;
-using NUnit.Framework;
+using System.Collections;
 using UnityEngine;
 
 
-public interface IWeapon
+public abstract class IWeapon : MonoBehaviour
 {
-    public bool TryAttack(PlayerContext context, bool isDashing);
-    public Action OnEnableSwitchState { get; set; }
-}
+    protected bool canAttack;
+    virtual public Action OnEnableSwitchState { get; set; }
+    
+    abstract public bool TryAttack(PlayerContext context, bool isDashing);
+    
+    virtual protected IEnumerator AttackCooldownCoroutine(AttackData data)
+    {
+        canAttack = false;
+        yield return new WaitForSeconds(data.cooldown);
+        canAttack = true;
+        OnEnableSwitchState?.Invoke();
+    }
+} 

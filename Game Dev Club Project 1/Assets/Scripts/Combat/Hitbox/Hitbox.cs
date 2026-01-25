@@ -19,7 +19,6 @@ public class Hitbox : MonoBehaviour
         hitboxData = data;
         this.self = self;
         StartCoroutine(LifetimeCoroutine());
-        
     }
 
     private IEnumerator LifetimeCoroutine()
@@ -68,7 +67,8 @@ public class Hitbox : MonoBehaviour
             Amount = damage,
             Source = self,
             HitPoint = hitPoint3,
-            HitNormal = (transform.position - hitPoint3).normalized,
+            HitNormal = (self.transform.position - hitPoint3).normalized,
+            KnockbackForce = hitboxData.targetKnockBackForce,
         };
 
         DamageResult damageResult = target.ApplyDamage(in info);
