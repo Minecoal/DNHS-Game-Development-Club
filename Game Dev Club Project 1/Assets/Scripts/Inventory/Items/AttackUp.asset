@@ -9,9 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9527d237b42aa2d4983951d0da82756c, type: 3}
-  m_Name: TestItemBlueEquipment
-  m_EditorClassIdentifier: Assembly-CSharp::EquipmentClass
+  m_Script: {fileID: 11500000, guid: 3bdee2fabe8bfb24198cd04f6102991d, type: 3}
+  m_Name: AttackUp
+  m_EditorClassIdentifier: Assembly-CSharp::AttackBuffEquipmentClass
   itemName: blue
   itemIcon: {fileID: 1074310927, guid: 7378718ef424b224b9a6ea47371852a1, type: 3}
   isStackable: 0
+  attackBuff: 10

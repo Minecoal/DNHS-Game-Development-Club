@@ -48,11 +48,15 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
     private GameObject primaryWeaponGameObject;
     private GameObject secondaryWeaponGameObject;
 
+    private PlayerManager playerManager;
+
     private int padding = 35;// half of slot size + half of padding size
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        playerManager = PlayerManager.Instance;
+
         slots = new GameObject[slotHolder.transform.childCount];
         items = new ItemSlot[slots.Length];
         equipmentSlots = new GameObject[equipmentSlotHolder.transform.childCount];
@@ -92,7 +96,7 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
         {
             if (item.GetItem() != null)
                 if (item.GetItem().GetEquipment() != null)
-                    item.GetItem().GetEquipment().OnEquip();
+                    item.GetItem().GetEquipment().OnEquip(playerManager.PlayerScript.playerContext);
         }
 
         //AddItem(itemToAdd, 1);
@@ -127,9 +131,9 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
 
         if (Input.GetMouseButtonDown(2))
         {
-            GetComponent<DropItem>().DropCurrency(10, PlayerManager.Instance.Player.transform.position);
-            //GetComponent<DropItem>().DropItems(new ItemSlot(startingItems[1]), PlayerManager.Instance.Player.transform.position);
-            //GetComponent<DropItem>().DropItems(new ItemSlot(startingItems[2]), PlayerManager.Instance.Player.transform.position);
+            GetComponent<DropItem>().DropCurrency(10, playerManager.Player.transform.position);
+            //GetComponent<DropItem>().DropItems(new ItemSlot(startingItems[1]), playerManager.Player.transform.position);
+            //GetComponent<DropItem>().DropItems(new ItemSlot(startingItems[2]), playerManager.Player.transform.position);
         }
     }
 
@@ -181,7 +185,7 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
         {
             //drop items(quantityLeft)
             if(quantityLeft > 0)
-                GetComponent<DropItem>().DropItems(new ItemSlot(item, quantityLeft), PlayerManager.Instance.Player.transform.position);
+                GetComponent<DropItem>().DropItems(new ItemSlot(item, quantityLeft), playerManager.Player.transform.position);
             Debug.Log("Drop items: " + quantityLeft + " | " + item.itemName);
         }
 
@@ -458,21 +462,21 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
 
         if (IsEquipmentItemAndSlot(originalSlot, originalSlot.GetItem()))
         {
-            originalSlot.GetItem().GetEquipment().OnUnequip();
+            originalSlot.GetItem().GetEquipment().OnUnequip(playerManager.PlayerScript.playerContext);
         }
         else if (isPrimaryWeaponItemAndSlot(originalSlot, movingSlot.GetItem()))
         {
             if (primaryWeaponGameObject != null)
                 Destroy(primaryWeaponGameObject);
             primaryWeaponGameObject = null;
-            PlayerManager.Instance.PlayerScript.SetPrimaryWeapon(null);
+            playerManager.PlayerScript.SetPrimaryWeapon(null);
         }
         else if (isSecondaryWeaponItemAndSlot(originalSlot, movingSlot.GetItem()))
         {
             if (secondaryWeaponGameObject != null)
                 Destroy(secondaryWeaponGameObject);
             secondaryWeaponGameObject = null;
-            PlayerManager.Instance.PlayerScript.SetSecondaryWeapon(null);
+            playerManager.PlayerScript.SetSecondaryWeapon(null);
         }
 
 
@@ -489,7 +493,7 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
         //drop item if click outside inventory
         if (!IsMouseOverUI())
         {
-            GetComponent<DropItem>().DropItems(new ItemSlot(movingSlot.GetItem(), movingSlot.GetQuantity()), PlayerManager.Instance.Player.transform.position);
+            GetComponent<DropItem>().DropItems(new ItemSlot(movingSlot.GetItem(), movingSlot.GetQuantity()), playerManager.Player.transform.position);
             movingSlot.Clear();
         }
         else
@@ -542,22 +546,22 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
 
                         if (IsEquipmentItemAndSlot(originalSlot, movingSlot.GetItem()))
                         {
-                            originalSlot.GetItem().GetEquipment().OnEquip();
-                            movingSlot.GetItem().GetEquipment().OnUnequip();
+                            originalSlot.GetItem().GetEquipment().OnEquip(playerManager.PlayerScript.playerContext);
+                            movingSlot.GetItem().GetEquipment().OnUnequip(playerManager.PlayerScript.playerContext);
                         }
                         else if (isPrimaryWeaponItemAndSlot(originalSlot, movingSlot.GetItem()))
                         {
                             if (primaryWeaponGameObject != null)
                                 Destroy(primaryWeaponGameObject);
                             primaryWeaponGameObject = Instantiate(originalSlot.GetItem().GetWeapon().weaponPrefab);
-                            PlayerManager.instance.PlayerScript.SetPrimaryWeapon(primaryWeaponGameObject);
+                            playerManager.PlayerScript.SetPrimaryWeapon(primaryWeaponGameObject);
                         }
                         else if (isSecondaryWeaponItemAndSlot(originalSlot, movingSlot.GetItem()))
                         {
                             if (secondaryWeaponGameObject != null)
                                 Destroy(secondaryWeaponGameObject);
                             secondaryWeaponGameObject = Instantiate(originalSlot.GetItem().GetWeapon().weaponPrefab);
-                            PlayerManager.instance.PlayerScript.SetSecondaryWeapon(secondaryWeaponGameObject);
+                            playerManager.PlayerScript.SetSecondaryWeapon(secondaryWeaponGameObject);
                         }
 
                         RefreshUI();
@@ -579,14 +583,14 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
                         if (primaryWeaponGameObject != null)
                             Destroy(primaryWeaponGameObject);
                         primaryWeaponGameObject = Instantiate(movingSlot.GetItem().GetWeapon().weaponPrefab);
-                        PlayerManager.instance.PlayerScript.SetPrimaryWeapon(primaryWeaponGameObject);
+                        playerManager.PlayerScript.SetPrimaryWeapon(primaryWeaponGameObject);
                     }
                     else if(isSecondaryWeaponItemAndSlot(originalSlot, movingSlot.GetItem()))
                     {
                         if (secondaryWeaponGameObject != null)
                             Destroy(secondaryWeaponGameObject);
                         secondaryWeaponGameObject = Instantiate(movingSlot.GetItem().GetWeapon().weaponPrefab);
-                        PlayerManager.instance.PlayerScript.SetSecondaryWeapon(secondaryWeaponGameObject);
+                        playerManager.PlayerScript.SetSecondaryWeapon(secondaryWeaponGameObject);
                     }*/
                     TryEquipEquipmentWeapon(originalSlot, movingSlot.GetItem());
 
@@ -753,21 +757,21 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
     {
         if (IsEquipmentItemAndSlot(itemSlot, item))
         {
-            originalSlot.GetItem().GetEquipment().OnEquip();
+            originalSlot.GetItem().GetEquipment().OnEquip(playerManager.PlayerScript.playerContext);
         }
         else if (isPrimaryWeaponItemAndSlot(itemSlot, item))
         {
             if (primaryWeaponGameObject != null)
                 Destroy(primaryWeaponGameObject);
             primaryWeaponGameObject = Instantiate(movingSlot.GetItem().GetWeapon().weaponPrefab);
-            PlayerManager.instance.PlayerScript.SetPrimaryWeapon(primaryWeaponGameObject);
+            playerManager.PlayerScript.SetPrimaryWeapon(primaryWeaponGameObject);
         }
         else if (isSecondaryWeaponItemAndSlot(itemSlot, movingSlot.GetItem()))
         {
             if (secondaryWeaponGameObject != null)
                 Destroy(secondaryWeaponGameObject);
             secondaryWeaponGameObject = Instantiate(movingSlot.GetItem().GetWeapon().weaponPrefab);
-            PlayerManager.instance.PlayerScript.SetSecondaryWeapon(secondaryWeaponGameObject);
+            playerManager.PlayerScript.SetSecondaryWeapon(secondaryWeaponGameObject);
         }
     }
 
