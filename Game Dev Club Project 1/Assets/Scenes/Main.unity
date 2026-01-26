@@ -9135,6 +9135,7 @@ GameObject:
   - component: {fileID: 806947593}
   - component: {fileID: 806947594}
   - component: {fileID: 806947595}
+  - component: {fileID: 806947596}
   m_Layer: 0
   m_Name: Small Enemy
   m_TagString: Untagged
@@ -9269,6 +9270,18 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.49089706, y: 1.8927767, z: 0.15550753}
   m_Center: {x: 0, y: 0.44638836, z: 0}
+--- !u!114 &806947596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 806947584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 703214b2bb9924d448f6e80c52a321c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DropItem
 --- !u!224 &807680332 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8788688767840062729, guid: f1760dc30a8fb034f98394407781d99a, type: 3}
@@ -12724,6 +12737,7 @@ GameObject:
   - component: {fileID: 1027968723}
   - component: {fileID: 1027968722}
   - component: {fileID: 1027968721}
+  - component: {fileID: 1027968729}
   m_Layer: 0
   m_Name: Large Enemy
   m_TagString: Untagged
@@ -12858,6 +12872,18 @@ Transform:
   - {fileID: 849648480}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1027968729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1027968720}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 703214b2bb9924d448f6e80c52a321c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DropItem
 --- !u!1001 &1039822635
 PrefabInstance:
   m_ObjectHideFlags: 0

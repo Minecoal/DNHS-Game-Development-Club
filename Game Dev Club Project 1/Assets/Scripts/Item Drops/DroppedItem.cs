@@ -14,7 +14,7 @@ public class DroppedItem : MonoBehaviour
     private float spawnTime;
 
     private float flyTime = 0.3f;
-    [SerializeField] private AnimationCurve flyCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+    private AnimationCurve flyCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
     private void Awake()
     {
