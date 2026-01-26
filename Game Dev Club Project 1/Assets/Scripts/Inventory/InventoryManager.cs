@@ -515,13 +515,9 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
                     AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
                 else
                 {
-                    oldSlotBeforeMove.AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
-
-                    Debug.Log(oldSlotBeforeMove.GetItem());
                     //add if statements checkjing for equipment/weapon
                     TryEquipEquipmentWeapon(oldSlotBeforeMove, movingSlot.GetItem());
-
-                    
+                    oldSlotBeforeMove.AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
                 }
                     
 
@@ -759,10 +755,15 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
 
     private void TryEquipEquipmentWeapon(ItemSlot itemSlot, ItemClass item)
     {
-        Debug.Log(itemSlot + "    ]    " + item);
+        
         if (IsEquipmentItemAndSlot(itemSlot, item))
         {
-            originalSlot.GetItem().GetEquipment().OnEquip(playerManager.PlayerScript.playerContext);
+            //changed originalSlot to movingSlot, check here if any errors
+            /*
+             * 
+             * 
+             */
+            movingSlot.GetItem().GetEquipment().OnEquip(playerManager.PlayerScript.playerContext);
         }
         else if (isPrimaryWeaponItemAndSlot(itemSlot, item))
         {
