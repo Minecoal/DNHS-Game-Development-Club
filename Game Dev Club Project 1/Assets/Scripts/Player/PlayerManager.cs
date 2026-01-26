@@ -3,9 +3,8 @@ using UnityEngine;
 public class PlayerManager : PersistentGenericSingleton<PlayerManager>
 {
     [SerializeField] private PlayerData data;
-    [SerializeField] private PlayerData runtimeData;
     public PlayerData BaseData => data;
-    public PlayerData RunTimeData => runtimeData;
+    public PlayerData RunTimeData;
 
     public GameObject Player { get; private set; }
     public Transform Transform { get; private set; }
@@ -28,6 +27,8 @@ public class PlayerManager : PersistentGenericSingleton<PlayerManager>
         Animator = Player.GetComponentInChildren<Animator>();
         AnimationManager = Player.GetComponentInChildren<PlayerAnimationManager>();
         PlayerFlipper = player.GetComponentInChildren<PlayerSpriteFlipper>();
+
+        RunTimeData = BaseData.Clone();
     }
 
     public void RegisterCamera(CameraController camera)

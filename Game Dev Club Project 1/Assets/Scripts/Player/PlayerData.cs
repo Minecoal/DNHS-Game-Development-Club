@@ -13,4 +13,21 @@ public class PlayerData : ScriptableObject
     public float dashForce = 6;
     public float dashDuration = 0.2f;
     public float dashCooldown = 0.5f;
+
+    [Header(header: "Attack")]
+    public float attackBonus = 0;
+
+    public PlayerData Clone()
+    {
+        return new PlayerData
+        {
+            moveSpeed = this.moveSpeed,
+            accelAmount = this.accelAmount,
+            decelAmount = this.decelAmount,
+            dashForce = this.dashForce,
+            dashDuration = this.dashDuration,
+            dashCooldown = this.dashCooldown,
+            attackBonus = this.attackBonus
+        };
+    }
 }

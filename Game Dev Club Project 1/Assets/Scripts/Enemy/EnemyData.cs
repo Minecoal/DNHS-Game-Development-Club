@@ -19,4 +19,7 @@ public class EnemyData : ScriptableObject
     [Header("Pathfinding Related")]
     public float vectorFieldRadius;
     public float weight;
+
+    [Header("Drop Table")]
+    public DropTableClass[] dropTable;
 }

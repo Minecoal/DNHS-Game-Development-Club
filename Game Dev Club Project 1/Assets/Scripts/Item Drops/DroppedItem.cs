@@ -13,6 +13,9 @@ public class DroppedItem : MonoBehaviour
     private float pickupDelay = 0.5f;
     private float spawnTime;
 
+    private float flyTime = 0.3f;
+    private AnimationCurve flyCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+
     private void Awake()
     {
         spawnTime = Time.time;
@@ -46,26 +49,10 @@ public class DroppedItem : MonoBehaviour
                 if (Time.time - spawnTime < pickupDelay)
                     return;
 
-                int quantityToAdd = inventory.CanAddItem(item.GetItem(), item.GetQuantity());
-                //can add all of item
-                if (quantityToAdd == -1)
-                {
-                    inventory.AddItem(item.GetItem(), item.GetQuantity());
-                    Destroy(gameObject);
+                if (inventory.CanAddItem(item.GetItem(), item.GetQuantity()) != 0)
+                    StartCoroutine(FlyToPlayer(col.transform));
 
-                }
-                //
-                else if (quantityToAdd != 0)
-                {
-                    Debug.Log(quantityToAdd);
-                    item.SubQuantity(quantityToAdd);
-                    inventory.AddItem(item.GetItem(), quantityToAdd);
-                    if (item.GetQuantity() == 0)
-                    {
-                        Destroy(this.gameObject);
-                    }
-
-                }
+                
             }
             else
             {
@@ -73,13 +60,67 @@ public class DroppedItem : MonoBehaviour
                 if (Time.time - spawnTime < pickupDelay)
                     return;
 
-                inventory.AddCurrency(currencyAmount);
-                Destroy(gameObject);
+                StartCoroutine(FlyToPlayer(col.transform));
+
+                
+                //Destroy(gameObject);
             }
         }
         
     }
 
-   
+
+    private IEnumerator FlyToPlayer(Transform target)
+    {
+        Vector3 startPos = transform.position;
+        float t = 0f;
+
+
+        while (t < flyTime)
+        {
+            t += Time.deltaTime;
+            float normalized = t / flyTime;
+            float curved = flyCurve.Evaluate(normalized);
+
+
+            transform.position = Vector3.Lerp(startPos, target.position, curved);
+            yield return null;
+        }
+
+
+        transform.position = target.position;
+        
+
+        if (isItem)
+        {
+            int quantityToAdd = inventory.CanAddItem(item.GetItem(), item.GetQuantity());
+            //can add all of item
+            if (quantityToAdd == -1)
+            {
+                inventory.AddItem(item.GetItem(), item.GetQuantity());
+                Destroy(gameObject);
+
+            }
+            //
+            else if (quantityToAdd != 0)
+            {
+                Debug.Log(quantityToAdd);
+                item.SubQuantity(quantityToAdd);
+                inventory.AddItem(item.GetItem(), quantityToAdd);
+                if (item.GetQuantity() == 0)
+                {
+                    Destroy(this.gameObject);
+                }
+            }
+            
+        }
+        else
+        {
+            inventory.AddCurrency(currencyAmount);
+            Destroy(gameObject);
+        }
+
+    }
+
 
 }

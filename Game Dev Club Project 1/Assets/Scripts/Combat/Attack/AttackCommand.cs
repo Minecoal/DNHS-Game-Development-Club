@@ -16,6 +16,6 @@ public class AttackCommand : ICommand
     {
         context.AnimationManager.PlayAnimationForce(attackData.animationID, attackData.animationSpeed);
         context.Player.ApplyForce(attackData.selfKnockbackForce, context);
-        GameObject hitbox = HitboxManager.Instance.CreateNewHitbox(attackData.hitboxData).WithSpawnPoint(context.AttackAnchor).Build(context.PlayerGO, attackData.damage);
+        GameObject hitbox = HitboxManager.Instance.CreateNewHitbox(attackData.hitboxData).WithSpawnPoint(context.AttackAnchor).Build(context.PlayerGO, attackData.damage + context.Data.attackBonus);
     }
 }

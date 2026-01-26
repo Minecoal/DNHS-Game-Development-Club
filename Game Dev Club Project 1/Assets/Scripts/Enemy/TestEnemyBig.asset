@@ -24,3 +24,14 @@ MonoBehaviour:
   agentTypeID: -334000983
   vectorFieldRadius: 3
   weight: 8
+  dropTable:
+  - itemName: green item
+    itemDropped: {fileID: 11400000, guid: 9e3a25992e795cf4983f5c0845316cd1, type: 2}
+    minQuantity: 3
+    maxQuantity: 8
+    dropChance: 100
+  - itemName: yellow item
+    itemDropped: {fileID: 11400000, guid: c86d4c53362fb904d9e5d53d279c89c4, type: 2}
+    minQuantity: 1
+    maxQuantity: 2
+    dropChance: 50

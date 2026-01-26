@@ -18,3 +18,4 @@ MonoBehaviour:
   dashForce: 25
   dashDuration: 0.1
   dashCooldown: 1
+  attackBonus: 0

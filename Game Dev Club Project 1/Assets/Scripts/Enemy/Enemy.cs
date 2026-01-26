@@ -180,6 +180,7 @@ public class Enemy : MonoBehaviour
         deathParticle?.PlayParticle(transform.position);
         PlayerManager.Instance.Camera.ScreenShake(Mathf.Max(Mathf.Sqrt(Health.GetMaxHealth()), 3f), 0.1f);
         TimeController.Instance.StartCoroutine(TimeController.TimeStop(0.18f, 0.1f));
+        GetComponent<DropItem>().DropItems(enemyData.dropTable, transform.position);
         gameObject.SetActive(false); //temporary
     }
 
