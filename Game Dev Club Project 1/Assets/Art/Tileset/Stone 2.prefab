@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6709440039480022699}
   m_Layer: 0
-  m_Name: Stone 1
+  m_Name: Stone 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -113,7 +113,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: b93500987534b4f2fb27ee285148c3b5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: dcf09097b30544868999342e6ec41f36, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -155,5 +155,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.61, y: 0.25, z: 0.11}
-  m_Center: {x: 0, y: -0.21, z: 0}
+  m_Size: {x: 0.42398894, y: 0.5562235, z: 0.11}
+  m_Center: {x: 0.009897321, y: -0.056888223, z: 0}
