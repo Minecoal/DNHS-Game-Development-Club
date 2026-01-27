@@ -4,6 +4,7 @@ using System.Collections;
 public class Weapon1 : IWeapon
 {
     [SerializeField] private AttackData slashAttack;
+    [SerializeField] private AttackData slashAttackFT;
     [SerializeField] private AttackData heavyAttack;
     [SerializeField] private AttackData dashAttack;
 
@@ -16,7 +17,7 @@ public class Weapon1 : IWeapon
         canAttack = true;
         combo1 = new AttackData[]{
             slashAttack,
-            dashAttack,
+            slashAttackFT,
             slashAttack,
             heavyAttack,
         };
