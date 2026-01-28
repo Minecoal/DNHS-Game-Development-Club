@@ -26,7 +26,7 @@ public class PlayerDashState : IPlayerState
             return;
         }
 
-        // Dash finished
+        // transitions
         if (context.Input.MoveInputNormalized.sqrMagnitude > 0.01f)
             context.StateMachine.ChangeState(new PlayerMovingState(), context);
         else

@@ -1,12 +1,32 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    [SerializeField] static private Dictionary<EnemyType, GameObject> enemyPrefabsDict;
+    [SerializeField] private EnemyPrefabEntry[] enemyPrefabs;
+    private Dictionary<EnemyType, GameObject> enemyPrefabsDict;
+    [SerializeField] float spawnInterval = 4f;
+    private float timer = 0f;
 
-    public static EnemyBuilder New(Vector3 spawnPoint, EnemyType type)
+    private void Awake()
+    {
+        enemyPrefabsDict = new Dictionary<EnemyType, GameObject>();
+
+        foreach (var entry in enemyPrefabs)
+        {
+            enemyPrefabsDict[entry.type] = entry.prefab;
+        }
+    }
+
+    void Update()
+    {
+        if (Time.time - timer >= spawnInterval){
+            Create(transform.position, EnemyType.SmallEnemy).WithPatrolCenter(transform.position).Build();
+            timer = Time.time;
+        }
+    }
+
+    public EnemyBuilder Create(Vector3 spawnPoint, EnemyType type)
     {
         if (!enemyPrefabsDict.TryGetValue(type, out GameObject prefab)){
             Debug.LogError("No Prefab Found in Dictionary");
@@ -38,12 +58,25 @@ public class EnemySpawner : MonoBehaviour
 
         public GameObject Build()
         {
-            GameObject obj = Instantiate(prefab, spawnPoint, Quaternion.identity);
+            Vector3 finalPos = spawnPoint + prefab.transform.localPosition; // addes prefab offset
+            GameObject obj = Instantiate(prefab, finalPos, Quaternion.identity);
             Enemy enemy = obj.GetComponent<Enemy>();
+            if (enemy == null) enemy = obj.GetComponentInChildren<Enemy>();
+            if (enemy == null){
+                Debug.LogError("Cannot Find Enemy Component");
+                return null;
+            }
             enemy.SetPatrolCenter(patrolCenter);
             enemy.Initialize();
             return obj;
         }
     }
+}
+
+[System.Serializable]
+public class EnemyPrefabEntry
+{
+    public EnemyType type;
+    public GameObject prefab;
 }
 

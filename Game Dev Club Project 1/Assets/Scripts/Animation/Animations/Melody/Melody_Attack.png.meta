@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: a668fa73846824d7b8e12b3c6a30a02e
+guid: 4a9ccd25026d94fb2a6da029cafab8cb
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -97,73 +97,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Melody_Attack_Melee_0
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 4096
-        width: 2048
-        height: 2048
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 2135760e3f2704e8d95889b548a5f021
-      internalID: 840873468
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Melody_Attack_Melee_1
-      rect:
-        serializedVersion: 2
-        x: 2048
-        y: 4096
-        width: 2048
-        height: 2048
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: c54185c2efe0c4806b1ca567c2c99767
-      internalID: 1068371904
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Melody_Attack_Melee_2
-      rect:
-        serializedVersion: 2
-        x: 4096
-        y: 4096
-        width: 2048
-        height: 2048
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 2904b2bc625f9400bb60b9687598e65e
-      internalID: 2142749932
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Melody_Attack_Melee_3
+      name: Melody_Attack_0
       rect:
         serializedVersion: 2
         x: 0
@@ -178,14 +112,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8f8e69d62dfe640dab5dfe195a9d378e
-      internalID: 329436093
+      spriteID: 38df5139d0e614d78b089af74be68dc4
+      internalID: -292324506
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Melody_Attack_Melee_4
+      name: Melody_Attack_1
       rect:
         serializedVersion: 2
         x: 2048
@@ -200,36 +134,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7a2e2223a35514b43a644a8f378dbd76
-      internalID: -1461262491
+      spriteID: 936deb3b7bcf54579b7ae10cd2613ad9
+      internalID: -72111270
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Melody_Attack_Melee_5
-      rect:
-        serializedVersion: 2
-        x: 4096
-        y: 2048
-        width: 2048
-        height: 2048
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: c8d9d9c9d5651412eb15f838a4bd8dd6
-      internalID: 1157217309
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Melody_Attack_Melee_6
+      name: Melody_Attack_2
       rect:
         serializedVersion: 2
         x: 0
@@ -244,8 +156,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e0169e730a3d34c58bd6e28a8185ec51
-      internalID: -247729290
+      spriteID: 5b2d0115d42784874b73fc6f8fdc84ec
+      internalID: 1700285152
       vertices: []
       indices: 
       edges: []
@@ -254,7 +166,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 287efe0d1442b40f7bff8f9d4202b50b
+    spriteID: 2d56f2f0421b84ff28db1859ee8f2ae2
     internalID: 0
     vertices: []
     indices: 
@@ -264,15 +176,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":3.0,"y":3.0},"gridSpriteSize":{"x":2048.0,"y":2048.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":2.0,"y":2.0},"gridSpriteSize":{"x":2048.0,"y":2048.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Melody_Attack_Melee_0: 840873468
-      Melody_Attack_Melee_1: 1068371904
-      Melody_Attack_Melee_2: 2142749932
-      Melody_Attack_Melee_3: 329436093
-      Melody_Attack_Melee_4: -1461262491
-      Melody_Attack_Melee_5: 1157217309
-      Melody_Attack_Melee_6: -247729290
+      Melody_Attack_0: -292324506
+      Melody_Attack_1: -72111270
+      Melody_Attack_2: 1700285152
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -10,6 +10,8 @@ public class PlayerAttackState : IPlayerState
         // Trigger the attack immediately
         context.ActivePrimaryWeapon.TryAttack(context, false);
         context.ActivePrimaryWeapon.OnEnableSwitchState += EnableSwitchState;
+
+        context.PlayerFlipper.CanFlip(false);
     }
 
     public void Exit(PlayerContext context)

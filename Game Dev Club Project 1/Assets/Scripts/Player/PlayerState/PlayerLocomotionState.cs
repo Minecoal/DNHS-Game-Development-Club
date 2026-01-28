@@ -2,7 +2,10 @@ using UnityEngine;
 // do not create instance of this class
 public class PlayerLocomotionState : IPlayerState
 {
-    public virtual void Enter(PlayerContext context) {}
+    public virtual void Enter(PlayerContext context)
+    {
+        context.PlayerFlipper.CanFlip(true);
+    }
     public virtual void Exit(PlayerContext context) {}
 
     public virtual void FixedTick(PlayerContext context, float fixedDeltaTime)
