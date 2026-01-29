@@ -25,13 +25,13 @@ MonoBehaviour:
   vectorFieldRadius: 3
   weight: 8
   dropTable:
-  - itemName: green item
-    itemDropped: {fileID: 11400000, guid: 9e3a25992e795cf4983f5c0845316cd1, type: 2}
+  - itemName: Wood
+    itemDropped: {fileID: 11400000, guid: ab3cab163e2ef47a895393e4812ecd28, type: 2}
     minQuantity: 3
-    maxQuantity: 8
+    maxQuantity: 6
     dropChance: 100
-  - itemName: yellow item
-    itemDropped: {fileID: 11400000, guid: c86d4c53362fb904d9e5d53d279c89c4, type: 2}
+  - itemName: Music Core 1
+    itemDropped: {fileID: 11400000, guid: 598e5f9e762a6450790a596a550b3464, type: 2}
     minQuantity: 1
-    maxQuantity: 2
+    maxQuantity: 1
     dropChance: 50
