@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0825a9c77846cff4ab5f5eda5ccaa99d, type: 3}
-  m_Name: weapon2
+  m_Name: Weapon2
   m_EditorClassIdentifier: Assembly-CSharp::WeaponClass
-  itemName: weapon2
+  itemName: Weapon2
   itemIcon: {fileID: -2052670412, guid: 372ee13e540634512b0160dd220a8d88, type: 3}
   isStackable: 0
   weaponPrefab: {fileID: 7056307776956405336, guid: 82123615b85318e4da41df46f0fbecec, type: 3}

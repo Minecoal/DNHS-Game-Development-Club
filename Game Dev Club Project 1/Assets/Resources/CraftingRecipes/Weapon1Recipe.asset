@@ -10,13 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2712889b5eb723343bfea4fd03ab5757, type: 3}
-  m_Name: BlueRecipe
+  m_Name: Weapon1Recipe
   m_EditorClassIdentifier: Assembly-CSharp::CraftingRecipeClass
   inputItems:
-  - item: {fileID: 11400000, guid: 10a98d2c95a32434388590398245201c, type: 2}
-    quantity: 2
-  - item: {fileID: 11400000, guid: 9e3a25992e795cf4983f5c0845316cd1, type: 2}
+  - item: {fileID: 11400000, guid: ab3cab163e2ef47a895393e4812ecd28, type: 2}
+    quantity: 10
+  - item: {fileID: 11400000, guid: 5a478dc537a764c979f7bd7bf076f02c, type: 2}
+    quantity: 5
+  - item: {fileID: 11400000, guid: 598e5f9e762a6450790a596a550b3464, type: 2}
     quantity: 1
   outputItem:
-    item: {fileID: 11400000, guid: 1d8660999ed905c48889c39394abeec9, type: 2}
+    item: {fileID: 11400000, guid: 747e26e4fe26f00478c9060963f76329, type: 2}
     quantity: 1

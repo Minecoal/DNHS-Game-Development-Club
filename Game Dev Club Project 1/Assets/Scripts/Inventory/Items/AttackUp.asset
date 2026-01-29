@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bdee2fabe8bfb24198cd04f6102991d, type: 3}
   m_Name: AttackUp
   m_EditorClassIdentifier: Assembly-CSharp::AttackBuffEquipmentClass
-  itemName: blue
-  itemIcon: {fileID: 1074310927, guid: 7378718ef424b224b9a6ea47371852a1, type: 3}
+  itemName: AttackBuff
+  itemIcon: {fileID: 21300000, guid: cc332aa5034414d6181981bd73766324, type: 3}
   isStackable: 0
   attackBuff: 10
