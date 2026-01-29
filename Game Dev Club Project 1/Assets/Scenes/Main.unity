@@ -7731,7 +7731,10 @@ MonoBehaviour:
     prefab: {fileID: 3054550129891836350, guid: 329c298e8b1b342738ffbdf6d4b839fa, type: 3}
   - type: 1
     prefab: {fileID: 7619986505134803389, guid: 4e0f8aef776454e818daf63473b2a1f5, type: 3}
-  strategies: []
+  strategies:
+  - {fileID: 11400000, guid: 3ced5342e7de94b2b85b399458a3ff91, type: 2}
+  maxSpawnCount: 2
+  spawnCount: 0
 --- !u!1 &675863101
 GameObject:
   m_ObjectHideFlags: 0
@@ -10734,7 +10737,10 @@ MonoBehaviour:
     prefab: {fileID: 3054550129891836350, guid: 329c298e8b1b342738ffbdf6d4b839fa, type: 3}
   - type: 1
     prefab: {fileID: 7619986505134803389, guid: 4e0f8aef776454e818daf63473b2a1f5, type: 3}
-  strategies: []
+  strategies:
+  - {fileID: 11400000, guid: 3ced5342e7de94b2b85b399458a3ff91, type: 2}
+  maxSpawnCount: 4
+  spawnCount: 0
 --- !u!4 &885121887
 Transform:
   m_ObjectHideFlags: 0
@@ -27229,21 +27235,11 @@ MonoBehaviour:
   itemToAdd: {fileID: 0}
   itemToRemove: {fileID: 0}
   startingItems:
-  - item: {fileID: 11400000, guid: 9e3a25992e795cf4983f5c0845316cd1, type: 2}
-    quantity: 5
-  - item: {fileID: 11400000, guid: 10a98d2c95a32434388590398245201c, type: 2}
-    quantity: 10
-  - item: {fileID: 11400000, guid: 1d8660999ed905c48889c39394abeec9, type: 2}
-    quantity: 1
-  - item: {fileID: 11400000, guid: 1d8660999ed905c48889c39394abeec9, type: 2}
-    quantity: 1
-  - item: {fileID: 11400000, guid: 1d8660999ed905c48889c39394abeec9, type: 2}
-    quantity: 1
-  - item: {fileID: 11400000, guid: c86d4c53362fb904d9e5d53d279c89c4, type: 2}
-    quantity: 1
-  - item: {fileID: 11400000, guid: 747e26e4fe26f00478c9060963f76329, type: 2}
-    quantity: 1
-  - item: {fileID: 11400000, guid: 377d0242e5fc7d8459e8db6a26856ff8, type: 2}
+  - item: {fileID: 11400000, guid: 5a478dc537a764c979f7bd7bf076f02c, type: 2}
+    quantity: 6
+  - item: {fileID: 11400000, guid: ab3cab163e2ef47a895393e4812ecd28, type: 2}
+    quantity: 4
+  - item: {fileID: 11400000, guid: 598e5f9e762a6450790a596a550b3464, type: 2}
     quantity: 1
   primaryWeaponSlotGameObject: {fileID: 1859507923}
   secondaryWeaponSlotGameObject: {fileID: 892927805}
