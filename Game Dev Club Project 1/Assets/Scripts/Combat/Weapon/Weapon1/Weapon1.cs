@@ -41,6 +41,8 @@ public class Weapon1 : IWeapon
             comboIndex++;
         }
 
+        context.Stamina.UseStamina(attackData.staminaCost);
+
         AttackCommand attack = new AttackCommand(context, attackData);
         attack.Execute();
         StartCoroutine(AttackCooldownCoroutine(attackData));
@@ -59,5 +61,17 @@ public class Weapon1 : IWeapon
 
         comboIndex = 0;
         resetCoroutine = null;
+    }
+
+    public override bool CanAttack(PlayerContext context, bool isDashing)
+    {
+        if (!canAttack)
+            return false;
+
+        AttackData attackData = isDashing
+            ? dashAttack
+            : combo1[comboIndex % combo1.Length];
+
+        return context.Stamina.CanUseStamina(attackData.staminaCost);
     }
 }

@@ -19,3 +19,4 @@ MonoBehaviour:
   animationSpeed: 1
   animationID: {fileID: 11400000, guid: 505b7c4c7781a41468fa23181592bf96, type: 2}
   hitboxData: {fileID: 11400000, guid: fc9b0ac0db29443bfaf538db2fc28c9b, type: 2}
+  staminaCost: 5

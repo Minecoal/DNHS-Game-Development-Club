@@ -21,7 +21,7 @@ public class PlayerDashState : IPlayerState
         //dash attack
         if (context.Input.ConsumePrimaryAttack())
         {
-            if (context.ActivePrimaryWeapon != null)
+            if (context.ActivePrimaryWeapon != null && context.ActivePrimaryWeapon.CanAttack(context, true))
                 context.StateMachine.ChangeState(new PlayerDashAttackState(), context);
             return;
         }
@@ -37,6 +37,8 @@ public class PlayerDashState : IPlayerState
 
     private void StartDash(PlayerContext context)
     {
+        context.Stamina.UseStamina(context.Data.dashStaminaCost);
+
         context.AnimationManager.PlayAnimation(context.AnimationManager.Dash);
 
         dashStartTime = Time.time;

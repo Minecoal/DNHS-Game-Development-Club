@@ -15,7 +15,7 @@ public class PlayerLocomotionState : IPlayerState
 
     public virtual void Tick(PlayerContext context, float deltaTime)
 {
-    if (context.Input.ConsumeDash())
+    if (context.Input.ConsumeDash() && context.Stamina.CanUseStamina(context.Data.dashStaminaCost))
     {
         context.StateMachine.ChangeState(new PlayerDashState(), context);
         return;
@@ -23,14 +23,14 @@ public class PlayerLocomotionState : IPlayerState
 
     if (context.Input.ConsumePrimaryAttack())
     {
-        if (context.ActivePrimaryWeapon != null)
+        if (context.ActivePrimaryWeapon != null && context.ActivePrimaryWeapon.CanAttack(context, false))
             context.StateMachine.ChangeState(new PlayerAttackState(), context);
         return;
     }
     
     if (context.Input.ConsumeSecondaryAttack())
     {
-        if (context.ActiveSecondaryWeapon != null)
+        if (context.ActiveSecondaryWeapon != null && context.ActiveSecondaryWeapon.CanAttack(context, false))
             context.StateMachine.ChangeState(new PlayerSecondaryAttackState(), context);
         return;
     }
