@@ -42,7 +42,7 @@ public class Hitbox : MonoBehaviour
     {
         if (collision == null) return;
 
-        // Ignore self (including child colliders)
+        // ignore self (including child colliders)
         if (self != null)
         {
             Transform selfTransform = self.transform;
@@ -52,7 +52,7 @@ public class Hitbox : MonoBehaviour
 
         if (alreadyHit.Contains(collision.gameObject)) return;
 
-        // Try to find IDamagable on the collider, its children, its parents, or attached rigidbody
+        // try to find IDamagable on the collider, its children, its parents
         IDamagable target = collision.GetComponent<IDamagable>();
         if (target == null) target = collision.GetComponentInChildren<IDamagable>();
         if (target == null && collision.attachedRigidbody != null) target = collision.attachedRigidbody.GetComponent<IDamagable>();

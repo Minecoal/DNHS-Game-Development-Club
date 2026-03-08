@@ -20,9 +20,6 @@ public class Enemy : MonoBehaviour
     public event Action<DamageInfo> OnDamagedBy;
     public EnemyContext context { get; private set; }
 
-    [SerializeField] private ParticlePlayer deathParticle;
-    [SerializeField] private ParticlePlayer hitParticle;
-
     private bool isInitialized = false;
     private Vector3 lastAppliedForce = Vector3.zero;
     [SerializeField] private float gizmoForceScale = 0.5f;
@@ -177,7 +174,7 @@ public class Enemy : MonoBehaviour
 
     private void HandleDeath()
     {
-        deathParticle?.PlayParticle(transform.position);
+        ParticleManager.Instance?.DeathParticles?.PlayParticle(transform.position);
         PlayerManager.Instance.Camera.ScreenShake(Mathf.Max(Mathf.Sqrt(Health.GetMaxHealth()), 3f), 0.1f);
         TimeController.Instance.StartCoroutine(TimeController.TimeStop(0.18f, 0.1f));
         GetComponent<DropItem>().DropItems(enemyData.dropTable, transform.position);
@@ -186,7 +183,7 @@ public class Enemy : MonoBehaviour
 
     private void HandleHit(DamageInfo info)
     {
-        hitParticle?.PlayParticle(transform.position);
+        ParticleManager.Instance?.HitParticles?.PlayParticle(transform.position);
         Rb.AddForce(- info.HitNormal * info.KnockbackForce, ForceMode.Impulse);
         PlayerManager.Instance.Camera.ScreenShake(Mathf.Max(Mathf.Sqrt(info.Amount), 1f), 0.1f);
         TimeController.Instance.StartCoroutine(TimeController.TimeStop(0.12f, 0.2f));
@@ -222,7 +219,7 @@ public class Enemy : MonoBehaviour
         Vector3 start = transform.position + Vector3.up * 0.5f;
         Vector3 end = start + lastAppliedForce * gizmoForceScale;
         Gizmos.DrawLine(start, end);
-        if (lastAppliedForce.sqrMagnitude > 0.0001f)
+        if (lastAppliedForce.sqrMagnitude > 0.01f)
         {
             Vector3 dir = (end - start).normalized;
             float headLen = 0.2f * gizmoForceScale;

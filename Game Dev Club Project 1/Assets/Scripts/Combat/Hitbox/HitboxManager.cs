@@ -1,5 +1,3 @@
-using System;
-using UnityEditor.SearchService;
 using UnityEngine;
 
 public class HitboxManager : PersistentGenericSingleton<HitboxManager>
@@ -55,13 +53,12 @@ public class HitboxManager : PersistentGenericSingleton<HitboxManager>
         {
             Vector3 pos = spawnPoint ? spawnPoint.position : Vector3.zero;
             Quaternion rot = spawnPoint ? spawnPoint.rotation : Quaternion.identity;
-            Vector3 scale = spawnPoint ? spawnPoint.lossyScale : Vector3.one; // fix this later to not use scaling
+            Vector3 scale = spawnPoint ? spawnPoint.lossyScale : Vector3.one;
 
             GameObject obj = Instantiate(prefab, pos, rot);
             obj.transform.localScale= scale;
             obj.transform.SetParent(HitboxManager.Instance.GetOrCreateContainer(), true);
 
-            // if (spawnPoint) obj.transform.SetParent(spawnPoint);
             Hitbox hitbox = obj.GetComponent<Hitbox>();
             if (hitbox == null){
                 hitbox = obj.AddComponent<Hitbox>();
@@ -70,7 +67,7 @@ public class HitboxManager : PersistentGenericSingleton<HitboxManager>
             hitbox.ConfigureAndDestroy(self, data, damage);
 
             Animator animator = obj.GetComponentInChildren<Animator>();
-            if (animator != null) animator.Play(0, -1, 0f); // players default animation clip;
+            if (animator != null) animator.Play(0, -1, 0f); // plays default animation clip;
             return obj;
         }
 

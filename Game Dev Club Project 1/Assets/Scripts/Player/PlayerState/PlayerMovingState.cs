@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public class PlayerMovingState : PlayerLocomotionState
 {
     public override void Enter(PlayerContext context)

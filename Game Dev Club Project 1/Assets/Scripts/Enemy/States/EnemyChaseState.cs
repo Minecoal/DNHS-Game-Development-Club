@@ -20,7 +20,6 @@ public class EnemyChaseState : IEnemyState
             return;
         }
 
-        // for now just stop and log
         if (context.Enemy.IsPlayerInAttackRange())
         {
             context.StateMachine.ChangeState(new EnemyAttackState(), context);

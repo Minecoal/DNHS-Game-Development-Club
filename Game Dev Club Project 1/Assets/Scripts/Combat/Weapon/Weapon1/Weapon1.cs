@@ -18,7 +18,6 @@ public class Weapon1 : IWeapon
         combo1 = new AttackData[]{
             slashAttack,
             slashAttackFT,
-            slashAttack,
             heavyAttack,
         };
     }

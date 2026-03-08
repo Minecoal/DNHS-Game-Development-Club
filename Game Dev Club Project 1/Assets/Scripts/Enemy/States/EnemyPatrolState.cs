@@ -32,7 +32,6 @@ public class EnemyPatrolState : IEnemyState
             return;
         }
 
-        // If reached patrol point, go back to idle
         if (Vector3.Distance(context.Enemy.transform.position, targetPatrolPos) < 0.5f)
         {
             context.StateMachine.ChangeState(new EnemyIdleState(), context);
@@ -51,7 +50,7 @@ public class EnemyPatrolState : IEnemyState
         return "Patrol";
     }
 
-    private void SetNewPatrolPos(EnemyContext context) // set patrol point
+    private void SetNewPatrolPos(EnemyContext context)
     {
         Vector2 randCircle = Random.insideUnitCircle * patrolRadius;
         targetPatrolPos = context.PatrolCenter + new Vector3(randCircle.x, 0, randCircle.y);

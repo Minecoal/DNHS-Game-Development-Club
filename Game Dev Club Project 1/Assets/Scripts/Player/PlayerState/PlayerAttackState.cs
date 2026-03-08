@@ -7,7 +7,7 @@ public class PlayerAttackState : IPlayerState
     public void Enter(PlayerContext context)
     {
         canSwitchState = false;
-        // Trigger the attack immediately
+        // trigger attack immediately
         context.ActivePrimaryWeapon.TryAttack(context, false);
         context.ActivePrimaryWeapon.OnEnableSwitchState += EnableSwitchState;
 
