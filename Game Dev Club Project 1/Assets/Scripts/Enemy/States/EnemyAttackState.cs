@@ -35,6 +35,6 @@ public class EnemyAttackState : IEnemyState
     
     public override string ToString()
     {
-        return "Idle";
+        return "Attack";
     }
 }

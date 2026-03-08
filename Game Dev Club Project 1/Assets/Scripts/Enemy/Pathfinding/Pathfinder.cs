@@ -3,9 +3,11 @@ using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEngine.AI;
 
-// Compute a simple distance-weighted influence vector based on targetsData (attractive)
-// and obstaclesData (repulsive). Returns a non-normalized vector that represents
-// the combined local deviation to apply on top of the NavMesh direction.
+/// <summary>  
+/// compute a simple distance-weighted influence vector based on targetsData (attractive)
+/// and obstaclesData (repulsive). returns a non-normalized vector that represents
+/// the combined local deviation to apply on top of the NavMesh direction.
+/// </summary>
 public class Pathfinder : MonoBehaviour, IPathfinder
 {
     [Header("NavMesh + Local Influence")]
@@ -27,7 +29,7 @@ public class Pathfinder : MonoBehaviour, IPathfinder
 
     private void OnEnable()
     {
-        PathfinderManager instance = PathfinderManager.Instance; // this is garanteed -- go see GenericSingleton
+        PathfinderManager instance = PathfinderManager.Instance;
 
         if (instance.IsReady)
         {
@@ -35,7 +37,6 @@ public class Pathfinder : MonoBehaviour, IPathfinder
         }
         else
         {
-            // Wait for OnReady event
             instance.OnReady += RegisterToInstance;
         }
     }
@@ -45,7 +46,7 @@ public class Pathfinder : MonoBehaviour, IPathfinder
         var instance = PathfinderManager.Instance;
         if (instance == null) return;
 
-        instance.OnReady -= RegisterToInstance; // unsubscribe in case we never registered
+        instance.OnReady -= RegisterToInstance; // unsubscribe in case never registered
         instance.UnregisterObstacle(targetData);
         instance.UnregisterPathfinder(this);
     }
@@ -78,12 +79,12 @@ public class Pathfinder : MonoBehaviour, IPathfinder
         targetData.position = transform.position;
     }
 
-    public static float DistanceFalloff(float distance, float strength, float falloff) // graph it on desmos lol
+    public static float DistanceFalloff(float distance, float strength, float falloff)
     {
-        return strength / (1f + falloff * distance);
+        return strength / (1f + falloff * distance); //decreases strength as distance increases
     }
     /// <summary>
-    /// Calculates a direction vector based on local influences
+    /// calculates a direction vector based on local influences
     /// </summary>
     public Vector3 CalculateInfluenceVector(Vector3 sourcePosition)
     {
@@ -100,26 +101,26 @@ public class Pathfinder : MonoBehaviour, IPathfinder
             return Vector3.zero;
         }
 
-        // attractive points: pull toward favored positions
+        // attractive points:
         foreach (var target in _targets)
         {
             if (target == null) continue;
             Vector3 dir = target.position - sourcePosition;
             dir.y = 0f;
             float dist = dir.magnitude;
-            if (dist > radius) continue; // only check for targets within a certain radius
+            if (dist > radius) continue;
 
             influence += dir.normalized * DistanceFalloff(dist, strength, falloff) * target.weight;
         }
 
-        // repulsive points: push away from unfavored positions
+        // repulsive points:
         foreach (var obs in _obstacles)
         {
             if (obs == null) continue;
             Vector3 dir = sourcePosition - obs.position;
             dir.y = 0f;
             float dist = dir.magnitude;
-            if (dist > radius) continue; // only check for targets within a certain radius
+            if (dist > radius) continue;
 
             influence += dir.normalized * DistanceFalloff(dist, strength, falloff) * obs.weight;
         }
@@ -153,8 +154,8 @@ public class Pathfinder : MonoBehaviour, IPathfinder
     }
 
     /// <summary>
-    /// Find the cloest position on the Navmesh to the given position
-    /// (Taking account for when the agent might be off the navmesh)
+    /// finds the cloest position on the Navmesh to the given position
+    /// (taking account for when the agent might be off the navmesh)
     /// </summary>
     public Vector3 SampleOnNavMesh(Vector3 pos, NavMeshQueryFilter filter)
     {

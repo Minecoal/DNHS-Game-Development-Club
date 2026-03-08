@@ -42,6 +42,6 @@ public class PlayerSecondaryAttackState : IPlayerState
 
     public override string ToString()
     {
-        return "Secondary Attack";
+        return "Secondary_Attack";
     }
 }

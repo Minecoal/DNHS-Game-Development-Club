@@ -19,4 +19,7 @@ public class AttackData : ScriptableObject
 
     [Header(header: "Hitbox")]
     public HitboxData hitboxData;
+
+    [Header(header: "Stamina")]
+    public float staminaCost; // positive to cost stamina, negative to gain
 }

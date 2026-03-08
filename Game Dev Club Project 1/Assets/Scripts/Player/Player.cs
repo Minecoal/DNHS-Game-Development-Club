@@ -30,7 +30,8 @@ public class Player : MonoBehaviour
             attackAnchor,
             null,
             null,
-            pm.PlayerFlipper
+            pm.PlayerFlipper,
+            pm.Stamina
         );
 
         playerStateMachine.Initialize(new PlayerIdleState(), playerContext);
@@ -40,6 +41,8 @@ public class Player : MonoBehaviour
             .WithDraggable()
             .WithInitialText("Waiting for Input")
             .Build();
+
+        GetComponent<Stamina>().InitializeStaminaBar(this);
     }
 
     void Update()

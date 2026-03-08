@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TestEnemyBig
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   detectionRadius: 3
-  chaseRadius: 10
+  chaseRadius: 6
   attackRadius: 1
   health: 10
   damage: 1

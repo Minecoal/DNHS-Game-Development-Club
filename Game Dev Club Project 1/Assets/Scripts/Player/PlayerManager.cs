@@ -15,6 +15,7 @@ public class PlayerManager : PersistentGenericSingleton<PlayerManager>
     public PlayerAnimationManager AnimationManager { get; private set; }
     public CameraController Camera { get; private set; }
     public PlayerSpriteFlipper PlayerFlipper { get; private set; }
+    public Stamina Stamina { get; private set; }
    
 
     public void RegisterPlayer(GameObject player)
@@ -27,6 +28,7 @@ public class PlayerManager : PersistentGenericSingleton<PlayerManager>
         Animator = Player.GetComponentInChildren<Animator>();
         AnimationManager = Player.GetComponentInChildren<PlayerAnimationManager>();
         PlayerFlipper = player.GetComponentInChildren<PlayerSpriteFlipper>();
+        Stamina = Player.GetComponent<Stamina>();
 
         RunTimeData = BaseData.Clone();
     }

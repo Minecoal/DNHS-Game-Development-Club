@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: YellowRecipe
   m_EditorClassIdentifier: Assembly-CSharp::CraftingRecipeClass
   inputItems:
-  - item: {fileID: 11400000, guid: 10a98d2c95a32434388590398245201c, type: 2}
+  - item: {fileID: 11400000, guid: ab3cab163e2ef47a895393e4812ecd28, type: 2}
     quantity: 1
   outputItem:
-    item: {fileID: 11400000, guid: c86d4c53362fb904d9e5d53d279c89c4, type: 2}
+    item: {fileID: 11400000, guid: b6897d8ffee57d342a49fb6e2b96256c, type: 2}
     quantity: 1
