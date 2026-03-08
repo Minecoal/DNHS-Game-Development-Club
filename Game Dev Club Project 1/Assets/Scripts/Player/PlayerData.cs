@@ -12,10 +12,16 @@ public class PlayerData : ScriptableObject
     [Header(header: "Dash")]
     public float dashForce = 6;
     public float dashDuration = 0.2f;
-    public float dashCooldown = 0.5f;
+    public float dashStaminaCost = 30;
 
     [Header(header: "Attack")]
     public float attackBonus = 0;
+
+    [Header(header: "Stamina")]
+    public float maxStamina = 100;
+    public float staminaRechargeRate = 10; // stamina per second
+    public float staminaRechargeDelay = 1.5f; // minimum delay before recharging
+
 
     public PlayerData Clone()
     {
@@ -26,8 +32,12 @@ public class PlayerData : ScriptableObject
             decelAmount = this.decelAmount,
             dashForce = this.dashForce,
             dashDuration = this.dashDuration,
-            dashCooldown = this.dashCooldown,
-            attackBonus = this.attackBonus
+            dashStaminaCost = this.dashStaminaCost,
+            attackBonus = this.attackBonus,
+            maxStamina = this.maxStamina,
+            staminaRechargeRate = this.staminaRechargeRate,
+            staminaRechargeDelay = this.staminaRechargeDelay
+
         };
     }
 }

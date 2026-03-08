@@ -13,6 +13,7 @@ public class PlayerContext
     public IWeapon ActivePrimaryWeapon;
     public IWeapon ActiveSecondaryWeapon;
     public PlayerSpriteFlipper PlayerFlipper;
+    public Stamina Stamina;
 
     public PlayerContext(
         PlayerStateMachine StateMachine,
@@ -25,7 +26,8 @@ public class PlayerContext
         Transform AttackAnchor,
         IWeapon ActivePrimaryWeapon,
         IWeapon ActiveSecondaryWeapon,
-        PlayerSpriteFlipper PlayerFlipper)
+        PlayerSpriteFlipper PlayerFlipper,
+        Stamina Stamina)
     {
         this.PlayerGO = PlayerGO;
         this.Data = Data;
@@ -38,5 +40,6 @@ public class PlayerContext
         this.ActivePrimaryWeapon = ActivePrimaryWeapon;
         this.ActiveSecondaryWeapon = ActiveSecondaryWeapon;
         this.PlayerFlipper = PlayerFlipper;
+        this.Stamina = Stamina;
     }
 }
