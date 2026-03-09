@@ -11,118 +11,119 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
     [Header("Inventory Slots")]
     [SerializeField] private GameObject slotHolder;
     [SerializeField] private GameObject equipmentSlotHolder;
-    [SerializeField] private ItemClass itemToAdd;
-    [SerializeField] private ItemClass itemToRemove;
-
     [SerializeField] private ItemSlot[] startingItems;
-
     [SerializeField] private GameObject primaryWeaponSlotGameObject;
     [SerializeField] private GameObject secondaryWeaponSlotGameObject;
 
-    public ItemSlot[] items;
-    public ItemSlot[] equipment;
-    public GameObject[] slots;
-    public GameObject[] equipmentSlots;
+    [SerializeField] private GameObject inventoryUIRoot; //canvas
+    [SerializeField] private KeyCode toggleKey = KeyCode.E;
+    [SerializeField] private GameObject droppedItemPrefab;
+    
+    [Header("Currency")]
+    [SerializeField] private CurrencyInfo[] coinData;
 
-    private ItemSlot primaryWeapon = new ItemSlot();
-    private ItemSlot secondaryWeapon = new ItemSlot();
+    private InventoryStorageService storageService;
+    private EquipmentService equipmentService;
+    private DropService dropService;
+    private InventoryUIPresenter uiPresenter;
 
     private ItemSlot movingSlot;
     private ItemSlot tempSlot;
     private ItemSlot originalSlot;
     private bool isMovingItem;
 
-    [SerializeField] private GameObject inventoryUIRoot; //Canvas
-    [SerializeField] private KeyCode toggleKey = KeyCode.E;
     private bool previousCursorState;
     private bool isInventoryOpen = false;
-
-    [Header("Currency")]
-    public int currency = 0;
-    [SerializeField] private TMPro.TextMeshProUGUI currencyText;
-    [SerializeField] private CurrencyInfo[] coinData;
-
-    public GameObject droppedItemPrefab;
-
-
-    private GameObject primaryWeaponGameObject;
-    private GameObject secondaryWeaponGameObject;
-
-    private PlayerManager playerManager;
-
     private int padding = 35;// half of slot size + half of padding size
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private PlayerManager playerManager;
+    private DropItem dropItemComponent;
+    
+    public ItemSlot[] items => storageService.GetItems();
+    public ItemSlot[] equipment => equipmentService.GetEquipmentSlots();
+    public int currency => dropService.GetCurrency();
+    public GameObject[] slots { get; private set; }
+    public GameObject[] equipmentSlots { get; private set; }
+    public GameObject DroppedItemPrefab => droppedItemPrefab;
+
+    override protected void Awake()
     {
+        base.Awake();
         playerManager = PlayerManager.Instance;
+        dropItemComponent = GetComponent<DropItem>();
 
+        SetupSlotReferences();
+        InitializeServices();
+
+        uiPresenter = GetComponent<InventoryUIPresenter>();
+        if (uiPresenter != null)
+        {
+            uiPresenter.Initialize(storageService, equipmentService, dropService, 
+                slots, equipmentSlots, primaryWeaponSlotGameObject, secondaryWeaponSlotGameObject);
+        }
+
+        SetupStartingItems();
+    }
+
+    private void SetupSlotReferences()
+    {
         slots = new GameObject[slotHolder.transform.childCount];
-        items = new ItemSlot[slots.Length];
         equipmentSlots = new GameObject[equipmentSlotHolder.transform.childCount];
-        equipment = new ItemSlot[equipmentSlots.Length];
 
-        for (int i = 0; i < items.Length; i++)
-        {
-            items[i] = new ItemSlot();
-        }
-
-        for (int i = 0; i < equipment.Length; i++)
-        {
-            equipment[i] = new ItemSlot();
-        }
-
-        for (int i = 0; i < items.Length; i++)
-        {
-            items[i] = new ItemSlot();
-        }
-
-        for (int i = 0; i < startingItems.Length; i++)
-        {
-            items[i] = startingItems[i];
-        }
-
-        for (int i = 0; i < slotHolder.transform.childCount; i++)
+        for (int i = 0; i < slots.Length; i++)
         {
             slots[i] = slotHolder.transform.GetChild(i).gameObject;
         }
 
-        for (int i = 0; i < equipmentSlotHolder.transform.childCount; i++)
+        for (int i = 0; i < equipmentSlots.Length; i++)
         {
             equipmentSlots[i] = equipmentSlotHolder.transform.GetChild(i).gameObject;
         }
-
-        foreach (var item in equipment)
-        {
-            if (item.GetItem() != null)
-                if (item.GetItem().GetEquipment() != null)
-                    item.GetItem().GetEquipment().OnEquip(playerManager.PlayerScript.playerContext);
-        }
-
-        //AddItem(itemToAdd, 1);
-        RemoveItem(itemToRemove);
-
-        RefreshUI();
     }
 
-    // Update is called once per frame
+    private void InitializeServices()
+    {
+        storageService = new InventoryStorageService(slots.Length, dropItemComponent, playerManager.Player.transform);
+        equipmentService = new EquipmentService(equipmentSlots.Length, playerManager);
+        dropService = new DropService(dropItemComponent);
+    }
+
+    private void SetupStartingItems()
+    {
+        // initialize starting items
+        for (int i = 0; i < startingItems.Length; i++)
+        {
+            if (startingItems[i].GetItem() != null)
+            {
+                storageService.SetItemAt(i, startingItems[i]);
+            }
+        }
+
+        // equip any starting equipment
+        ItemSlot[] equipmentSlots = equipmentService.GetEquipmentSlots();
+        for (int i = 0; i < equipmentSlots.Length; i++)
+        {
+            if (equipmentSlots[i].GetItem() != null && equipmentSlots[i].GetItem().GetEquipment() != null)
+            {
+                equipmentService.EquipEquipment(equipmentSlots[i], playerManager.PlayerScript.playerContext);
+            }
+        }
+    }
+
     void Update()
     {
         itemCursor.SetActive(isMovingItem);
         itemCursor.transform.position = Input.mousePosition;
-        if (isMovingItem)
+        if (isMovingItem && movingSlot.GetItem() != null)
             itemCursor.GetComponent<Image>().sprite = movingSlot.GetItem().itemIcon;
 
         if (Input.GetMouseButtonDown(0))
         {
             if (isMovingItem)
-            {
                 EndItemMove();
-            }
             else
                 BeginItemMove();
         }
-
 
         if (Input.GetKeyDown(toggleKey))
         {
@@ -131,327 +132,64 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
 
         if (Input.GetMouseButtonDown(2))
         {
-            GetComponent<DropItem>().DropCurrency(10, playerManager.Player.transform.position);
-            //GetComponent<DropItem>().DropItems(new ItemSlot(startingItems[1]), playerManager.Player.transform.position);
-            //GetComponent<DropItem>().DropItems(new ItemSlot(startingItems[2]), playerManager.Player.transform.position);
+            dropItemComponent.DropCurrency(10, playerManager.Player.transform.position);
         }
     }
 
     public void AddItem(ItemClass item, int quantity)
     {
-        bool itemsAdded = false;
-        int quantityLeft = quantity;
-
-        ItemSlot slot = Contains(item);
-        if (slot != null && slot.GetItem().isStackable)
-        {
-            slot.AddQuantity(quantity);
-            itemsAdded = true;
-        }
-        else
-        {
-            if (item.isStackable)
-            {
-                for (int i = 0; i < items.Length; i++)
-                {
-                    if (items[i].GetItem() == null)
-                    {
-                        items[i].AddItem(item, quantity);
-                        itemsAdded = true;
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                for (int i = 0; i < items.Length; i++)
-                {
-                    if (items[i].GetItem() == null && quantityLeft > 0)
-                    {
-                        items[i].AddItem(item, 1);
-                        quantityLeft--;
-                        if (quantityLeft <= 0)
-                        {
-                            itemsAdded = true;
-                            break;
-                        }
-                    }
-                }
-            }
-            
-        }
-
-        if (!itemsAdded)
-        {
-            //drop items(quantityLeft)
-            if(quantityLeft > 0)
-                GetComponent<DropItem>().DropItems(new ItemSlot(item, quantityLeft), playerManager.Player.transform.position);
-            Debug.Log("Drop items: " + quantityLeft + " | " + item.itemName);
-        }
-
-        RefreshUI();
+        storageService.AddItem(item, quantity);
     }
 
     public void RemoveItem(ItemClass item)
     {
-
-        ItemSlot temp = Contains(item);
-        if (temp != null)
-        {
-            if (temp.GetQuantity() > 1)
-                temp.SubQuantity(1);
-            else
-            {
-                int slotToRemoveIndex = 0;
-
-                for (int i = 0; i < items.Length; i++)
-                {
-                    if (items[i].GetItem() == item)
-                    {
-                        slotToRemoveIndex = i;
-                        break;
-                    }
-                }
-                items[slotToRemoveIndex].Clear();
-            }
-        }
-        RefreshUI();
+        storageService.RemoveItem(item);
     }
 
     public void RemoveItem(ItemClass item, int quantity)
     {
-        if (item.isStackable)
-        {
-            ItemSlot temp = Contains(item);
-            if (temp != null)
-            {
-                //remove num of items from stack
-                if (temp.GetQuantity() > quantity)
-                    temp.SubQuantity(quantity);
-                else
-                {
-                    //remove full stack
-                    int slotToRemoveIndex = 0;
-
-                    for (int i = 0; i < items.Length; i++)
-                    {
-                        if (items[i].GetItem() == item)
-                        {
-                            slotToRemoveIndex = i;
-                            break;
-                        }
-                    }
-                    items[slotToRemoveIndex].Clear();
-                }
-            }
-        }
-        else
-        {
-            //remove items 1 at a time if not stackable
-            int quantityLeft = quantity;
-
-            for (int i = 0; i < items.Length; i++)
-            {
-                if (items[i].GetItem() == item)
-                {
-                    items[i].Clear();
-                    quantityLeft--;
-                }
-                if(quantityLeft <= 0)
-                {
-                    break;
-                }
-            }
-        }
-
-
-        RefreshUI();
+        storageService.RemoveItem(item, quantity);
     }
 
     public int CanAddItem(ItemClass item, int quantity)
     {
-        //returns -1 if can add item, else returns amount that can add
-        bool itemsAdded = false;
-        int quantityLeft = quantity;
-        int quantityAdded = 0;
-
-        ItemSlot slot = Contains(item);
-        if (slot != null && slot.GetItem().isStackable)
-            return -1;
-        else
-        {
-            if (item.isStackable)
-            {
-                for (int i = 0; i < items.Length; i++)
-                {
-                    if (items[i].GetItem() == null)
-                    {
-                        itemsAdded = true;
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                for (int i = 0; i < items.Length; i++)
-                {
-                    if (items[i].GetItem() == null && quantityLeft > 0)
-                    {
-                        quantityLeft--;
-                        quantityAdded++;
-                    }
-                    else if (quantityLeft == 0)
-                    {
-                        itemsAdded = true;
-                        break;
-                    }
-                }
-            }
-
-        }
-
-        if (!itemsAdded)
-        {
-            return quantityAdded;
-        }
-
-        return -1;
-    }
-
-    public void AddCurrency(int amount)
-    {
-        currency += amount;
-
-        currencyText.text = currency.ToString();
-    }
-
-    public void RemoveCurrency(int amount)
-    {
-        currency -= amount;
-
-        currencyText.text = currency.ToString();
-    }
-
-    public void RefreshUI()
-    {
-        //refresh main inventory
-        for (int i = 0; i < slots.Length; i++)
-        {
-            try
-            {
-                slots[i].transform.GetChild(0).GetComponent<Image>().enabled = true;
-                slots[i].transform.GetChild(0).GetComponent<Image>().sprite = items[i].GetItem().itemIcon;
-                if (items[i].GetItem().isStackable)
-                    slots[i].transform.GetChild(1).GetComponent<TMPro.TextMeshProUGUI>().text = items[i].GetQuantity() + "";
-                else
-                    slots[i].transform.GetChild(1).GetComponent<TMPro.TextMeshProUGUI>().text = "";
-            }
-            catch
-            {
-                slots[i].transform.GetChild(0).GetComponent<Image>().sprite = null;
-                slots[i].transform.GetChild(0).GetComponent<Image>().enabled = false;
-                slots[i].transform.GetChild(1).GetComponent<TMPro.TextMeshProUGUI>().text = "";
-            }
-        }
-
-        //refresh equipment slots
-        for (int i = 0; i < equipmentSlots.Length; i++)
-        {
-            try
-            {
-                equipmentSlots[i].transform.GetChild(0).GetComponent<Image>().enabled = true;
-                equipmentSlots[i].transform.GetChild(0).GetComponent<Image>().sprite = equipment[i].GetItem().itemIcon;
-                equipmentSlots[i].transform.GetChild(1).GetComponent<TMPro.TextMeshProUGUI>().text = "";
-
-            }
-            catch
-            {
-                equipmentSlots[i].transform.GetChild(0).GetComponent<Image>().sprite = null;
-                equipmentSlots[i].transform.GetChild(0).GetComponent<Image>().enabled = false;
-                equipmentSlots[i].transform.GetChild(1).GetComponent<TMPro.TextMeshProUGUI>().text = "";
-
-            }
-        }
-
-        //refresh primary weapon slot
-        try
-        {
-            primaryWeaponSlotGameObject.transform.GetChild(0).GetComponent<Image>().enabled = true;
-            primaryWeaponSlotGameObject.transform.GetChild(0).GetComponent<Image>().sprite = primaryWeapon.GetItem().itemIcon;
-            primaryWeaponSlotGameObject.transform.GetChild(1).GetComponent<TMPro.TextMeshProUGUI>().text = "";
-        }
-        catch
-        {
-            primaryWeaponSlotGameObject.transform.GetChild(0).GetComponent<Image>().sprite = null;
-            primaryWeaponSlotGameObject.transform.GetChild(0).GetComponent<Image>().enabled = false;
-            primaryWeaponSlotGameObject.transform.GetChild(1).GetComponent<TMPro.TextMeshProUGUI>().text = "";
-        }
-
-        //refresh secondary weapon slot
-        try
-        {
-            secondaryWeaponSlotGameObject.transform.GetChild(0).GetComponent<Image>().enabled = true;
-            secondaryWeaponSlotGameObject.transform.GetChild(0).GetComponent<Image>().sprite = secondaryWeapon.GetItem().itemIcon;
-            secondaryWeaponSlotGameObject.transform.GetChild(1).GetComponent<TMPro.TextMeshProUGUI>().text = "";
-        }
-        catch
-        {
-            secondaryWeaponSlotGameObject.transform.GetChild(0).GetComponent<Image>().sprite = null;
-            secondaryWeaponSlotGameObject.transform.GetChild(0).GetComponent<Image>().enabled = false;
-            secondaryWeaponSlotGameObject.transform.GetChild(1).GetComponent<TMPro.TextMeshProUGUI>().text = "";
-        }
-
-        //refresh currency
-        currencyText.text = currency.ToString();
+        return storageService.CanAddItem(item, quantity);
     }
 
     public ItemSlot Contains(ItemClass item)
     {
-        for (int i = 0; i < items.Length; i++)
-        {
-            if (items[i].GetItem() == item)
-                return items[i];
-        }
-
-        return null;
+        return storageService.Contains(item);
     }
 
     public bool Contains(ItemClass item, int quantity)
     {
-        for (int i = 0; i < items.Length; i++)
-        {
-            if (items[i].GetItem() == item && items[i].GetQuantity() >= quantity)
-                return true;
-        }
-
-        return false;
+        return storageService.Contains(item, quantity);
     }
 
     public int ContainAmount(ItemClass item)
     {
-        if (item.isStackable)
-        {
-            for (int i = 0; i < items.Length; i++)
-            {
-                if (items[i].GetItem() == item)
-                    return items[i].GetQuantity();
-            }
-        }
-        else
-        {
-            int totalAmount = 0;
-            for (int i = 0; i < items.Length; i++)
-            {
-                if (items[i].GetItem() == item)
-                    totalAmount += items[i].GetQuantity();
-            }
-
-            return totalAmount;
-        }
-
-        return 0;
+        return storageService.ContainAmount(item);
     }
 
+    public void AddCurrency(int amount)
+    {
+        dropService.AddCurrency(amount);
+    }
+
+    public void RemoveCurrency(int amount)
+    {
+        dropService.RemoveCurrency(amount);
+    }
+
+    public void RefreshUI()
+    {
+        if (uiPresenter != null)
+        {
+            uiPresenter.RefreshUI();
+        }
+    }
+
+    //item movement
     private bool BeginItemMove()
     {
         originalSlot = GetAllClosestItemSlot();
@@ -460,31 +198,24 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
 
         movingSlot = new ItemSlot(originalSlot);
 
+        // Handle unequipping
         if (IsEquipmentItemAndSlot(originalSlot, originalSlot.GetItem()))
         {
-            originalSlot.GetItem().GetEquipment().OnUnequip(playerManager.PlayerScript.playerContext);
+            equipmentService.UnequipEquipment(originalSlot, playerManager.PlayerScript.playerContext);
         }
         else if (isPrimaryWeaponItemAndSlot(originalSlot, movingSlot.GetItem()))
         {
-            if (primaryWeaponGameObject != null)
-                Destroy(primaryWeaponGameObject);
-            primaryWeaponGameObject = null;
-            playerManager.PlayerScript.SetPrimaryWeapon(null);
+            equipmentService.UnequipPrimaryWeapon();
         }
         else if (isSecondaryWeaponItemAndSlot(originalSlot, movingSlot.GetItem()))
         {
-            if (secondaryWeaponGameObject != null)
-                Destroy(secondaryWeaponGameObject);
-            secondaryWeaponGameObject = null;
-            playerManager.PlayerScript.SetSecondaryWeapon(null);
+            equipmentService.UnequipSecondaryWeapon();
         }
-
 
         originalSlot.Clear();
         isMovingItem = true;
         RefreshUI();
 
-        
         return true;
     }
 
@@ -493,7 +224,7 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
         //drop item if click outside inventory
         if (!IsMouseOverUI())
         {
-            GetComponent<DropItem>().DropItems(new ItemSlot(movingSlot.GetItem(), movingSlot.GetQuantity()), playerManager.Player.transform.position);
+            dropService.DropItems(movingSlot, playerManager.Player.transform.position);
             movingSlot.Clear();
         }
         else
@@ -515,12 +246,10 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
                     AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
                 else
                 {
-                    //add if statements checkjing for equipment/weapon
                     TryEquipEquipmentWeapon(oldSlotBeforeMove, movingSlot.GetItem());
                     oldSlotBeforeMove.AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
                 }
-                    
-
+                
                 movingSlot.Clear();
             }
             else
@@ -545,22 +274,16 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
 
                         if (IsEquipmentItemAndSlot(originalSlot, movingSlot.GetItem()))
                         {
-                            originalSlot.GetItem().GetEquipment().OnEquip(playerManager.PlayerScript.playerContext);
-                            movingSlot.GetItem().GetEquipment().OnUnequip(playerManager.PlayerScript.playerContext);
+                            equipmentService.EquipEquipment(originalSlot, playerManager.PlayerScript.playerContext);
+                            equipmentService.UnequipEquipment(movingSlot, playerManager.PlayerScript.playerContext);
                         }
                         else if (isPrimaryWeaponItemAndSlot(originalSlot, movingSlot.GetItem()))
                         {
-                            if (primaryWeaponGameObject != null)
-                                Destroy(primaryWeaponGameObject);
-                            primaryWeaponGameObject = Instantiate(originalSlot.GetItem().GetWeapon().weaponPrefab);
-                            playerManager.PlayerScript.SetPrimaryWeapon(primaryWeaponGameObject);
+                            equipmentService.EquipPrimaryWeapon(originalSlot);
                         }
                         else if (isSecondaryWeaponItemAndSlot(originalSlot, movingSlot.GetItem()))
                         {
-                            if (secondaryWeaponGameObject != null)
-                                Destroy(secondaryWeaponGameObject);
-                            secondaryWeaponGameObject = Instantiate(originalSlot.GetItem().GetWeapon().weaponPrefab);
-                            playerManager.PlayerScript.SetSecondaryWeapon(secondaryWeaponGameObject);
+                            equipmentService.EquipSecondaryWeapon(originalSlot);
                         }
 
                         RefreshUI();
@@ -571,72 +294,39 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
                 {
                     //no item in slot
                     originalSlot.AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
-
-                    /*
-                    if (IsEquipmentItemAndSlot(originalSlot, movingSlot.GetItem()))
-                    {
-                        originalSlot.GetItem().GetEquipment().OnEquip();
-                    }
-                    else if(isPrimaryWeaponItemAndSlot(originalSlot, movingSlot.GetItem()))
-                    {
-                        if (primaryWeaponGameObject != null)
-                            Destroy(primaryWeaponGameObject);
-                        primaryWeaponGameObject = Instantiate(movingSlot.GetItem().GetWeapon().weaponPrefab);
-                        playerManager.PlayerScript.SetPrimaryWeapon(primaryWeaponGameObject);
-                    }
-                    else if(isSecondaryWeaponItemAndSlot(originalSlot, movingSlot.GetItem()))
-                    {
-                        if (secondaryWeaponGameObject != null)
-                            Destroy(secondaryWeaponGameObject);
-                        secondaryWeaponGameObject = Instantiate(movingSlot.GetItem().GetWeapon().weaponPrefab);
-                        playerManager.PlayerScript.SetSecondaryWeapon(secondaryWeaponGameObject);
-                    }*/
-
                     TryEquipEquipmentWeapon(originalSlot, movingSlot.GetItem());
-
-
                     movingSlot.Clear();
                 }
             }
         }
-
 
         isMovingItem = false;
         RefreshUI();
         return true;
     }
 
+    //helpers
     private ItemSlot GetClosestSlot()
     {
         for (int i = 0; i < slots.Length; i++)
         {
-            if (Vector2.Distance(slots[i].transform.position, Input.mousePosition) <= padding) // half of slot size + half of padding size
+            if (Vector2.Distance(slots[i].transform.position, Input.mousePosition) <= padding)
             {
-                return items[i];
+                return storageService.GetItemAt(i);
             }
         }
-
         return null;
     }
 
     private ItemSlot GetClosestEquipmentSlot()
     {
-        for (int i = 0; i < slots.Length; i++)
-        {
-            if (Vector2.Distance(slots[i].transform.position, Input.mousePosition) <= padding) 
-            {
-                return items[i];
-            }
-        }
-
         for (int i = 0; i < equipmentSlots.Length; i++)
         {
-            if (Vector2.Distance(equipmentSlots[i].transform.position, Input.mousePosition) <= padding) // half of slot size + half of padding size
+            if (Vector2.Distance(equipmentSlots[i].transform.position, Input.mousePosition) <= padding)
             {
-                return equipment[i];
+                return equipmentService.GetEquipmentSlots()[i];
             }
         }
-
         return null;
     }
 
@@ -646,25 +336,24 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
         {
             if (Vector2.Distance(slots[i].transform.position, Input.mousePosition) <= padding)
             {
-                return items[i];
+                return storageService.GetItemAt(i);
             }
         }
 
         if (movingSlot.GetItem().GetWeapon().weaponType == WeaponClass.WeaponType.Primary)
         {
-            if (Vector2.Distance(primaryWeaponSlotGameObject.transform.position, Input.mousePosition) <= padding) // half of slot size + half of padding size
+            if (Vector2.Distance(primaryWeaponSlotGameObject.transform.position, Input.mousePosition) <= padding)
             {
-                return primaryWeapon;
+                return equipmentService.GetPrimaryWeapon();
             }
         }
         else
         {
-            if (Vector2.Distance(secondaryWeaponSlotGameObject.transform.position, Input.mousePosition) <= padding) // half of slot size + half of padding size
+            if (Vector2.Distance(secondaryWeaponSlotGameObject.transform.position, Input.mousePosition) <= padding)
             {
-                return secondaryWeapon;
+                return equipmentService.GetSecondaryWeapon();
             }
         }
-
         return null;
     }
 
@@ -674,76 +363,61 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
         {
             if (Vector2.Distance(slots[i].transform.position, Input.mousePosition) <= padding)
             {
-                return items[i];
+                return storageService.GetItemAt(i);
             }
         }
 
+        ItemSlot[] equipSlots = equipmentService.GetEquipmentSlots();
         for (int i = 0; i < equipmentSlots.Length; i++)
         {
-            if (Vector2.Distance(equipmentSlots[i].transform.position, Input.mousePosition) <= padding) // half of slot size + half of padding size
+            if (Vector2.Distance(equipmentSlots[i].transform.position, Input.mousePosition) <= padding)
             {
-                return equipment[i];
+                return equipSlots[i];
             }
         }
 
-        if (Vector2.Distance(primaryWeaponSlotGameObject.transform.position, Input.mousePosition) <= padding) // half of slot size + half of padding size
+        if (Vector2.Distance(primaryWeaponSlotGameObject.transform.position, Input.mousePosition) <= padding)
         {
-            return primaryWeapon;
+            return equipmentService.GetPrimaryWeapon();
         }
 
-        if (Vector2.Distance(secondaryWeaponSlotGameObject.transform.position, Input.mousePosition) <= padding) // half of slot size + half of padding size
+        if (Vector2.Distance(secondaryWeaponSlotGameObject.transform.position, Input.mousePosition) <= padding)
         {
-            return secondaryWeapon;
+            return equipmentService.GetSecondaryWeapon();
         }
 
         return null;
     }
 
-    //run this to apply effects
-    //i might remove this and put everything in the onequip and uneqiup function
-    public void GetEquipmentEffects()
-    {
-        //reset playerdata to base (implemnt later)
-        foreach (var item in equipment)
-        {
-            if(item.GetItem() != null)
-                if(item.GetItem().GetEquipment() != null)
-                {
-                    item.GetItem().GetEquipment().EquipmentEffect();
-                }
-                    
-        }
-    }
-
     private bool IsEquipmentItemAndSlot(ItemSlot itemSlot, ItemClass item)
     {
-        for (int i = 0; i < equipment.Length; i++)
+        ItemSlot[] equipSlots = equipmentService.GetEquipmentSlots();
+        for (int i = 0; i < equipSlots.Length; i++)
         {
-            if(itemSlot == equipment[i])
+            if (itemSlot == equipSlots[i])
             {
-                if(item.GetEquipment() != null)
+                if (item.GetEquipment() != null)
                     return true;
             }
         }
         return false;
     }
 
-    //add restrictions on primary vs secondary later
     private bool isPrimaryWeaponItemAndSlot(ItemSlot itemSlot, ItemClass item)
     {
-        //temp for testing, remove secondary weapon part when seperating
-        if(itemSlot == primaryWeapon)
+        if (itemSlot == equipmentService.GetPrimaryWeapon())
         {
-            if(item.GetWeapon() != null)
+            if (item.GetWeapon() != null)
             {
                 return true;
             }
         }
         return false;
     }
+
     private bool isSecondaryWeaponItemAndSlot(ItemSlot itemSlot, ItemClass item)
     {
-        if (itemSlot == secondaryWeapon)
+        if (itemSlot == equipmentService.GetSecondaryWeapon())
         {
             if (item.GetWeapon() != null)
             {
@@ -755,42 +429,26 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
 
     private void TryEquipEquipmentWeapon(ItemSlot itemSlot, ItemClass item)
     {
-        
         if (IsEquipmentItemAndSlot(itemSlot, item))
         {
-            //changed originalSlot to movingSlot, check here if any errors
-            /*
-             * 
-             * 
-             */
-            movingSlot.GetItem().GetEquipment().OnEquip(playerManager.PlayerScript.playerContext);
+            equipmentService.EquipEquipment(itemSlot, playerManager.PlayerScript.playerContext);
         }
         else if (isPrimaryWeaponItemAndSlot(itemSlot, item))
         {
-            if (primaryWeaponGameObject != null)
-                Destroy(primaryWeaponGameObject);
-            primaryWeaponGameObject = Instantiate(movingSlot.GetItem().GetWeapon().weaponPrefab);
-            playerManager.PlayerScript.SetPrimaryWeapon(primaryWeaponGameObject);
+            equipmentService.EquipPrimaryWeapon(itemSlot);
         }
-        else if (isSecondaryWeaponItemAndSlot(itemSlot, movingSlot.GetItem()))
+        else if (isSecondaryWeaponItemAndSlot(itemSlot, item))
         {
-            if (secondaryWeaponGameObject != null)
-                Destroy(secondaryWeaponGameObject);
-            secondaryWeaponGameObject = Instantiate(movingSlot.GetItem().GetWeapon().weaponPrefab);
-            playerManager.PlayerScript.SetSecondaryWeapon(secondaryWeaponGameObject);
+            equipmentService.EquipSecondaryWeapon(itemSlot);
         }
     }
 
     public void ToggleInventory()
     {
         if (isInventoryOpen)
-        {
             CloseInventory();
-        }
         else
-        {
             OpenInventory();
-        }
     }
 
     public void CloseInventory()
@@ -798,21 +456,17 @@ public class InventoryManager : PersistentGenericSingleton<InventoryManager>
         //close inv when holding item
         if (isMovingItem)
         {
-            
             if (originalSlot.GetItem() != null && movingSlot.GetItem() != null)
                 AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
             else
             {
                 originalSlot.AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
-                //run checks for equipment/weapons
                 TryEquipEquipmentWeapon(originalSlot, movingSlot.GetItem());
             }
-                
 
             movingSlot.Clear();
         }
         isMovingItem = false;
-
 
         isInventoryOpen = false;
         inventoryUIRoot?.SetActive(false);

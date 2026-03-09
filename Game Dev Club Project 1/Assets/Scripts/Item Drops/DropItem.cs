@@ -8,20 +8,20 @@ public class DropItem : MonoBehaviour
 
     private void Start()
     {
-        droppedItemPrefab = InventoryManager.Instance.droppedItemPrefab;
+        droppedItemPrefab = InventoryManager.Instance.DroppedItemPrefab;
     }
 
     public void DropItems(ItemSlot itemToDrop)
     {
         GameObject droppedItem = Instantiate(droppedItemPrefab, PlayerManager.Instance.Player.transform.position, Quaternion.identity);
-        droppedItem.GetComponent<DroppedItem>().SetDroppedItem(itemToDrop);
+        droppedItem.GetComponent<DroppedItem>().SetDroppedItem(new ItemSlot(itemToDrop.GetItem(), itemToDrop.GetQuantity()));;
         ShootOut(droppedItem, Random.Range(1f, 3f));
     }
 
     public void DropItems(ItemSlot itemToDrop, Vector3 dropPosition)
     {
         GameObject droppedItem = Instantiate(droppedItemPrefab, dropPosition, Quaternion.identity);
-        droppedItem.GetComponent<DroppedItem>().SetDroppedItem(itemToDrop);
+        droppedItem.GetComponent<DroppedItem>().SetDroppedItem(new ItemSlot(itemToDrop.GetItem(), itemToDrop.GetQuantity()));;
         ShootOut(droppedItem, Random.Range(1f, 3f));   
     }
 
